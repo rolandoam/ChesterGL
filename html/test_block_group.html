@@ -1,0 +1,89 @@
+<html>
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-0.9.5.min.js"></script>
+	<script type="text/javascript" src="externals/webgl-debug.js"></script>
+	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
+	<script type="text/javascript" src="externals/soundmanager2-jsmin.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	// setup soundmanager
+	soundManager.url = "externals/swf/";
+	soundManager.flashVersion = 9;
+	soundManager.consoleOnly = true;
+	soundManager.onready(function () {
+		console.log("soundManager loaded");
+		setupGame();
+	});
+
+	function setupGame() {
+		ChesterGL.setupWebGL("demo-canvas");
+		var width = ChesterGL.gl.viewportWidth;
+		var height = ChesterGL.gl.viewportHeight;
+
+		ChesterGL.loadTexture("images/star.png");
+		ChesterGL.texturesLoaded(function () {
+			$("#loading").html("Test Single Block");        	
+			// finish with the setup and run the game
+			ChesterGL.setupPerspective();
+			
+			var group = ChesterGL.BlockGroup.create("images/star.png");
+			
+			// create a block
+			var block1 = group.createBlock();
+			block1.rotateBy(-45);
+			block1.opacity = 0.5;
+			block1.moveTo(width/2, height/2);
+			
+			var block2 = group.createBlock();
+			block2.moveTo(width/2 - 64, height/2 - 64);
+			
+			var block3 = group.createBlock();
+			block2.moveTo(width/2 - 10, height/2 - 10);
+			
+			group.addChild(block1);
+			group.addChild(block2);
+			group.addChild(block3);
+			ChesterGL.rootBlock = group;
+			
+			// add some action
+			block1.update = function () {
+				this.rotateBy(1);
+			};
+			block2.update = function () {
+				this.rotateBy(-1);
+			};
+
+			// ChesterGL.run();
+			// draw a single frame (for debug purposes)
+			ChesterGL.drawScene();
+		});
+	} // setupGame()
+});
+    </script>
+    <style type="text/css">
+#loading {
+    color: #fff;
+    text-shadow: 2px 2px 2px #000;
+    font-weight: bold;
+    font-size: 18pt;
+    padding: 1em;
+}
+    </style>
+</head>
+<body>
+	<div>
+		<div id="loading" style="position: absolute; z-index: 100;"></div>
+		<canvas id="demo-canvas" width="500" height="500"></canvas><br/>
+		<span id="debug-fps">00</span>
+	</div>
+	<div style="width: 80%">
+	    <p><em>Notes</em></p>
+	    <ul>
+			<li>Rendering the scene as a "batch" - using gl.drawElements</li>
+	    </ul>
+	</div>
+</body>
+</html>
