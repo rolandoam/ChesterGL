@@ -1,3 +1,53 @@
-# Just a demo
+# ChesterGL
 
-this is a WIP - a demo with the hopes to be something else
+This is a WIP!!
+
+## How to have fun
+
+     make debug
+     make server
+
+And point your browser to http://localhost:3000, pick one of the test*.html files.
+
+## How to create fun
+
+     make doc
+
+Sorry, the doc is not yet complete, but it will at some point :)
+Just look at the examples and figure your way out from there. It shouldn't be too hard
+
+## How to compile
+
+You will need to modify the Makefile and change the location of closure compiler, as well as add the following externs:
+
+* jquery-1.5.js
+* base64.js
+* glMatrix-0.9.5.js
+* webkit_console.js
+
+All of them are in the svn repo of google closure, except the glMatrix one, you can find that in the following gist: https://gist.github.com/1248396 (it's not complete, it just fills the functions I'm using in ChesterGL)
+
+## Known problems
+
+There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page
+
+## Known problems in canvas mode
+
+* Apart from the texture loading problem, you will not get a z-position, for really obvious reasons.
+* Color tinting will not work (I haven't found a way to replace that part)
+* Block groups (batched sprites) will not add any improvement, for obvious reasons
+
+## Roadmap
+
+### 1.0
+
+* Add time-based animations (shouldn't be too hard)
+* Improve canvas fallback
+* Improve speed on iOS (and other mobiles, right now we can get ~40fps with ~20 sprites on a iPhone 4)
+* Improve support for Texture Packer sprite sheets
+* Improve support for tile maps
+
+### 2.0
+
+* Finish the webgl binding for iOS (what!?)
+* Add your ideas here
