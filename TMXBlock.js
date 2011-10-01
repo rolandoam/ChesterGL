@@ -117,25 +117,25 @@
 			var orientation = map.attr("orientation");
 			if (tileset) {
 				tmx.tileSize = {
-					'w': parseInt(tileset.attr("tilewidth")),
-					'h': parseInt(tileset.attr("tileheight"))
+					'w': parseInt(tileset.attr("tilewidth"), 10),
+					'h': parseInt(tileset.attr("tileheight"), 10)
 				};
 				tmx.mapTileSize = {
-					'w': parseInt(map.attr("tilewidth")),
-					'h': parseInt(map.attr("tileheight"))
+					'w': parseInt(map.attr("tilewidth"), 10),
+					'h': parseInt(map.attr("tileheight"), 10)
 				}
 				if (tileset.attr("spacing")) {
-					tmx.spacing = parseInt(tileset.attr("spacing"));
+					tmx.spacing = parseInt(tileset.attr("spacing"), 10);
 				}
 				if (tileset.attr("margin")) {
-					tmx.margin = parseInt(tileset.attr("margin"));
+					tmx.margin = parseInt(tileset.attr("margin"), 10);
 				}
 				
 				// find the image for the tileset
 				var image = tileset.find("image").first();
 				var imageSize = {
-					'w': parseInt(image.attr("width")),
-					'h': parseInt(image.attr("height"))
+					'w': parseInt(image.attr("width"), 10),
+					'h': parseInt(image.attr("height"), 10)
 				};
 				tmx.texture = image.attr('source');
 				ChesterGL.loadAsset('texture', tmx.texture);
@@ -147,8 +147,8 @@
 					blockLayer.render = function () {};
 					
 					var layerSize = {
-						'w': parseInt($(layer).attr("width")),
-						'h': parseInt($(layer).attr("height"))
+						'w': parseInt($(layer).attr("width"), 10),
+						'h': parseInt($(layer).attr("height"), 10)
 					};
 					var data = $(layer).find("data").first();
 					if (data) {
@@ -169,11 +169,11 @@
 								var mapTileSize = tmx.mapTileSize;
 								
 								b.setTexture(tmx.texture);
-								var max_x = parseInt((imageSize.w - margin * 2 + spacing) / (tileSize.w + spacing));
+								var max_x = parseInt((imageSize.w - margin * 2 + spacing) / (tileSize.w + spacing), 10);
 								var frame = {
 									// assume gid == 1
 									l: (gid % max_x) * (tileSize.w + spacing) + margin,
-									t: (imageSize.h - tileSize.h - margin - spacing) - parseInt(gid / max_x) * (tileSize.h + spacing) + margin,
+									t: (imageSize.h - tileSize.h - margin - spacing) - parseInt(gid / max_x, 10) * (tileSize.h + spacing) + margin,
 									w: tileSize.w,
 									h: tileSize.h
 								}
