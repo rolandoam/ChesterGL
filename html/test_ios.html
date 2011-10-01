@@ -71,12 +71,8 @@ $(document).ready(function () {
 			sceneBlock.addChild(someBlock);
 			
 			// add some action
-			var dz = 2;
 			someBlock.update = function () {
 				this.rotateBy(1);
-				this.moveBy(0, 0, dz);
-				if (this.position.z >=  200) { dz = -dz; }
-				if (this.position.z <= -200) { dz = -dz; }
 			};
 			someBlock2.update = function () {
 				this.rotateBy(-1);
@@ -86,7 +82,7 @@ $(document).ready(function () {
 				ChesterGL.drawScene();
 			});
 			$("#clear-frame").click(function () {
-				ChesterGL.gl.fillRect(0, 0, 500, 500);
+				ChesterGL.gl.fillRect(0, 0, width, height);
 			});
 			
 			ChesterGL.run();
