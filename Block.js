@@ -457,9 +457,9 @@
 		if (this.type == Block.TYPE.BLOCKGROUP) {
 			throw "Cannot call render on a BlockGroup block!";
 		}
-		var gl = ChesterGL.gl;
 		
 		if (ChesterGL.webglMode) {
+			var gl = ChesterGL.gl;
 			// select current shader
 			var program = ChesterGL.selectProgram(Block.PROGRAM_NAME[this.program]);
 
@@ -489,6 +489,7 @@
 			gl.uniformMatrix4fv(program.mvMatrixUniform, false, this.mvMatrix);
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		} else {
+			var gl = ChesterGL.offContext;
 			// canvas drawing api - we only draw textures
 			if (this.program == Block.PROGRAM.TEXTURE) {
 				var m = this.mvMatrix;

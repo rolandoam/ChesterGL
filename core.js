@@ -71,6 +71,7 @@
 	 * @type {?ChesterGL.Block}
 	 */
 	ChesterGL.rootBlock = null;
+	ChesterGL['rootBlock'] = ChesterGL.rootBlock;
 	
 	/**
 	 * @type {?Element}
@@ -83,13 +84,22 @@
 	 * @type {string}
 	 */
 	ChesterGL.projection = "3d";
-	
+	ChesterGL['projection'] = ChesterGL.projection;
+		
 	/**
 	 * are we on webgl?
 	 * @type {boolean}
 	 */
 	ChesterGL.webglMode = true;
 	ChesterGL['webglMode'] = ChesterGL.webglMode;
+	
+	/**
+	 * whether or not to use an offscreen buffer when in not webgl mode
+	 * 
+	 * @type {boolean}
+	 */
+	ChesterGL.usesOffscreenBuffer = false;
+	ChesterGL['usesOffscreenBuffer'] = ChesterGL.usesOffscreenBuffer;
 	
 	/**
 	 * @type {Object.<string,Object>}
@@ -148,13 +158,13 @@
 		var prog = this.programs[program];
 		var gl = this.gl;
 		if (program != this.currentProgram) {
-			console.log("selecting program " + program);
+			// console.log("selecting program " + program);
 			this.currentProgram = program;
 			gl.validateProgram(prog);
 			gl.useProgram(prog);
 			// enable attribs
 			for (var attr in prog.attribs) {
-				console.log("  enabling attribute " + attr);
+				// console.log("  enabling attribute " + attr);
 				gl.enableVertexAttribArray(prog.attribs[attr]);
 			}
 			// set the projection matrix
@@ -193,8 +203,22 @@
 			console.log("ERROR: " + e);
 		}
 		if (!this.gl) {
+			// fallback to canvas API (uses an offscreen buffer)
 			this.gl = canvas.getContext("2d");
-			if (!this.gl) {
+			if (this.usesOffscreenBuffer) {
+				this.offCanvas = document.createElement('canvas');
+				this.offCanvas.width = canvas.width;
+				this.offCanvas.height = canvas.height;
+				this.offContext = this.offCanvas.getContext("2d");
+				this.offContext.viewportWidth = canvas.width;
+				this.offContext.viewportHeight = canvas.height;
+				this['offContext'] = this.offContext;
+				this.offContext['viewportWidth'] = this.offContext.viewportWidth;
+				this.offContext['viewportHeight'] = this.offContext.viewportHeight;
+			} else {
+				this.offContext = this.gl;
+			}
+			if (!this.gl || !this.offContext) {
 				throw "Error initializing graphic context!";
 			}
 			this.webglMode = false;
@@ -528,24 +552,31 @@
 	 * main draw function, will call the root block
 	 */
 	ChesterGL.drawScene = function () {
-		var gl = this.gl;
-		
 		if (this.webglMode) {
+			var gl = this.gl;
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 			// global blending options
 			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 			gl.enable(gl.BLEND);
 		} else {
+			var gl = this.offContext;
 			gl.setTransform(1, 0, 0, 1, 0, 0);
 			gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
-			// gl.clearRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 		}
 		
 		// start mayhem
 		if (this.rootBlock) {
 			this.rootBlock.visit();
 		}
+		
+		if (!this.webglMode) {
+			// copy back the off context (if we use one)
+			if (this.usesOffscreenBuffer) {
+				this.gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
+				this.gl.drawImage(this.offCanvas, 0, 0);
+			}
+		}		
 	}
 	
 	/**
