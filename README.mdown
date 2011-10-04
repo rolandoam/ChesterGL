@@ -2,6 +2,10 @@
 
 This is a WIP!!
 
+## What is this?
+
+It's a simple WebGL 2d library/demo (mostly a proof of concept) that I've been writing since early 2011 just to teach myself OpenGL-ES 2.0 and other stuff. Nothing more than that. If you can build a game with this, awesome :) (and let me know)
+
 ## How to have fun
 
      make debug
