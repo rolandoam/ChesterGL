@@ -61,6 +61,7 @@
 	
 	/**
 	 * this is the size of the buffer data (Float32Array)
+	 * 4*3 (verts) + 4*2 (tex coords) + 4*4 (color)
 	 * @const
 	 */
 	Block.QUAD_SIZE = 36;
@@ -359,7 +360,7 @@
 		}
 		
 		var bufferData = this.glBufferData;
-		var inBlockGroup = this.parent && this.parent == Block.TYPE.BLOCKGROUP;
+		var inBlockGroup = this.parent && this.parent.type == Block.TYPE.BLOCKGROUP;
 		
 		if (ChesterGL.webglMode) {
 			if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
@@ -404,7 +405,7 @@
 						t = this.frame.t / texH,
 						w = this.frame.w / texW,
 						h = this.frame.h / texH;
-					_idx = 12 + this.baseBufferIndex * Block.QUAD_SIZE;
+					_idx += 12;
 					bufferData[_idx+0] = l  ; bufferData[_idx+1] = t;
 					bufferData[_idx+2] = l  ; bufferData[_idx+3] = t+h;
 					bufferData[_idx+4] = l+w; bufferData[_idx+5] = t;

@@ -31,162 +31,166 @@
 	var ChesterGL = window['ChesterGL'];
 	var Block = ChesterGL['Block'];
 	
-	BlockGroup_prototype = {
-		/**
-		 * The max number of children this blockgroup can hold (this is here for the buffer data)
-		 * @type {number}
-		 */
-		maxChildren: 0,
-		
-		/**
-		 * @type {boolean}
-		 */
-		isChildDirty: false,
-				
-		/**
-		 * @type {?WebGLBuffer}
-		 */
-		indexBuffer: null,
-		
-		/**
-		 * @type {?Uint16Array}
-		 */
-		indexBufferData: null,
-		
-		/**
-		 * creates a block that can be added to this block group
-		 */
-		createBlock: function (rect) {
-			var b = Block.create(rect, Block.TYPE.STANDALONE, this);
-			if (this.texture) {
-				b.setTexture(this.texture);
-			}
-			return b;
-		},
-		
-		/**
-		 * adds a child
-		 * @param {Block} block
-		 */
-		addChild: function (block) {
-			if (!this.texture) {
-				this.texture = block.texture;
-			} else {
-				if (this.texture != block.texture) {
-					throw "Invalid child: only can add child with the same texture";
-				}
-			}
-			if (block.parent != this) {
-				throw "Invalid child: can only add children created with BlockGroup.create";
-			}
-			this.children.push(block);
-			
-			var length = this.children.length;
-			
-			// just point the buffer data on the child and set the baseIndex
-			block.baseBufferIndex = length-1;
-			block.glBufferData    = this.glBufferData;			
-			this.isChildDirty = true;
-		},
-		
-		/**
-		 * when the block list changes, the indices array must be recreated
-		 * @param {number} startIdx
-		 */
-		recreateIndices: function (startIdx) {
-			var lastIdx = (this.indexBufferData[startIdx*6 - 1] || -1) + 1;
-			var total = (this.children.length + 1) * 6;
-			for (var idx = startIdx * 6; idx < total; idx += 6) {
-				this.indexBufferData[idx + 0] = lastIdx    ; this.indexBufferData[idx + 1] = lastIdx + 1; this.indexBufferData[idx + 2] = lastIdx + 2;
-				this.indexBufferData[idx + 3] = lastIdx + 2; this.indexBufferData[idx + 4] = lastIdx + 1; this.indexBufferData[idx + 5] = lastIdx + 3;
-				lastIdx += 4;
-			}
-			var gl = ChesterGL.gl;
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indexBufferData, gl.STATIC_DRAW);
-		},
-		
-		/**
-		 * removes a block from the group
-		 * @param {Block} b
-		 */
-		removeBlock: function (b) {
-			throw "not implemented";
-		},
-		
-		visit: function () {
-			if (this.update) {
-				this.update();
-			}
-			if (!this.visible) {
-				return;
-			}
-			this.transform();
-			
-			var children = this.children;
-			var len = children.length;
-			for (var i=0; i < len; i++) {
-				children[i].visit();
-			}
-			
-			// re-bind the glBuffer (might have changed in the children visit)
-			var gl = ChesterGL.gl;
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
-
-			// render this block group
-			this.render();
-			
-			// reset our dirty markers
-			this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
-		},
-		
-		/**
-		 * actually render the block group
-		 */
-		render: function () {
-			var gl = ChesterGL.gl;
-			
-			// select current shader
-			var program = ChesterGL.selectProgram(Block.PROGRAM_NAME[this.program]);
-			var totalChildren = this.children.length;
-			var texOff = 12 * 4,
-				colorOff = texOff + 8 * 4;
-			
-			gl.uniform1f(program.opacityUniform, this.opacity);
-			gl.uniformMatrix4fv(program.mvMatrixUniform, false, this.mvMatrix);
-			
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-			
-			gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, 0, 0);
-			gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, 0, colorOff);
-			
-			if (this.program == Block.PROGRAM.DEFAULT) {
-				// no extra attributes for the shader
-			} else if (this.program == Block.PROGRAM.TEXTURE) {
-				var texture = ChesterGL.textures[this.texture];
-				
-				// pass the texture attributes
-				gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, 0, texOff);
-				
-				gl.activeTexture(gl.TEXTURE0);
-				gl.bindTexture(gl.TEXTURE_2D, texture.tex);
-				gl.uniform1i(program.samplerUniform, 0);				
-			}
-			
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);			
-			// set the matrix uniform (actually, only the model view matrix)
-			gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
-		}
-	}
+	/**
+	 * The max number of children this blockgroup can hold (this is here for the buffer data)
+	 * @type {number}
+	 */
+	BlockGroup.prototype.maxChildren = 0;
 	
-	BlockGroup.prototype = BlockGroup_prototype;
+	/**
+	 * @type {boolean}
+	 */
+	BlockGroup.prototype.isChildDirty = false;
+			
+	/**
+	 * @type {?WebGLBuffer}
+	 */
+	BlockGroup.prototype.indexBuffer = null;
+	
+	/**
+	 * @type {?Uint16Array}
+	 */
+	BlockGroup.prototype.indexBufferData = null;
+	
+	/**
+	 * creates a block that can be added to this block group
+	 */
+	BlockGroup.prototype.createBlock = function (rect) {
+		var b = Block.create(rect, Block.TYPE.STANDALONE, this);
+		if (this.texture) {
+			b.setTexture(this.texture);
+		}
+		return b;
+	},
+	
+	/**
+	 * adds a child
+	 * @param {Block} block
+	 */
+	BlockGroup.prototype.addChild = function (block) {
+		if (!this.texture) {
+			this.texture = block.texture;
+		} else {
+			if (this.texture != block.texture) {
+				throw "Invalid child: only can add child with the same texture";
+			}
+		}
+		if (block.parent != this) {
+			throw "Invalid child: can only add children created with BlockGroup.create";
+		}
+		this.children.push(block);
+		
+		var length = this.children.length;
+		
+		// just point the buffer data on the child and set the baseIndex
+		block.baseBufferIndex = length-1;
+		block.glBufferData    = this.glBufferData;			
+		this.isChildDirty = true;
+	},
+	
+	/**
+	 * when the block list changes, the indices array must be recreated
+	 * @param {number} startIdx
+	 */
+	BlockGroup.prototype.recreateIndices = function (startIdx) {
+		var lastIdx = (this.indexBufferData[startIdx*6 - 1] || -1) + 1;
+		var total = Math.max(this.children.length, 1);
+		for (var i = startIdx; i < total; i ++) {
+			var idx = i*6;
+			this.indexBufferData[idx + 0] = lastIdx    ; this.indexBufferData[idx + 1] = lastIdx + 1; this.indexBufferData[idx + 2] = lastIdx + 2;
+			this.indexBufferData[idx + 3] = lastIdx + 2; this.indexBufferData[idx + 4] = lastIdx + 1; this.indexBufferData[idx + 5] = lastIdx + 3;
+			lastIdx += 4;
+		}
+		var gl = ChesterGL.gl;
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indexBufferData, gl.STATIC_DRAW);
+	},
+	
+	/**
+	 * removes a block from the group
+	 * @param {Block} b
+	 */
+	BlockGroup.prototype.removeBlock = function (b) {
+		throw "not implemented";
+	},
+	
+	BlockGroup.prototype.visit = function () {
+		if (this.update) {
+			this.update();
+		}
+		if (!this.visible) {
+			return;
+		}
+		this.transform();
+		
+		var children = this.children;
+		var len = children.length;
+		for (var i=0; i < len; i++) {
+			children[i].visit();
+		}
+		
+		// re-bind the glBuffer (might have changed in the children visit)
+		var gl = ChesterGL.gl;
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
+		
+		if (this.isChildDirty) {
+			this.recreateIndices(0);
+			this.isChildDirty = false;
+		}
+		// render this block group
+		this.render();
+		
+		// reset our dirty markers
+		this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
+	},
+	
+	/**
+	 * actually render the block group
+	 */
+	BlockGroup.prototype.render = function () {
+		var gl = ChesterGL.gl;
+		
+		// select current shader
+		var program = ChesterGL.selectProgram(Block.PROGRAM_NAME[this.program]);
+		var totalChildren = this.children.length;
+		var texOff = 12 * 4,
+			colorOff = texOff + 8 * 4;
+		
+		gl.uniform1f(program.opacityUniform, this.opacity);
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
+		
+		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, 0, colorOff);
+		
+		if (this.program == Block.PROGRAM.DEFAULT) {
+			// no extra attributes for the shader
+		} else if (this.program == Block.PROGRAM.TEXTURE) {
+			var texture = ChesterGL.getAsset('texture', this.texture);
+			
+			// pass the texture attributes
+			gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, 0, texOff);
+			
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
+			gl.uniform1i(program.samplerUniform, 0);				
+		}
+		
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+		gl.uniformMatrix4fv(program.mvMatrixUniform, false, this.mvMatrix);
+		// gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4 * this.children.length);
+		gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
+	}
 	
 	/**
 	 * creates a new block group
 	 * @param {string} texture An optional texture that will be shared with all children
 	 */
 	BlockGroup.create = function (texture, noChildren) {
+		if (!ChesterGL.webglMode) {
+			throw "BlockGroup only works on WebGL mode";
+		}
 		var b = new BlockGroup();
 		b.type = Block.TYPE.BLOCKGROUP;
 		b.children = [];
@@ -212,6 +216,7 @@
 		
 		return b;
 	}
+	
 	// inherit everything from Block
 	ChesterGL.extend(BlockGroup.prototype, Block.prototype);
 	
