@@ -35,7 +35,10 @@
 	BlockFrames.frames = {};
 	
 	/**
-	 * loads the json data
+	 * loads the json data (callback for the ajax call)
+	 * 
+	 * @param {Object} data
+	 * @return {undefined}
 	 */
 	BlockFrames.loadJSON = function (data) {
 		// first, get the meta data
@@ -46,12 +49,13 @@
 				var frames = data['frames'];
 				for (var frameName in frames) {
 					var f = frames[frameName];
-					BlockFrames.frames[frameName] = {
-						't': imgHeight - (f['frame']['y'] + f['frame']['h']),
-						'l': f['frame']['x'],
-						'w': f['frame']['w'],
-						'h': f['frame']['h']
-					};
+					BlockFrames.frames[frameName] = {};
+					BlockFrames.frames[frameName]['frame'] = quat4.create([
+						imgHeight - (f['frame']['y'] + f['frame']['h']),
+						f['frame']['x'],
+						f['frame']['w'],
+						f['frame']['h']
+					]);
 					BlockFrames.frames[frameName]['texture'] = texture;
 				}
 			});
@@ -60,6 +64,10 @@
 		}
 	}
 	
+	/**
+	 * @param {string} frameName
+	 * @return {quat4}
+	 */
 	BlockFrames.getFrame = function (frameName) {
 		return BlockFrames.frames[frameName];
 	}

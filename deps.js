@@ -22,17 +22,23 @@
  * THE SOFTWARE.
  */
 
-/**
- * @type {Object}
- */
+/** @type {Object} */
 var ChesterGL = {};
 
-/**
- * @constructor
- */
+/** @constructor */
 ChesterGL.Block = function () {};
 
+/** @constructor */
+ChesterGL.BlockGroup = function () {};
+
+/** @constructor */
+ChesterGL.BlockFrames = function () {};
+
 /**
- * @type {Object}
+ * @param {string} frameName
+ * @return {Object}
  */
-ChesterGL.BlockFrames = {};
+ChesterGL.BlockFrames.getFrame = function (frameName) {};
+
+/** @constructor */
+ChesterGL.TMXBlock = function () {};

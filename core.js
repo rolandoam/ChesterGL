@@ -25,6 +25,26 @@
 
 (function (window) {
 	/**
+	 * @typedef {Object.<number,number>}
+	 */
+	var vec2 = {};
+	
+	/**
+	 * @param {(vec2|Array)=} vec
+	 * @return vec2
+	 */
+	vec2.create = function (vec) {
+		var dest = new Float32Array(2);
+		
+		if (vec) {
+			dest[0] = vec[0];
+			dest[1] = vec[1];
+		}
+		
+		return dest;
+	};
+	
+	/**
 	 * @name ChesterGL
 	 * @namespace
 	 * @typedef {Object}

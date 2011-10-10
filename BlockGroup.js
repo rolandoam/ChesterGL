@@ -24,12 +24,16 @@
  */
 
 (function (window) {
-	/**
-	 * @constructor {BlockGroup}
-	 */
-	var BlockGroup = function () {};
 	var ChesterGL = window['ChesterGL'];
 	var Block = ChesterGL['Block'];
+	
+	/**
+	 * @name BlockGroup
+	 * @class
+	 * @constructor
+	 * @extends ChesterGL.Block
+	 */
+	var BlockGroup = function () {};
 	
 	/**
 	 * The max number of children this blockgroup can hold (this is here for the buffer data)
@@ -54,6 +58,7 @@
 	
 	/**
 	 * creates a block that can be added to this block group
+	 * @param {quat4} rect
 	 */
 	BlockGroup.prototype.createBlock = function (rect) {
 		var b = Block.create(rect, Block.TYPE.STANDALONE, this);
@@ -65,7 +70,7 @@
 	
 	/**
 	 * adds a child
-	 * @param {Block} block
+	 * @param {ChesterGL.Block} block
 	 */
 	BlockGroup.prototype.addChild = function (block) {
 		if (!this.texture) {
@@ -108,7 +113,7 @@
 	
 	/**
 	 * removes a block from the group
-	 * @param {Block} b
+	 * @param {ChesterGL.Block} b
 	 */
 	BlockGroup.prototype.removeBlock = function (b) {
 		throw "not implemented";
@@ -200,7 +205,7 @@
 		} else {
 			b.program = Block.PROGRAM.DEFAULT;
 		}
-		b.setColor(1, 1, 1, 1);
+		b.setColor([1, 1, 1, 1]);
 		
 		b.maxChildren = noChildren || 10;
 		
