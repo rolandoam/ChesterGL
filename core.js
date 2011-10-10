@@ -23,27 +23,28 @@
  *
  */
 
-(function (window) {
-	/**
-	 * @typedef {Object.<number,number>}
-	 */
-	var vec2 = {};
+/**
+ * @typedef {Object.<number,number>}
+ */
+var vec2 = {};
+
+/**
+ * @constructor
+ * @param {(vec2|Array)=} vec
+ * @return {vec2}
+ */
+vec2.create = function (vec) {
+	var dest = new Float32Array(2);
 	
-	/**
-	 * @param {(vec2|Array)=} vec
-	 * @return vec2
-	 */
-	vec2.create = function (vec) {
-		var dest = new Float32Array(2);
-		
-		if (vec) {
-			dest[0] = vec[0];
-			dest[1] = vec[1];
-		}
-		
-		return dest;
-	};
+	if (vec) {
+		dest[0] = vec[0];
+		dest[1] = vec[1];
+	}
 	
+	return dest;
+};
+
+(function (window) {	
 	/**
 	 * @name ChesterGL
 	 * @namespace
@@ -61,9 +62,6 @@
 			window.setTimeout(callback, 1000/60);
 		};
 	})();
-	
-		
-	
 	
 	/**
 	 * This is the WebGL context

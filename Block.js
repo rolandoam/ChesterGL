@@ -197,7 +197,7 @@
 	 */
 	ChesterGL.Block.prototype.setFrame = function (newFrame) {
 		this.frame = quat4.create(newFrame);
-		this.setContentSize(newFrame);
+		this.setContentSize([newFrame[2], newFrame[3]]);
 		this.isFrameDirty = true;
 	}
 	
@@ -265,9 +265,10 @@
 	
 	/**
 	 * move the block relatively
-	 * @param {vec3} vec
+	 * @param {vec3|Array} vec
+	 * @param {number=} time The time it should take to move to that position. Don't pass time to make it instantly
 	 */
-	ChesterGL.Block.prototype.moveBy = function (vec) {
+	ChesterGL.Block.prototype.moveBy = function (vec, time) {
 		vec3.add(this.position, vec);
 		this.isTransformDirty = true;
 	}
@@ -492,7 +493,6 @@
 				var f = ChesterGL.BlockFrames.getFrame(rect);
 				b.setTexture(f.texture);
 				b.setFrame(f.frame);
-				b.setContentSize([f.frame[2], f.frame[3]]);
 			} else {
 				b.setFrame(rect);
 			}
