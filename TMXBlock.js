@@ -117,14 +117,14 @@
 			var tileset = map.find("tileset").first();
 			var orientation = map.attr("orientation");
 			if (tileset) {
-				tmx.tileSize = {
-					'w': parseInt(tileset.attr("tilewidth"), 10),
-					'h': parseInt(tileset.attr("tileheight"), 10)
-				};
-				tmx.mapTileSize = {
-					'w': parseInt(map.attr("tilewidth"), 10),
-					'h': parseInt(map.attr("tileheight"), 10)
-				}
+				tmx.tileSize = vec2.create([
+					parseInt(tileset.attr("tilewidth"), 10),
+					parseInt(tileset.attr("tileheight"), 10)
+				]);
+				tmx.mapTileSize = vec2.create([
+					parseInt(map.attr("tilewidth"), 10),
+					parseInt(map.attr("tileheight"), 10)
+				]);
 				if (tileset.attr("spacing")) {
 					tmx.spacing = parseInt(tileset.attr("spacing"), 10);
 				}
@@ -134,10 +134,10 @@
 				
 				// find the image for the tileset
 				var image = tileset.find("image").first();
-				var imageSize = {
-					'w': parseInt(image.attr("width"), 10),
-					'h': parseInt(image.attr("height"), 10)
-				};
+				var imageSize = vec2.create([
+					parseInt(image.attr("width"), 10),
+					parseInt(image.attr("height"), 10)
+				]);
 				tmx.texture = image.attr('source');
 				ChesterGL.loadAsset('texture', tmx.texture);
 				
@@ -148,10 +148,10 @@
 					/** @ignore */
 					blockLayer.render = function () {};
 					
-					var layerSize = {
-						'w': parseInt($(layer).attr("width"), 10),
-						'h': parseInt($(layer).attr("height"), 10)
-					};
+					var layerSize = vec2.create([
+						parseInt($(layer).attr("width"), 10),
+						parseInt($(layer).attr("height"), 10)
+					]);
 					var data = $(layer).find("data").first();
 					if (data) {
 						if (data.attr("encoding") != "base64" || data.attr("compression")) {
@@ -161,8 +161,8 @@
 						var decodedData = base64.decode(str);
 						// fun begins here
 						var offset = 0;
-						for (var row = 0; row < layerSize.h; row++) {
-							for (var col = 0; col < layerSize.w; col++) {
+						for (var row = 0; row < layerSize[1]; row++) {
+							for (var col = 0; col < layerSize[0]; col++) {
 								var gid = unpackUInt32(decodedData, offset) - 1;
 								var b = ChesterGL.Block.create();
 								var margin = tmx.margin || 0;
@@ -171,27 +171,27 @@
 								var mapTileSize = tmx.mapTileSize;
 								
 								b.setTexture(tmx.texture);
-								var max_x = parseInt((imageSize.w - margin * 2 + spacing) / (tileSize.w + spacing), 10);
-								var frame = {
+								var max_x = parseInt((imageSize[0] - margin * 2 + spacing) / (tileSize[0] + spacing), 10);
+								var frame = quat4.create([
 									// assume gid == 1
-									l: (gid % max_x) * (tileSize.w + spacing) + margin,
-									t: (imageSize.h - tileSize.h - margin - spacing) - parseInt(gid / max_x, 10) * (tileSize.h + spacing) + margin,
-									w: tileSize.w,
-									h: tileSize.h
-								}
+									(gid % max_x) * (tileSize[0] + spacing) + margin,
+									(imageSize[1] - tileSize[1] - margin - spacing) - parseInt(gid / max_x, 10) * (tileSize[1] + spacing) + margin,
+									tileSize[0],
+									tileSize[1]
+								]);
 								// console.log("gid " + col + "," + row + ": " + gid + "; frame: " + frame.l + "," + frame.t);
 								b.setFrame(frame);
 								var bx, by;
 								if (orientation == "orthogonal") {
-									bx = col * mapTileSize.w                     + tileSize.w/2;
-									by = (layerSize.h - row - 1) * mapTileSize.h + tileSize.h/2;
+									bx = col * mapTileSize[0]                     + tileSize[0]/2;
+									by = (layerSize[1] - row - 1) * mapTileSize[1] + tileSize[1]/2;
 								} else if (orientation == "isometric") {
-									bx = mapTileSize.w/2 * (layerSize.w + col - row - 1)       + tileSize.w/2;
-									by = mapTileSize.h/2 * ((layerSize.h * 2 - col - row) - 2) + tileSize.h/2;
+									bx = mapTileSize[0]/2 * (layerSize[0] + col - row - 1)       + tileSize[0]/2;
+									by = mapTileSize[1]/2 * ((layerSize[1] * 2 - col - row) - 2) + tileSize[1]/2;
 								} else {
 									throw "Invalid orientation";
 								}
-								b.moveTo(bx, by);                            
+								b.moveTo([bx, by, 0]);                            
 								blockLayer.addChild(b);
 								offset += 4;
 							}
