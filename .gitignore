@@ -1,5 +1,6 @@
 .DS_Store
 html/chester.js
+html/test_lessons.html
 doc/
 
 # remove this after the iOS project is working properly
