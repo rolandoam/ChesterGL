@@ -50,8 +50,8 @@
 					var f = frames[frameName];
 					BlockFrames.frames[frameName] = {};
 					BlockFrames.frames[frameName]['frame'] = quat4.create([
-						imgHeight - (f['frame']['y'] + f['frame']['h']),
 						f['frame']['x'],
+						imgHeight - (f['frame']['y'] + f['frame']['h']),
 						f['frame']['w'],
 						f['frame']['h']
 					]);
