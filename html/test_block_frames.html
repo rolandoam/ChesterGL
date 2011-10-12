@@ -2,7 +2,7 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-0.9.5.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -31,17 +31,17 @@ $(document).ready(function () {
 			
 			// create a block with a block frame
 			var b1 = ChesterGL.Block.create("1945-4-0.png");
-			b1.moveTo(width / 2, height / 2);
+			b1.moveTo([width * 0.5, height * 0.5, 0]);
 
 			var b2 = ChesterGL.Block.create("1945-4-1.png");
-			b2.moveTo(width / 2 - 50, height / 2);
+			b2.moveTo([width *0.5 - 50, height * 0.5, 0]);
 			
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
 			
-			// ChesterGL.run();
+			ChesterGL.run();
 			// draw a single frame (for debug purposes)
-			ChesterGL.drawScene();
+			// ChesterGL.drawScene();
 		});
 	} // setupGame()
 });

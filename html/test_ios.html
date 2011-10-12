@@ -6,7 +6,7 @@
 	<title>ChesterGL Demo</title>
 	
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-0.9.5.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<script type="text/javascript" src="chester.js"></script>
 	<!-- audio!! -->
@@ -42,16 +42,16 @@ $(document).ready(function () {
 			sceneBlock.render = function () {};			
 			ChesterGL.rootBlock = sceneBlock;
 			
-			// add lots of blocks
+			// add some extra blocks
 			for (var i=0; i < 2; i++) {
 				var b = ChesterGL.Block.create();
 				b.setTexture("images/star.png");
-				b.moveTo(Math.random() * width, Math.random() * height);
+				b.moveTo([Math.random() * width, Math.random() * height, 0]);
 				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5];
 				b.update = function () {
-					this.moveBy(this.speed[0], this.speed[1]);
-					if (this.position.x >= width || this.position.x <= 0) { this.speed[0] = -this.speed[0]; }
-					if (this.position.y >= width || this.position.y <= 0) { this.speed[1] = -this.speed[1]; }
+					this.moveBy([this.speed[0], this.speed[1], 0]);
+					if (this.position[0] >= width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
+					if (this.position[1] >= width || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
 				}
 				sceneBlock.addChild(b);
 			}
@@ -59,13 +59,12 @@ $(document).ready(function () {
 			// create a block
 			var someBlock = ChesterGL.Block.create();
 			someBlock.setTexture("images/test.png")
-			// someBlock.rotateBy(45);
-			someBlock.moveTo(width/2, height/2);
+			someBlock.moveTo([width/2, height/2, 0]);
 			
 			var someBlock2 = ChesterGL.Block.create();
 			someBlock2.setTexture("images/star.png");
 			someBlock2.opacity = 0.5;
-			someBlock2.moveTo(60, 0);
+			someBlock2.moveTo([60, 0, 0]);
 			someBlock.addChild(someBlock2);
 			
 			sceneBlock.addChild(someBlock);
