@@ -110,6 +110,7 @@
 	TMXBlock.loadTMX = function(path) {
 		ChesterGL.loadAsset('tmx', {path:path, dataType: 'xml'}, function (data) {
 			var tmx = ChesterGL.Block.create();
+			/** @ignore */
 			tmx.render = function () {};
 			
 			var map = $(data).find("map");
@@ -144,6 +145,7 @@
 				tmx.layers = [];
 				map.find("layer").each(function (i, layer) {
 					var blockLayer = ChesterGL.Block.create();
+					/** @ignore */
 					blockLayer.render = function () {};
 					
 					var layerSize = {

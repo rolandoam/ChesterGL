@@ -28,7 +28,7 @@ clean:
 	rm -f $(OUTPUT_DIR)/$(OUTPUT_FILE)
 
 doc: ${SOURCES}
-	${JAVA} -jar ${JSDOC_HOME}/jsrun.jar ${JSDOC_HOME}/app/run.js -a -t=${JSDOC_HOME}/templates/jsdoc ${SOURCES} -d=${DOC_OUTPUT}
+	${JAVA} -jar ${JSDOC_HOME}/jsrun.jar ${JSDOC_HOME}/app/run.js -v -a -t=${JSDOC_HOME}/templates/jsdoc ${SOURCES} -d=${DOC_OUTPUT}
 
 server:
 	ruby -rwebrick -e's = WEBrick::HTTPServer.new(:Port => 3000, :DocumentRoot => File.join(Dir.pwd, "${OUTPUT_DIR}")); trap("INT"){ s.shutdown }; s.start'

@@ -38,7 +38,6 @@
 	 * loads the json data (callback for the ajax call)
 	 * 
 	 * @param {Object} data
-	 * @return {undefined}
 	 */
 	BlockFrames.loadJSON = function (data) {
 		// first, get the meta data
@@ -66,7 +65,7 @@
 	
 	/**
 	 * @param {string} frameName
-	 * @return {quat4}
+	 * @return {Object}
 	 */
 	BlockFrames.getFrame = function (frameName) {
 		return BlockFrames.frames[frameName];
