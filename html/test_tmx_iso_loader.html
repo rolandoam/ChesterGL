@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/base64.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	setupGame();
+	function setupGame() {
+		ChesterGL.setup("demo-canvas");
+		var width = ChesterGL.gl.viewportWidth;
+		var height = ChesterGL.gl.viewportHeight;
+		
+		ChesterGL.loadAsset('texture', 'images/iso-test.png');
+		ChesterGL.TMXBlock.loadTMX("images/iso.tmx");
+		ChesterGL.assetsLoaded("all", function () {
+			// $("#loading").html("Test Single Block");        	
+			// finish with the setup and run the game
+			ChesterGL.setupPerspective();
+			
+			ChesterGL.rootBlock = ChesterGL.TMXBlock.maps['images/iso.tmx'];
+			
+			ChesterGL.run();
+			// draw a single frame (for debug purposes)
+			// ChesterGL.drawScene();
+		});
+	} // setupGame()
+});
+    </script>
+    <style type="text/css">
+#loading {
+    color: #fff;
+    text-shadow: 2px 2px 2px #000;
+    font-weight: bold;
+    font-size: 18pt;
+    padding: 1em;
+}
+    </style>
+</head>
+<body>
+	<div>
+		<!-- <div id="loading" style="position: absolute; z-index: 100;"></div> -->
+		<canvas id="demo-canvas" width="500" height="500"></canvas><br/>
+		<span id="debug-fps">00</span>
+	</div>
+	<div id="debug-img"></div>
+	<div style="width: 80%">
+	    <p><em>Notes</em></p>
+	    <ul>
+	    </ul>
+	</div>
+</body>
+</html>
