@@ -26,14 +26,14 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
-			var sceneBlock = ChesterGL.Block.create();
+			var sceneBlock = new ChesterGL.Block();
 			// no render for this block
 			sceneBlock.render = function () {};			
 			ChesterGL.rootBlock = sceneBlock;
 			
 			// add lots of blocks
 			for (var i=0; i < 100; i++) {
-				var b = ChesterGL.Block.create();
+				var b = new ChesterGL.Block();
 				b.setTexture("images/star.png");
 				b.moveTo([Math.random() * width, Math.random() * height, 0]);
 				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5];
@@ -46,12 +46,12 @@ $(document).ready(function () {
 			}
 			
 			// create a block
-			var someBlock = ChesterGL.Block.create();
+			var someBlock = new ChesterGL.Block();
 			someBlock.setTexture("images/test.png")
 			// someBlock.rotateBy(45);
 			someBlock.moveTo([width/2, height/2, 0]);
 			
-			var someBlock2 = ChesterGL.Block.create();
+			var someBlock2 = new ChesterGL.Block();
 			someBlock2.setTexture("images/star.png");
 			someBlock2.opacity = 0.5;
 			someBlock2.moveTo([60, 0, 0]);

@@ -109,7 +109,7 @@
 	 */
 	TMXBlock.loadTMX = function(path) {
 		ChesterGL.loadAsset('tmx', {path:path, dataType: 'xml'}, function (data) {
-			var tmx = ChesterGL.Block.create();
+			var tmx = new ChesterGL.Block();
 			/** @ignore */
 			tmx.render = function () {};
 			
@@ -144,7 +144,7 @@
 				// parse the layers
 				tmx.layers = [];
 				map.find("layer").each(function (i, layer) {
-					var blockLayer = ChesterGL.Block.create();
+					var blockLayer = new ChesterGL.Block();
 					/** @ignore */
 					blockLayer.render = function () {};
 					
@@ -164,7 +164,7 @@
 						for (var row = 0; row < layerSize[1]; row++) {
 							for (var col = 0; col < layerSize[0]; col++) {
 								var gid = unpackUInt32(decodedData, offset) - 1;
-								var b = ChesterGL.Block.create();
+								var b = new ChesterGL.Block();
 								var margin = tmx.margin || 0;
 								var spacing = tmx.spacing || 0;
 								var tileSize = tmx.tileSize;

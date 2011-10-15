@@ -27,11 +27,46 @@
 	var ChesterGL = window['ChesterGL'];
 	
 	/**
-	 * @name ChesterGL.Block
-	 * @class
+	 * creates a new block. Pass the rect if you want to set the frame at
+	 * creation time.
+	 * 
 	 * @constructor
+	 * @param {Object.<string,number>|string=} rect
+	 * @param {number=} type
+	 * @param {ChesterGL.Block=} parent
 	 */
-	ChesterGL.Block = function () {};
+	ChesterGL.Block = function (rect, type, parent) {
+		this.type = type || ChesterGL.Block.TYPE.STANDALONE;
+		if (parent) {
+			this.parent = parent;
+		}
+		
+		this.children = [];
+		this.program = ChesterGL.Block.PROGRAM.DEFAULT;
+		
+		if (rect) {
+			if (typeof(rect) === 'string') {
+				var f = ChesterGL.BlockFrames.getFrame(rect);
+				this.setTexture(f.texture);
+				this.setFrame(f.frame);
+			} else {
+				this.setFrame(rect);
+			}
+		}
+		// set default color
+		this.setColor([1, 1, 1, 1]);
+		
+		if (ChesterGL.webglMode && this.type == ChesterGL.Block.TYPE.STANDALONE && (!parent || parent.type != ChesterGL.Block.TYPE.BLOCKGROUP)) {
+			var gl = ChesterGL.gl;
+			// just a single buffer for all data (a "quad")
+			this.glBuffer = gl.createBuffer();
+			this.glBufferData = new Float32Array(ChesterGL.Block.QUAD_SIZE);
+		}
+		
+		// always create the mvMatrix
+		this.mvMatrix = mat4.create();
+		mat4.identity(this.mvMatrix);
+	}
 	
 	/**
 	 * what gl program to use
@@ -468,51 +503,7 @@
 			}
 		}
 	}
-	
-	/**
-	 * create a new block. Pass the rect if you want to set the frame at
-	 * creation time.
-	 * 
-	 * @constructs
-	 * @param {Object.<string,number>|string=} rect
-	 * @param {number=} type
-	 * @param {ChesterGL.Block=} parent
-	 */
-	ChesterGL.Block.create = function (rect, type, parent) {
-		var b = new ChesterGL.Block();
-		b.type = type || ChesterGL.Block.TYPE.STANDALONE;
-		if (parent) {
-			b.parent = parent;
-		}
 		
-		b.children = [];
-		b.program = ChesterGL.Block.PROGRAM.DEFAULT;
-		
-		if (rect) {
-			if (typeof(rect) === 'string') {
-				var f = ChesterGL.BlockFrames.getFrame(rect);
-				b.setTexture(f.texture);
-				b.setFrame(f.frame);
-			} else {
-				b.setFrame(rect);
-			}
-		}
-		// set default color
-		b.setColor([1, 1, 1, 1]);
-		
-		if (ChesterGL.webglMode && b.type == ChesterGL.Block.TYPE.STANDALONE && (!parent || parent.type != ChesterGL.Block.TYPE.BLOCKGROUP)) {
-			var gl = ChesterGL.gl;
-			// just a single buffer for all data (a "quad")
-			b.glBuffer = gl.createBuffer();
-			b.glBufferData = new Float32Array(ChesterGL.Block.QUAD_SIZE);
-		}
-		
-		// always create the mvMatrix
-		b.mvMatrix = mat4.create();
-		mat4.identity(b.mvMatrix);
-		return b;
-	}
-	
 	// export symbols
 	// constants / enums
 	ChesterGL.Block['FullFrame'] = ChesterGL.Block.FullFrame;

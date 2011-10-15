@@ -25,43 +25,69 @@
 
 (function (window) {
 	var ChesterGL = window['ChesterGL'];
-	var Block = ChesterGL['Block'];
 	
 	/**
-	 * @name BlockGroup
-	 * @class
+	 * creates a new block group
+	 * 
 	 * @constructor
 	 * @extends ChesterGL.Block
+	 * @param {string} texture An optional texture that will be shared with all children
+	 * @param {number=} noChildren The optional initial number of maxChidlren. Defaults to 10
 	 */
-	var BlockGroup = function () {};
+	ChesterGL.BlockGroup = function (texture, noChildren) {
+		if (!ChesterGL.webglMode) {
+			throw "BlockGroup only works on WebGL mode";
+		}
+		this.type = ChesterGL.Block.TYPE.BLOCKGROUP;
+		this.children = [];
+		if (texture) {
+			this.texture = texture;
+			this.program = ChesterGL.Block.PROGRAM.TEXTURE;
+		} else {
+			this.program = ChesterGL.Block.PROGRAM.DEFAULT;
+		}
+		this.setColor([1, 1, 1, 1]);
+		
+		this.maxChildren = noChildren || 10;
+		
+		// same as block, but multiplied by the number of totalChildren (plus index data)
+		var gl = ChesterGL.gl;
+		this.glBuffer        = gl.createBuffer();
+		this.glBufferData    = new Float32Array(ChesterGL.Block.QUAD_SIZE * this.maxChildren);
+		this.indexBuffer     = gl.createBuffer();
+		this.indexBufferData = new Uint16Array(6 * this.maxChildren);
+		
+		this.mvMatrix = mat4.create();
+		mat4.identity(this.mvMatrix);
+	}
 	
 	/**
 	 * The max number of children this blockgroup can hold (this is here for the buffer data)
 	 * @type {number}
 	 */
-	BlockGroup.prototype.maxChildren = 0;
+	ChesterGL.BlockGroup.prototype.maxChildren = 0;
 	
 	/**
 	 * @type {boolean}
 	 */
-	BlockGroup.prototype.isChildDirty = false;
+	ChesterGL.BlockGroup.prototype.isChildDirty = false;
 			
 	/**
 	 * @type {?WebGLBuffer}
 	 */
-	BlockGroup.prototype.indexBuffer = null;
+	ChesterGL.BlockGroup.prototype.indexBuffer = null;
 	
 	/**
 	 * @type {?Uint16Array}
 	 */
-	BlockGroup.prototype.indexBufferData = null;
+	ChesterGL.BlockGroup.prototype.indexBufferData = null;
 	
 	/**
 	 * creates a block that can be added to this block group
 	 * @param {quat4} rect
 	 */
-	BlockGroup.prototype.createBlock = function (rect) {
-		var b = Block.create(rect, Block.TYPE.STANDALONE, this);
+	ChesterGL.BlockGroup.prototype.createBlock = function (rect) {
+		var b = new ChesterGL.Block(rect, ChesterGL.Block.TYPE.STANDALONE, this);
 		if (this.texture) {
 			b.setTexture(this.texture);
 		}
@@ -72,7 +98,7 @@
 	 * adds a child
 	 * @param {ChesterGL.Block} block
 	 */
-	BlockGroup.prototype.addChild = function (block) {
+	ChesterGL.BlockGroup.prototype.addChild = function (block) {
 		if (!this.texture) {
 			this.texture = block.texture;
 		} else {
@@ -97,7 +123,7 @@
 	 * when the block list changes, the indices array must be recreated
 	 * @param {number} startIdx
 	 */
-	BlockGroup.prototype.recreateIndices = function (startIdx) {
+	ChesterGL.BlockGroup.prototype.recreateIndices = function (startIdx) {
 		var lastIdx = (this.indexBufferData[startIdx*6 - 1] || -1) + 1;
 		var total = Math.max(this.children.length, 1);
 		for (var i = startIdx; i < total; i ++) {
@@ -115,11 +141,11 @@
 	 * removes a block from the group
 	 * @param {ChesterGL.Block} b
 	 */
-	BlockGroup.prototype.removeBlock = function (b) {
+	ChesterGL.BlockGroup.prototype.removeBlock = function (b) {
 		throw "not implemented";
 	},
 	
-	BlockGroup.prototype.visit = function () {
+	ChesterGL.BlockGroup.prototype.visit = function () {
 		if (this.update) {
 			this.update();
 		}
@@ -153,11 +179,11 @@
 	/**
 	 * actually render the block group
 	 */
-	BlockGroup.prototype.render = function () {
+	ChesterGL.BlockGroup.prototype.render = function () {
 		var gl = ChesterGL.gl;
 		
 		// select current shader
-		var program = ChesterGL.selectProgram(Block.PROGRAM_NAME[this.program]);
+		var program = ChesterGL.selectProgram(ChesterGL.Block.PROGRAM_NAME[this.program]);
 		var totalChildren = this.children.length;
 		var texOff = 12 * 4,
 			colorOff = texOff + 8 * 4;
@@ -169,9 +195,9 @@
 		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, 0, 0);
 		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, 0, colorOff);
 		
-		if (this.program == Block.PROGRAM.DEFAULT) {
+		if (this.program == ChesterGL.Block.PROGRAM.DEFAULT) {
 			// no extra attributes for the shader
-		} else if (this.program == Block.PROGRAM.TEXTURE) {
+		} else if (this.program == ChesterGL.Block.PROGRAM.TEXTURE) {
 			var texture = ChesterGL.getAsset('texture', this.texture);
 			
 			// pass the texture attributes
@@ -187,44 +213,10 @@
 		// gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4 * this.children.length);
 		gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
 	}
-	
-	/**
-	 * creates a new block group
-	 * @param {string} texture An optional texture that will be shared with all children
-	 */
-	BlockGroup.create = function (texture, noChildren) {
-		if (!ChesterGL.webglMode) {
-			throw "BlockGroup only works on WebGL mode";
-		}
-		var b = new BlockGroup();
-		b.type = Block.TYPE.BLOCKGROUP;
-		b.children = [];
-		if (texture) {
-			b.texture = texture;
-			b.program = Block.PROGRAM.TEXTURE;
-		} else {
-			b.program = Block.PROGRAM.DEFAULT;
-		}
-		b.setColor([1, 1, 1, 1]);
 		
-		b.maxChildren = noChildren || 10;
-		
-		// same as block, but multiplied by the number of totalChildren (plus index data)
-		var gl = ChesterGL.gl;
-		b.glBuffer        = gl.createBuffer();
-		b.glBufferData    = new Float32Array(Block.QUAD_SIZE * b.maxChildren);
-		b.indexBuffer     = gl.createBuffer();
-		b.indexBufferData = new Uint16Array(6 * b.maxChildren);
-		
-		b.mvMatrix = mat4.create();
-		mat4.identity(b.mvMatrix);
-		
-		return b;
-	}
-	
 	// inherit everything from Block
-	ChesterGL.extend(BlockGroup.prototype, Block.prototype);
+	ChesterGL.extend(ChesterGL.BlockGroup.prototype, ChesterGL.Block.prototype);
 	
 	// export the symbol
-	ChesterGL['BlockGroup'] = BlockGroup;
+	ChesterGL['BlockGroup'] = ChesterGL.BlockGroup;
 })(window);

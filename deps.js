@@ -25,14 +25,29 @@
 /** @type {Object} */
 var ChesterGL = {};
 
-/** @constructor */
-ChesterGL.Block = function () {};
+/**
+ * creates a new block. Pass the rect if you want to set the frame at
+ * creation time.
+ * 
+ * @constructor
+ * @param {Object.<string,number>|string=} rect
+ * @param {number=} type
+ * @param {ChesterGL.Block=} parent
+ */
+ChesterGL.Block = function (rect, type, parent) {};
 
-/** @constructor */
-ChesterGL.BlockGroup = function () {};
+/**
+ * creates a new block group
+ * 
+ * @constructor
+ * @extends ChesterGL.Block
+ * @param {string} texture An optional texture that will be shared with all children
+ * @param {number=} noChildren The optional initial number of maxChidlren. Defaults to 10
+ */
+ChesterGL.BlockGroup = function (texture, noChildren) {};
 
-/** @constructor */
-ChesterGL.BlockFrames = function () {};
+/** @type {Object} */
+ChesterGL.BlockFrames = {};
 
 /**
  * @param {string} frameName

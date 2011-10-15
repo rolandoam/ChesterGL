@@ -1,7 +1,7 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-0.9.5.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -21,9 +21,9 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
-			var group = ChesterGL.BlockGroup.create("images/star.png");
+			var group = new ChesterGL.BlockGroup("images/star.png");
 			
-			var sceneBlock = ChesterGL.Block.create();
+			var sceneBlock = new ChesterGL.Block();
 			// no render for this block
 			sceneBlock.render = function () {};			
 			ChesterGL.rootBlock = sceneBlock;
@@ -45,7 +45,7 @@ $(document).ready(function () {
 			// group.addChild(block3);
 			
 			// create single block
-			var single = ChesterGL.Block.create();
+			var single = new ChesterGL.Block();
 			single.setTexture("images/star.png");
 			single.rotateBy(-45);
 			single.moveTo(32, 32);
