@@ -145,6 +145,9 @@
 		throw "not implemented";
 	},
 	
+	/**
+	 * where the fun begins
+	 */
 	ChesterGL.BlockGroup.prototype.visit = function () {
 		if (this.update) {
 			this.update();
@@ -154,6 +157,7 @@
 		}
 		this.transform();
 		
+		// this should be more like cocos2d: preserve the z-ordering
 		var children = this.children;
 		var len = children.length;
 		for (var i=0; i < len; i++) {

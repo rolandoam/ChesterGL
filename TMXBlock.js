@@ -100,7 +100,7 @@
 	ChesterGL.extend(TMXBlock.prototype, ChesterGL.Block.prototype);
 	
 	/**
-	 * @type {Object.<string,TMXBlock>}
+	 * @type {Object.<string,ChesterGL.Block>}
 	 */
 	TMXBlock.maps = {};
 	
