@@ -47,7 +47,7 @@ There's a weird problem that makes textures not load the first time, so you migh
 
 * Add time-based animations (shouldn't be too hard)
 * Improve canvas fallback
-* Improve speed on iOS (and other mobiles, right now we can get ~40fps with ~20 sprites on a iPhone 4)
+* Improve speed on iOS (and other mobiles, right now we can get ~20fps with 4 sprites on an iPhone 4) - see test_ios.html
 * Improve support for Texture Packer sprite sheets
 * Improve support for tile maps
 
