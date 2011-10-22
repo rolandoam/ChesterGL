@@ -349,13 +349,33 @@ vec2.create = function (vec) {
 	}
 	
 	/**
-	 * registers an asset loader (which is basically a function)
-	 *
-	 * @param {string} type the type of the asset
-	 * @param {?function(Object)} handler the handler that will be called every time an asset is loaded
-	 * 
+	 * registers an asset loader (which is basically a function).
 	 * By convention, every handler must set the <code>data</code> property of the asset. It should not
 	 * modify the status property.
+	 * 
+	 * @param {string} type the type of the asset
+	 * @param {function(string,string,function(boolean)=)} handler the handler that will be called every time an asset is loaded
+	 * 
+	 * @example
+	 * ChesterGL.defaultTextureHandler = function (path, data, callback) {
+	 *		// create the image
+	 *		var imgtype = (/[.]/.exec(path)) ? /[^.]+$/.exec(path) : undefined;
+	 *		var img = new Image();
+	 *		var rawData = base64.encode(data);
+	 *		img.onload = function () {
+	 *			if (ChesterGL.webglMode) {
+	 *				img.tex = ChesterGL.gl.createTexture();
+	 *			}
+	 *			var texture = ChesterGL.assets['texture'][path];
+	 *			texture.data = img;
+	 *			var result = true;
+	 *			if (ChesterGL.webglMode) {
+	 *				result = ChesterGL.prepareWebGLTexture(img);
+	 *			}
+	 *			callback && callback(result);
+	 *		}
+	 *		img.src = "data:image/" + imgtype + ";base64," + rawData;
+	 * }
 	 */
 	ChesterGL.registerAssetHandler = function (type, handler) {
 		this.assetsHandlers[type] = handler;
@@ -406,19 +426,20 @@ vec2.create = function (vec) {
 				},
 				success: function (data, textStatus) {
 					if (textStatus == "success") {
-						var handled = ChesterGL.assetsHandlers[type](path, data);
-						if (!handled) {
-							assets[path].status = 'try';
-							console.log("fetching " + path + " - again");
-							ChesterGL.loadAsset(type, {path: path, dataType: dataType});
-						} else {
-							assets[path].status = 'loaded';
-							// call all listeners
-							var l;
-							while (l = assets[path].listeners.shift()) { l(assets[path].data); }
-							ChesterGL.assetsLoaded(type);
-							ChesterGL.assetsLoaded('all');
-						}
+						ChesterGL.assetsHandlers[type](path, data, function (handled) {
+							if (!handled) {
+								assets[path].status = 'try';
+								console.log("fetching " + path + " - again");
+								ChesterGL.loadAsset(type, {path: path, dataType: dataType});
+							} else {
+								assets[path].status = 'loaded';
+								// call all listeners
+								var l;
+								while (l = assets[path].listeners.shift()) { l(assets[path].data); }
+								ChesterGL.assetsLoaded(type);
+								ChesterGL.assetsLoaded('all');
+							}
+						});
 					} else {
 						console.log("Error loading asset " + path);
 					}
@@ -479,24 +500,21 @@ vec2.create = function (vec) {
 	}
 	
 	/**
-	 * handles a loaded texture
+	 * handles a loaded texture - should only be called on a webGL mode
+	 * @return {boolean}
 	 */
-	ChesterGL.handleLoadedTexture = function (texture) {
+	ChesterGL.prepareWebGLTexture = function (texture) {
 		var gl = this.gl;
 		var result = true;
 		
-		// quick bail if we're not on a webgl rendering mode
-		if (!this.webglMode) {
-			return result;
-		}
-		
 		try {
+			var error = 0;
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
-			var error = gl.getError();
-			if (error == 1281) {
-				console.log("error 1281 - you know what that means!?");
+			error = gl.getError();
+			if (error != 0) {
+				console.log("gl error " + error);
 				result = false;
 			}
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -504,26 +522,35 @@ vec2.create = function (vec) {
 			gl.bindTexture(gl.TEXTURE_2D, null);
 		} catch (e) {
 			console.log("got some error: " + e);
+			result = false;
 		}
 		return result;
 	}
 	
 	/**
 	 * The default texture handler
+	 * 
+	 * @param {string} path
+	 * @param {string} data
+	 * @param {function(boolean)=} callback
 	 */
-	ChesterGL.defaultTextureHandler = function (textureName, data) {
-		// create the image
-		var imgtype = (/[.]/.exec(textureName)) ? /[^.]+$/.exec(textureName) : undefined;
+	ChesterGL.defaultTextureHandler = function (path, data, callback) {
+		var imgtype = (/[.]/.exec(path)) ? /[^.]+$/.exec(path) : undefined;
 		var img = new Image();
 		var rawData = base64.encode(data);
-		img.src = "data:image/" + imgtype + ";base64," + rawData;
-		if (ChesterGL.webglMode) {
-			img.tex = ChesterGL.gl.createTexture();
+		img.onload = function () {
+			if (ChesterGL.webglMode) {
+				img.tex = ChesterGL.gl.createTexture();
+			}
+			var texture = ChesterGL.assets['texture'][path];
+			texture.data = img;
+			var result = true;
+			if (ChesterGL.webglMode) {
+				result = ChesterGL.prepareWebGLTexture(img);
+			}
+			callback && callback(result);
 		}
-		
-		var texture = ChesterGL.assets['texture'][textureName];
-		texture.data = img;
-		return ChesterGL.handleLoadedTexture(img);
+		img.src = "data:image/" + imgtype + ";base64," + rawData;
 	}
 	
 	/**
