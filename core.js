@@ -625,11 +625,13 @@ vec2.create = function (vec) {
 	}
 	
 	/**
-	 * extend an object with another object.
+	 * extend an object with another object (for super naive 1-level inheritance).
+	 * When extending classes, you would usually use ChesterGL.extend(B.prototype, A.prototype) to
+	 * inherit from A.
 	 * 
 	 * @param {Object} target the object that will be extended
 	 * @param {Object} parent the parent object
-	 * @function
+	 * 
 	 * @example
 	 * var a = {
 	 *   prop1 = function () {...},
