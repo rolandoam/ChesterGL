@@ -51,8 +51,8 @@ You can always look at the issues on the github project and look for the right m
 * Add time-based animations (shouldn't be too hard)
 * Improve canvas fallback
 * Improve speed on iOS (see test_ios.html). Right now we can get:
- * ~26fps with 12 moving sprites on an iPhone 4, iOS 5)
- * ~33fps with 42 moving sprites on iTouch 4gen, iOS 4.3.5
+ * ~26fps with 12 moving sprites on an iPhone 4, iOS 4.3.5
+ * ~35fps with 42 moving sprites on iTouch 4gen, iOS 5.0
 * Improve support for Texture Packer sprite sheets
 * Improve support for tile maps
 
