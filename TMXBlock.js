@@ -39,14 +39,17 @@
 	
 	/**
 	 * @ignore
+	 * 
+	 * @param {string} path
+	 * @param {string} data
+	 * @param {function(boolean)=} callback
 	 */
-	function handleLoadTMX(path, data) {
+	function handleLoadTMX(path, data, callabck) {
 		console.log("tmx loaded: " + path);
 		
 		var tmx = ChesterGL.assets['tmx'][path];
 		tmx.data = data;
-		
-		return true;
+		callabck && callabck(true);
 	}
 	
 	/**
