@@ -2,7 +2,8 @@
 <html>
 <head>
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="viewport" content="width=device-width, initial-scale=0.5, user-scalable=no"/>
+	<!-- small hack to get hardware accel -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 	<title>ChesterGL Demo</title>
 	
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
@@ -43,7 +44,7 @@ $(document).ready(function () {
 			ChesterGL.rootBlock = sceneBlock;
 			
 			// add some extra blocks
-			for (var i=0; i < 10; i++) {
+			for (var i=0; i < 20; i++) {
 				var b = new ChesterGL.Block();
 				b.setTexture("images/star.png");
 				b.moveTo([Math.random() * width, Math.random() * height, 0]);
@@ -112,7 +113,7 @@ $(document).ready(function () {
 	height: 100px;
 }
 #demo-canvas {
-	-webkit-transform: scale3d(2, 2, 0) translate3d(80px, 80px, 0);
+	-webkit-transform: scale3d(1, 1, 0) translate3d(0px, 0px, 0);
 }
 body {
 	padding: 0;
@@ -126,24 +127,6 @@ body {
 	</div>
 	<div>
 		<canvas id="demo-canvas" width="320" height="320"></canvas><br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
 		<div id="debug-fps">reload</div>
 	</div>
 </body>
