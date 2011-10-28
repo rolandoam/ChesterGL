@@ -14,6 +14,7 @@ $(document).ready(function () {
 		ChesterGL.setup("demo-canvas");
 		var width = ChesterGL.gl.viewportWidth;
 		var height = ChesterGL.gl.viewportHeight;
+		var totalBlocks = 500;
 
 		ChesterGL.loadAsset("texture", "images/star.png");
 		ChesterGL.assetsLoaded("texture", function () {
@@ -21,37 +22,48 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
-			var group = new ChesterGL.BlockGroup("images/star.png");
+			var group = new ChesterGL.BlockGroup("images/star.png", totalBlocks);
 			
-			var sceneBlock = new ChesterGL.Block();
-			// no render for this block
-			sceneBlock.render = function () {};			
-			ChesterGL.rootBlock = sceneBlock;
+			// var sceneBlock = new ChesterGL.Block();
+			// // no render for this block
+			// sceneBlock.render = function () {};
+			// ChesterGL.rootBlock = sceneBlock;
 			
 			// create a block
-			var block1 = group.createBlock();
-			block1.rotateBy(-45);
-			block1.opacity = 0.5;
-			block1.moveTo(width/2, height/2);
-			
-			var block2 = group.createBlock();
-			block2.moveTo(width/2 - 64, height/2 - 64);
+			// var block1 = group.createBlock();
+			// block1.rotateBy(-45);
+			// block1.opacity = 0.5;
+			// block1.moveTo([width/2, height/2, 0]);
 			// 
-			// var block3 = group.createBlock();
-			// block2.moveTo(width/2 - 10, height/2 - 10);
+			// var block2 = group.createBlock();
+			// block2.moveTo([width/2 - 64, height/2 - 64, 0]);
+			// 
+			// group.addChild(block1);
+			// group.addChild(block2);
+
 			
-			group.addChild(block1);
-			group.addChild(block2);
-			// group.addChild(block3);
+			// add lots of blocks
+			for (var i=0; i < totalBlocks; i++) {
+				var b = group.createBlock();
+				b.moveTo([Math.random() * width, Math.random() * height, 0]);
+				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
+				b.update = function () {
+					this.moveBy(this.speed);
+					if (this.position[0] >= width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
+					if (this.position[1] >= width || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
+				}
+				group.addChild(b);
+			}
+			
 			
 			// create single block
-			var single = new ChesterGL.Block();
-			single.setTexture("images/star.png");
-			single.rotateBy(-45);
-			single.moveTo(32, 32);
+			// var single = new ChesterGL.Block();
+			// single.setTexture("images/star.png");
+			// single.rotateBy(-45);
+			// single.moveTo(32, 32);
 			
-			sceneBlock.addChild(group);
-			sceneBlock.addChild(single);
+			ChesterGL.rootBlock = group;
+			// sceneBlock.addChild(single);
 			
 			// add some action
 			// block1.update = function () {
@@ -61,9 +73,9 @@ $(document).ready(function () {
 			// 	this.rotateBy(-1);
 			// };
 
-			// ChesterGL.run();
+			ChesterGL.run();
 			// draw a single frame (for debug purposes)
-			ChesterGL.drawScene();
+			// ChesterGL.drawScene();
 		});
 	} // setupGame()
 });

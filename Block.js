@@ -58,9 +58,9 @@
 		
 		if (ChesterGL.webglMode && this.type == ChesterGL.Block.TYPE.STANDALONE && (!parent || parent.type != ChesterGL.Block.TYPE.BLOCKGROUP)) {
 			var gl = ChesterGL.gl;
-			// just a single buffer for all data (a "quad")
+			// just a single buffer for all data (a 4x"quad")
 			this.glBuffer = gl.createBuffer();
-			this.glBufferData = new Float32Array(ChesterGL.Block.QUAD_SIZE);
+			this.glBufferData = new Float32Array(ChesterGL.Block.BUFFER_SIZE);
 		}
 		
 		// always create the mvMatrix
@@ -95,11 +95,18 @@
 	};
 	
 	/**
-	 * this is the size of the buffer data (Float32Array)
-	 * 4*3 (verts) + 4*2 (tex coords) + 4*4 (color)
+	 * This is the size of one quad, the buffer data length (in bytes) will be 4 * QUAD_SIZE
+	 * 12 (verts, 3 floats) + 8 (tex coords, 2 floats) + 16 (color, 4 floats)
 	 * @const
 	 */
 	ChesterGL.Block.QUAD_SIZE = 36;
+	
+	/**
+	 * This is how many items the buffer data must have.
+	 * 3 (vert) + 2 (tex) + 4 (color) = 9; 9 * 4 (verts) = 36
+	 * @const
+	 */
+	ChesterGL.Block.BUFFER_SIZE = 36;
 	
 	/**
 	 * @const
@@ -366,11 +373,12 @@
 			if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
 				gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 			}
-			if (this.isFrameDirty) {
+			if (this.isFrameDirty || (inBlockGroup && this.isTransformDirty)) {
 				// NOTE
 				// the tex coords and the frame coords need to match. Otherwise you get a distorted image
+				var offset = 9;
 				var hw = this.contentSize[0] * 0.5, hh = this.contentSize[1] * 0.5;
-				var _idx = this.baseBufferIndex * ChesterGL.Block.QUAD_SIZE;
+				var _idx = this.baseBufferIndex * ChesterGL.Block.BUFFER_SIZE;
 				var z = this.position[2];
 
 				// NOTE
@@ -386,15 +394,15 @@
 					mat4.multiplyVec3(this.mvMatrix, bl);
 					mat4.multiplyVec3(this.mvMatrix, br);
 
-					bufferData[_idx+0] =  bl[0]; bufferData[_idx+ 1] =  bl[1]; bufferData[_idx+ 2] = z;
-					bufferData[_idx+3] =  tl[0]; bufferData[_idx+ 4] =  tl[1]; bufferData[_idx+ 5] = z;
-					bufferData[_idx+6] =  br[0]; bufferData[_idx+ 7] =  br[1]; bufferData[_idx+ 8] = z;
-					bufferData[_idx+9] =  tr[0]; bufferData[_idx+10] =  tr[1]; bufferData[_idx+11] = z;
+					bufferData[_idx           ] =  bl[0]; bufferData[_idx + 1           ] =  bl[1]; bufferData[_idx + 2           ] = z;
+					bufferData[_idx +   offset] =  tl[0]; bufferData[_idx + 1 +   offset] =  tl[1]; bufferData[_idx + 2 +   offset] = z;
+					bufferData[_idx + 2*offset] =  br[0]; bufferData[_idx + 1 + 2*offset] =  br[1]; bufferData[_idx + 2 + 2*offset] = z;
+					bufferData[_idx + 3*offset] =  tr[0]; bufferData[_idx + 1 + 3*offset] =  tr[1]; bufferData[_idx + 2 + 3*offset] = z;
 				} else {
-					bufferData[_idx+0] = -hw; bufferData[_idx+ 1] = -hh; bufferData[_idx+ 2] = 0;
-					bufferData[_idx+3] = -hw; bufferData[_idx+ 4] =  hh; bufferData[_idx+ 5] = 0;
-					bufferData[_idx+6] =  hw; bufferData[_idx+ 7] = -hh; bufferData[_idx+ 8] = 0;
-					bufferData[_idx+9] =  hw; bufferData[_idx+10] =  hh; bufferData[_idx+11] = 0;
+					bufferData[_idx           ] = -hw; bufferData[_idx + 1           ] = -hh; bufferData[_idx + 2           ] = 0;
+					bufferData[_idx +   offset] = -hw; bufferData[_idx + 1 +   offset] =  hh; bufferData[_idx + 2 +   offset] = 0;
+					bufferData[_idx + 2*offset] =  hw; bufferData[_idx + 1 + 2*offset] = -hh; bufferData[_idx + 2 + 2*offset] = 0;
+					bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = 0;
 				}
 
 				if (this.program == ChesterGL.Block.PROGRAM.TEXTURE) {
@@ -402,24 +410,24 @@
 					var texW = tex.width,
 						texH = tex.height;
 					var l = this.frame[0] / texW,
-						t = this.frame[1] / texH,
+						b = this.frame[1] / texH,
 						w = this.frame[2] / texW,
 						h = this.frame[3] / texH;
-					_idx += 12;
-					bufferData[_idx+0] = l  ; bufferData[_idx+1] = t;
-					bufferData[_idx+2] = l  ; bufferData[_idx+3] = t+h;
-					bufferData[_idx+4] = l+w; bufferData[_idx+5] = t;
-					bufferData[_idx+6] = l+w; bufferData[_idx+7] = t+h;
+					_idx += 3;
+					bufferData[_idx           ] = l  ; bufferData[_idx+1           ] = b;
+					bufferData[_idx +   offset] = l  ; bufferData[_idx+1 +   offset] = b+h;
+					bufferData[_idx + 2*offset] = l+w; bufferData[_idx+1 + 2*offset] = b;
+					bufferData[_idx + 3*offset] = l+w; bufferData[_idx+1 + 3*offset] = b+h;
 				}
 			}
 			if (this.isColorDirty) {
-				_idx = 20 + this.baseBufferIndex * ChesterGL.Block.QUAD_SIZE;
+				_idx = 5 + this.baseBufferIndex * ChesterGL.Block.BUFFER_SIZE;
 				var color = this.color;
 				for (var i=0; i < 4; i++) {
-					bufferData[_idx+i*4    ] = color[0];
-					bufferData[_idx+i*4 + 1] = color[1];
-					bufferData[_idx+i*4 + 2] = color[2];
-					bufferData[_idx+i*4 + 3] = color[3];
+					bufferData[_idx     + offset*i] = color[0];
+					bufferData[_idx + 1 + offset*i] = color[1];
+					bufferData[_idx + 2 + offset*i] = color[2];
+					bufferData[_idx + 3 + offset*i] = color[3];
 				}
 			}
 			if (ChesterGL.webglMode && !inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
@@ -465,11 +473,12 @@
 			var program = ChesterGL.selectProgram(ChesterGL.Block.PROGRAM_NAME[this.program]);
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-			var texOff = 12 * 4,
-				colorOff = texOff + 8 * 4;
-
-			gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, 0, 0);			
-			gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, 0, colorOff);
+			var texOff = 3 * 4,
+				colorOff = texOff + 2 * 4,
+				stride = ChesterGL.Block.QUAD_SIZE;
+			
+			gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
+			gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
 
 			gl.uniform1f(program.opacityUniform, this.opacity);
 
@@ -479,7 +488,7 @@
 				var texture = ChesterGL.getAsset('texture', this.texture);
 
 				// pass the texture attributes
-				gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, 0, texOff);
+				gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, stride, texOff);
 
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, texture.tex);

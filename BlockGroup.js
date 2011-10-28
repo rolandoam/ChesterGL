@@ -189,28 +189,28 @@
 		// select current shader
 		var program = ChesterGL.selectProgram(ChesterGL.Block.PROGRAM_NAME[this.program]);
 		var totalChildren = this.children.length;
-		var texOff = 12 * 4,
-			colorOff = texOff + 8 * 4;
+		var texOff = 3 * 4,
+			colorOff = texOff + 2 * 4,
+			stride = ChesterGL.Block.QUAD_SIZE;
 		
 		gl.uniform1f(program.opacityUniform, this.opacity);
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		
-		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, 0, 0);
-		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, 0, colorOff);
-		
+		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 		if (this.program == ChesterGL.Block.PROGRAM.DEFAULT) {
 			// no extra attributes for the shader
 		} else if (this.program == ChesterGL.Block.PROGRAM.TEXTURE) {
 			var texture = ChesterGL.getAsset('texture', this.texture);
 			
 			// pass the texture attributes
-			gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, 0, texOff);
+			gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, stride, texOff);
 			
 			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 			gl.uniform1i(program.samplerUniform, 0);				
 		}
+		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 		gl.uniformMatrix4fv(program.mvMatrixUniform, false, this.mvMatrix);
