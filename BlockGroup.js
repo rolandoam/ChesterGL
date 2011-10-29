@@ -99,6 +99,9 @@
 	 * @param {ChesterGL.Block} block
 	 */
 	ChesterGL.BlockGroup.prototype.addChild = function (block) {
+		if (this.children.length >= this.maxChildren) {
+			throw "Error: too many children - Make the initial size of the BlockGroup larger"
+		}
 		if (!this.texture) {
 			this.texture = block.texture;
 		} else {

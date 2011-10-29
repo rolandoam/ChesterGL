@@ -18,29 +18,11 @@ $(document).ready(function () {
 
 		ChesterGL.loadAsset("texture", "images/star.png");
 		ChesterGL.assetsLoaded("texture", function () {
-			$("#loading").html("Test Single Block");        	
+			$("#loading").html("Test BlockGroup");
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
 			var group = new ChesterGL.BlockGroup("images/star.png", totalBlocks);
-			
-			// var sceneBlock = new ChesterGL.Block();
-			// // no render for this block
-			// sceneBlock.render = function () {};
-			// ChesterGL.rootBlock = sceneBlock;
-			
-			// create a block
-			// var block1 = group.createBlock();
-			// block1.rotateBy(-45);
-			// block1.opacity = 0.5;
-			// block1.moveTo([width/2, height/2, 0]);
-			// 
-			// var block2 = group.createBlock();
-			// block2.moveTo([width/2 - 64, height/2 - 64, 0]);
-			// 
-			// group.addChild(block1);
-			// group.addChild(block2);
-
 			
 			// add lots of blocks
 			for (var i=0; i < totalBlocks; i++) {
@@ -55,24 +37,7 @@ $(document).ready(function () {
 				group.addChild(b);
 			}
 			
-			
-			// create single block
-			// var single = new ChesterGL.Block();
-			// single.setTexture("images/star.png");
-			// single.rotateBy(-45);
-			// single.moveTo(32, 32);
-			
 			ChesterGL.rootBlock = group;
-			// sceneBlock.addChild(single);
-			
-			// add some action
-			// block1.update = function () {
-			// 	this.rotateBy(1);
-			// };
-			// block2.update = function () {
-			// 	this.rotateBy(-1);
-			// };
-
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
 			// ChesterGL.drawScene();
