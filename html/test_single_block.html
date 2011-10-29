@@ -28,7 +28,8 @@ $(document).ready(function () {
 			sceneBlock.render = function () {};			
 			ChesterGL.rootBlock = sceneBlock;
 			
-			// add lots of blocks
+			// add lots of blocks - this is here for comparison with BlockGroup
+			/*
 			for (var i=0; i < 500; i++) {
 				var b = new ChesterGL.Block();
 				b.setTexture("images/star.png");
@@ -41,6 +42,7 @@ $(document).ready(function () {
 				}
 				sceneBlock.addChild(b);
 			}
+			*/
 			
 			// create a block
 			var someBlock = new ChesterGL.Block();
