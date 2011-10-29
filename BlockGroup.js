@@ -38,16 +38,14 @@
 		if (!ChesterGL.webglMode) {
 			throw "BlockGroup only works on WebGL mode";
 		}
-		this.type = ChesterGL.Block.TYPE.BLOCKGROUP;
-		this.children = [];
+		// call "super"
+		ChesterGL.Block.call(this, ChesterGL.Block.TYPE.BLOCKGROUP);
 		if (texture) {
 			this.texture = texture;
 			this.program = ChesterGL.Block.PROGRAM.TEXTURE;
 		} else {
 			this.program = ChesterGL.Block.PROGRAM.DEFAULT;
 		}
-		this.setColor([1, 1, 1, 1]);
-		
 		this.maxChildren = noChildren || 10;
 		
 		// same as block, but multiplied by the number of totalChildren (plus index data)
@@ -55,10 +53,7 @@
 		this.glBuffer        = gl.createBuffer();
 		this.glBufferData    = new Float32Array(ChesterGL.Block.QUAD_SIZE * this.maxChildren);
 		this.indexBuffer     = gl.createBuffer();
-		this.indexBufferData = new Uint16Array(6 * this.maxChildren);
-		
-		this.mvMatrix = mat4.create();
-		mat4.identity(this.mvMatrix);
+		this.indexBufferData = new Uint16Array(6 * this.maxChildren);		
 	}
 	
 	/**
