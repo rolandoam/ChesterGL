@@ -641,47 +641,6 @@ vec2.create = function (vec) {
 	}
 	
 	/**
-	 * extend an object with another object (for super naive 1-level inheritance).
-	 * When extending classes, you would usually use ChesterGL.extend(B.prototype, A.prototype) to
-	 * inherit from A.
-	 * 
-	 * @param {Object} target the object that will be extended
-	 * @param {Object} parent the parent object
-	 * 
-	 * @example
-	 * var a = {
-	 *   prop1 = function () {...},
-	 *   prop2 = function () {...}
-	 * }
-	 * 
-	 * var b = {
-	 *   prop2 = function () {...}
-	 * }
-	 * 
-	 * ChesterGL.extend(b, a);
-	 * 
-	 * // now you can call b.prop2() and from within prop2, you can
-	 * // call the parent's version:
-	 * 
-	 * var b = {
-	 *   prop2 = function () {
-	 *     prop2_(); // call the parent's version
-	 *   }
-	 * }
-	 */
-	ChesterGL.extend = function (target, parent) {
-		if (typeof target === "object" && typeof parent === "object") {
-			for (var prop in parent) {
-				if (!target[prop]) {
-					target[prop] = parent[prop];
-				} else {
-					target[prop + "_"] = parent[prop];
-				}
-			}
-		}
-	}
-	
-	/**
 	 * updates the internal FPS counter
 	 */
 	/** @ignore */

@@ -29,20 +29,18 @@ $(document).ready(function () {
 			ChesterGL.rootBlock = sceneBlock;
 			
 			// add lots of blocks
-			/*
 			for (var i=0; i < 500; i++) {
-				var b = ChesterGL.Block.create();
+				var b = new ChesterGL.Block();
 				b.setTexture("images/star.png");
-				b.moveTo(Math.random() * width, Math.random() * height);
-				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5];
+				b.moveTo([Math.random() * width, Math.random() * height, 0]);
+				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
 				b.update = function () {
-					this.moveBy(this.speed[0], this.speed[1]);
-					if (this.position.x >= width || this.position.x <= 0) { this.speed[0] = -this.speed[0]; }
-					if (this.position.y >= width || this.position.y <= 0) { this.speed[1] = -this.speed[1]; }
+					this.moveBy(this.speed);
+					if (this.position[0] >= width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
+					if (this.position[1] >= width || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
 				}
 				sceneBlock.addChild(b);
 			}
-			*/
 			
 			// create a block
 			var someBlock = new ChesterGL.Block();

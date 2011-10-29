@@ -62,6 +62,12 @@
 	}
 	
 	/**
+	 * extend from Block
+	 * @ignore
+	 */
+	ChesterGL.BlockGroup.prototype = Object.create(ChesterGL.Block.prototype)
+	
+	/**
 	 * The max number of children this blockgroup can hold (this is here for the buffer data)
 	 * @type {number}
 	 */
@@ -222,7 +228,7 @@
 	}
 		
 	// inherit everything from Block
-	ChesterGL.extend(ChesterGL.BlockGroup.prototype, ChesterGL.Block.prototype);
+	// ChesterGL.extend(ChesterGL.BlockGroup.prototype, ChesterGL.Block.prototype);
 	
 	// export the symbol
 	ChesterGL['BlockGroup'] = ChesterGL.BlockGroup;
