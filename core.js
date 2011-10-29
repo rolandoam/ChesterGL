@@ -153,10 +153,16 @@ vec2.create = function (vec) {
 	ChesterGL.fps = 0;
 	
 	/**
-	 * the span that will hold the fps counter
+	 * the span that will hold the debug info
 	 * @type {?Element}
 	 */
-	ChesterGL.debugFPS = null;
+	ChesterGL.debugSpan = null;
+	
+	/**
+	 * the id of the span that will hold the debug info. Defaults to "debug-info"
+	 * @type {string}
+	 */
+	ChesterGL.debugSpanId = "debug-info";
 	
 	/**
 	 * the global update function, to be called every
@@ -201,7 +207,7 @@ vec2.create = function (vec) {
 			this.initDefaultShaders();
 		}
 		
-		this.debugFPS = document.getElementById("debug-fps");
+		this.debugSpan = document.getElementById("debug-info");
 		// register the default handler for textures
 		this.registerAssetHandler('texture', this.defaultTextureHandler);
 	}
@@ -597,6 +603,11 @@ vec2.create = function (vec) {
 	 * main draw function, will call the root block
 	 */
 	ChesterGL.drawScene = function () {
+		// for actions and other stuff
+		var current = Date.now(); // milliseconds
+		this.delta = current - this.lastTime;
+		this.lastTime = current;
+		
 		if (this.webglMode) {
 			var gl = this.gl;
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -667,19 +678,25 @@ vec2.create = function (vec) {
 	
 	/**
 	 * updates the internal FPS counter
-	 */		
+	 */
+	/** @ignore */
+	ChesterGL.lastDebug_ = Date.now();
+	/** @ignore */
+	ChesterGL.sumDelta_ = 0;
+	/** @ignore */
+	ChesterGL.countDelta_ = 0;
+	/** @ignore */
 	ChesterGL.updateFPS = function () {
-		var current = Date.now(); // milliseconds
-		var delta = current - ChesterGL.lastTime;
-		ChesterGL.lastTime = current;
-		
-		var raw_fps = 1000.0 / delta;
-		var alpha = 0.1;
-		var new_fps = raw_fps * alpha + ChesterGL.fps * (1.0 - alpha);
-		ChesterGL.fps = Math.round(new_fps);
-		ChesterGL.delta = delta;
-		
-		ChesterGL.debugFPS && (ChesterGL.debugFPS.textContent = ChesterGL.fps);
+		if (this.debugSpan) {
+			var now = Date.now();
+			this.sumDelta_ += this.delta;
+			this.countDelta_ ++;
+			if (now - this.lastDebug_ > 1000) {
+				this.debugSpan.textContent = (this.sumDelta_ / this.countDelta_).toFixed(2);
+				this.sumDelta_ = this.countDelta_ = 0;
+				this.lastDebug_ = now;
+			}
+		}
 	}
 	
 	/**
