@@ -39,7 +39,7 @@
 			throw "BlockGroup only works on WebGL mode";
 		}
 		// call "super"
-		ChesterGL.Block.call(this, ChesterGL.Block.TYPE.BLOCKGROUP);
+		ChesterGL.Block.call(this, null, ChesterGL.Block.TYPE.BLOCKGROUP);
 		if (texture) {
 			this.texture = texture;
 			this.program = ChesterGL.Block.PROGRAM.TEXTURE;
@@ -48,12 +48,8 @@
 		}
 		this.maxChildren = noChildren || 10;
 		
-		// same as block, but multiplied by the number of totalChildren (plus index data)
-		var gl = ChesterGL.gl;
-		this.glBuffer        = gl.createBuffer();
-		this.glBufferData    = new Float32Array(ChesterGL.Block.QUAD_SIZE * this.maxChildren);
-		this.indexBuffer     = gl.createBuffer();
-		this.indexBufferData = new Uint16Array(6 * this.maxChildren);		
+		// create the buffers for the children
+		this.createBuffers();
 	}
 	
 	/**
@@ -84,6 +80,18 @@
 	ChesterGL.BlockGroup.prototype.indexBufferData = null;
 	
 	/**
+	 * Creates the buffers for the current maxChildren size
+	 * @ignore
+	 */
+	ChesterGL.BlockGroup.prototype.createBuffers = function () {
+		var gl = ChesterGL.gl;
+		this.glBuffer        = gl.createBuffer();
+		this.glBufferData    = new Float32Array(ChesterGL.Block.QUAD_SIZE * this.maxChildren);
+		this.indexBuffer     = gl.createBuffer();
+		this.indexBufferData = new Uint16Array(6 * this.maxChildren);		
+	}
+	
+	/**
 	 * creates a block that can be added to this block group
 	 * @param {quat4} rect
 	 */
@@ -93,7 +101,7 @@
 			b.setTexture(this.texture);
 		}
 		return b;
-	},
+	}
 	
 	/**
 	 * adds a child
@@ -121,7 +129,7 @@
 		block.baseBufferIndex = length-1;
 		block.glBufferData    = this.glBufferData;			
 		this.isChildDirty = true;
-	},
+	}
 	
 	/**
 	 * when the block list changes, the indices array must be recreated
@@ -139,7 +147,7 @@
 		var gl = ChesterGL.gl;
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indexBufferData, gl.STATIC_DRAW);
-	},
+	}
 	
 	/**
 	 * removes a block from the group
@@ -147,7 +155,7 @@
 	 */
 	ChesterGL.BlockGroup.prototype.removeBlock = function (b) {
 		throw "not implemented";
-	},
+	}
 	
 	/**
 	 * where the fun begins
@@ -182,7 +190,7 @@
 		
 		// reset our dirty markers
 		this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
-	},
+	}
 	
 	/**
 	 * actually render the block group

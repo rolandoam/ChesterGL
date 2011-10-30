@@ -54,7 +54,9 @@
 			}
 		}
 		// set default color
-		this.setColor([1, 1, 1, 1]);
+		if (this.type == ChesterGL.Block.TYPE.STANDALONE) {
+			this.setColor([1, 1, 1, 1]);
+		}
 		
 		if (ChesterGL.webglMode && this.type == ChesterGL.Block.TYPE.STANDALONE && (!parent || parent.type != ChesterGL.Block.TYPE.BLOCKGROUP)) {
 			var gl = ChesterGL.gl;
@@ -91,7 +93,8 @@
 	 */
 	ChesterGL.Block.TYPE = {
 		STANDALONE: 0,
-		BLOCKGROUP: 1
+		BLOCKGROUP: 1,
+		TMXBLOCK:   2
 	};
 	
 	/**
@@ -177,7 +180,7 @@
 	ChesterGL.Block.prototype.position = vec3.create();
 	
 	/**
-	 * @type {?vec3}
+	 * @type {?vec2}
 	 */
 	ChesterGL.Block.prototype.contentSize = null;
 	

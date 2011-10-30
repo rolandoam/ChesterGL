@@ -23,7 +23,7 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
-			ChesterGL.rootBlock = ChesterGL.TMXBlock.maps['images/test-plain.tmx'];
+			ChesterGL.rootBlock = new ChesterGL.TMXBlock('images/test-plain.tmx');
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)

@@ -55,5 +55,9 @@ ChesterGL.BlockFrames = {};
  */
 ChesterGL.BlockFrames.getFrame = function (frameName) {};
 
-/** @constructor */
-ChesterGL.TMXBlock = function () {};
+/**
+ * @constructor
+ * @extends ChesterGL.Block
+ * @param {string} tmxFile
+ */
+ChesterGL.TMXBlock = function (tmxFile) {};

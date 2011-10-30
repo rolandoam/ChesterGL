@@ -44,95 +44,112 @@
 	 * @param {string} data
 	 * @param {function(boolean)=} callback
 	 */
-	function handleLoadTMX(path, data, callabck) {
+	function handleLoadTMX(path, data, callback) {
 		console.log("tmx loaded: " + path);
 		
-		var tmx = ChesterGL.assets['tmx'][path];
-		tmx.data = data;
-		callabck && callabck(true);
+		var map = ChesterGL.assets['tmx'][path];
+		map.data = data;
+		callback && callback(true);
 	}
 	
 	/**
-	 * @name TMXBlock
-	 * @class
+	 * Creates a new TMXBlock (from a TMX file)
+	 * The first line of children are the layers of the tmx map and they're all BlockGroups
+	 * 
 	 * @constructor
 	 * @extends ChesterGL.Block
+	 * @param {string} tmxFile
 	 */
-	var TMXBlock = function () {};
+	ChesterGL.TMXBlock = function (tmxFile) {
+		// first, get the map from the map list
+		var map = ChesterGL.TMXBlock.maps[tmxFile];
+		if (!map) {
+			throw "Invalid map - make sure you call loadTMX first";
+		}
+		ChesterGL.Block.call(this, null, ChesterGL.Block.TYPE.TMXBLOCK);
+		// create the map from the metadata
+		for (var i=0; i < map['layers'].length; i++) {
+			var layer = map['layers'][i];
+			var l = new ChesterGL.BlockGroup(map['texture'], layer['blocks'].length);
+			for (var n=0; n < layer['blocks'].length; n++) {
+				var block = layer['blocks'][n];
+				var b = l.createBlock(block['frame']);
+				b.moveTo(block['position']);
+				l.addChild(b);
+			}
+			this.addChild(l);
+		}
+	};
 	
+	/** @ignore */
+	ChesterGL.TMXBlock.prototype = Object.create(ChesterGL.Block.prototype);
+
+	/**
+	 * empty rendering function
+	 * @ignore
+	 */
+	ChesterGL.TMXBlock.prototype.render = function () {};
+		
 	/**
 	 * The size (in pixels) of the tiles (in the texture)
 	 * 
-	 * @type {Object.<string,number>}
+	 * @type {?vec2}
 	 */
-	TMXBlock.prototype.tileSize = {
-		'w': 0,
-		'h': 0
-	};
+	ChesterGL.TMXBlock.prototype.tileSize = null;
 	
 	/**
 	 * The tile size in the map
-	 * @type {Object.<string,number>}
+	 * @type {?vec2}
 	 */
-	TMXBlock.prototype.mapTileSize = {
-		'w': 0,
-		'h': 0
-	};
+	ChesterGL.TMXBlock.prototype.mapTileSize = null;
 	
 	/**
 	 * @type {number}
 	 */
-	TMXBlock.prototype.totalTiles = 0;
+	ChesterGL.TMXBlock.prototype.totalTiles = 0;
 	
 	/**
 	 * @type {number}
 	 */
-	TMXBlock.prototype.spacing = 0;
+	ChesterGL.TMXBlock.prototype.spacing = 0;
 	
 	/**
 	 * @type {number}
 	 */
-	TMXBlock.prototype.margin = 0;
+	ChesterGL.TMXBlock.prototype.margin = 0;
 	
 	/**
-	 * @type {Array}
+	 * @type {Object.<string,Object>}
 	 */
-	TMXBlock.prototype.layers = null;
-		
-	// TMXBlock inherits from Block
-	ChesterGL.extend(TMXBlock.prototype, ChesterGL.Block.prototype);
+	ChesterGL.TMXBlock.maps = {};
 	
 	/**
-	 * @type {Object.<string,ChesterGL.Block>}
-	 */
-	TMXBlock.maps = {};
-	
-	/**
+	 * Will load a TMX file, parse it when loaded and add the metadata to create
+	 * the TMX block later
+	 * 
 	 * @param {string} path
 	 */
-	TMXBlock.loadTMX = function(path) {
+	ChesterGL.TMXBlock.loadTMX = function(path) {
 		ChesterGL.loadAsset('tmx', {path:path, dataType: 'xml'}, function (data) {
-			var tmx = new ChesterGL.Block();
-			/** @ignore */
-			tmx.render = function () {};
+			var tmx = {};
 			
 			var map = $(data).find("map");
 			var tileset = map.find("tileset").first();
 			var orientation = map.attr("orientation");
 			if (tileset) {
-				tmx.tileSize = vec2.create([
+				tmx['tileSize'] = vec2.create([
 					parseInt(tileset.attr("tilewidth"), 10),
 					parseInt(tileset.attr("tileheight"), 10)
 				]);
-				tmx.mapTileSize = vec2.create([
+				tmx['mapTileSize'] = vec2.create([
 					parseInt(map.attr("tilewidth"), 10),
 					parseInt(map.attr("tileheight"), 10)
 				]);
 				if (tileset.attr("spacing")) {
-					tmx.spacing = parseInt(tileset.attr("spacing"), 10);
+					tmx['spacing'] = parseInt(tileset.attr("spacing"), 10);
 				}
 				if (tileset.attr("margin")) {
-					tmx.margin = parseInt(tileset.attr("margin"), 10);
+					tmx['margin'] = parseInt(tileset.attr("margin"), 10);
 				}
 				
 				// find the image for the tileset
@@ -141,15 +158,14 @@
 					parseInt(image.attr("width"), 10),
 					parseInt(image.attr("height"), 10)
 				]);
-				tmx.texture = image.attr('source');
-				ChesterGL.loadAsset('texture', tmx.texture);
+				tmx['texture'] = image.attr('source');
+				ChesterGL.loadAsset('texture', tmx['texture']);
 				
 				// parse the layers
-				tmx.layers = [];
+				tmx['layers'] = [];
 				map.find("layer").each(function (i, layer) {
-					var blockLayer = new ChesterGL.Block();
-					/** @ignore */
-					blockLayer.render = function () {};
+					var blockLayer = {};
+					blockLayer['blocks'] = [];
 					
 					var layerSize = vec2.create([
 						parseInt($(layer).attr("width"), 10),
@@ -158,7 +174,7 @@
 					var data = $(layer).find("data").first();
 					if (data) {
 						if (data.attr("encoding") != "base64" || data.attr("compression")) {
-							throw "Invalid TMX Data"
+							throw "Invalid TMX Data";
 						}
 						var str = data.text().trim();
 						var decodedData = base64.decode(str);
@@ -167,13 +183,12 @@
 						for (var row = 0; row < layerSize[1]; row++) {
 							for (var col = 0; col < layerSize[0]; col++) {
 								var gid = unpackUInt32(decodedData, offset) - 1;
-								var b = new ChesterGL.Block();
-								var margin = tmx.margin || 0;
-								var spacing = tmx.spacing || 0;
-								var tileSize = tmx.tileSize;
-								var mapTileSize = tmx.mapTileSize;
+								var b = {};
+								var margin = tmx['margin'] || 0;
+								var spacing = tmx['spacing'] || 0;
+								var tileSize = tmx['tileSize'];
+								var mapTileSize = tmx['mapTileSize'];
 								
-								b.setTexture(tmx.texture);
 								var max_x = parseInt((imageSize[0] - margin * 2 + spacing) / (tileSize[0] + spacing), 10);
 								var frame = quat4.create([
 									// assume gid == 1
@@ -183,7 +198,7 @@
 									tileSize[1]
 								]);
 								// console.log("gid " + col + "," + row + ": " + gid + "; frame: " + frame.l + "," + frame.t);
-								b.setFrame(frame);
+								b['frame'] = frame;
 								var bx, by;
 								if (orientation == "orthogonal") {
 									bx = col * mapTileSize[0]                     + tileSize[0]/2;
@@ -194,18 +209,18 @@
 								} else {
 									throw "Invalid orientation";
 								}
-								b.moveTo([bx, by, 0]);                            
-								blockLayer.addChild(b);
+								b['position'] = [bx, by, 0];
+								blockLayer['blocks'].push(b);
 								offset += 4;
 							}
 						}
 					} else {
 						throw "No data for layer!"
 					}
-					tmx.addChild(blockLayer);
+					tmx['layers'].push(blockLayer);
 				}); // each layer
 			} // if tileset
-			TMXBlock.maps[path] = tmx;
+			ChesterGL.TMXBlock.maps[path] = tmx;
 		});
 	};
 		
@@ -213,7 +228,6 @@
 	ChesterGL.registerAssetHandler('tmx', handleLoadTMX);
 	
 	// export symbols
-	TMXBlock['loadTMX'] = TMXBlock.loadTMX;
-	
-	window['ChesterGL']['TMXBlock'] = TMXBlock;
+	ChesterGL.TMXBlock['loadTMX'] = ChesterGL.TMXBlock.loadTMX;
+	ChesterGL['TMXBlock'] = ChesterGL.TMXBlock;
 })(window);
