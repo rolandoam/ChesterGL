@@ -76,6 +76,15 @@ vec2.create = function (vec) {
 	ChesterGL.gl = null;
 	
 	/**
+	 * For debug/performance metrics. You can set this to false to ignore analytics (no data will be sent).
+	 * This will use whatever profile you have for analytics on the game page
+	 * 
+	 * @type {boolean}
+	 * @see {ChesterGL.analyticsProfile}
+	 */
+	ChesterGL.useGoogleAnalytics = true;
+			
+	/**
 	 * @type {Object.<string,WebGLProgram>}
 	 */
 	ChesterGL.programs = {};
@@ -604,12 +613,7 @@ vec2.create = function (vec) {
 	/**
 	 * main draw function, will call the root block
 	 */
-	ChesterGL.drawScene = function () {
-		// for actions and other stuff
-		var current = Date.now(); // milliseconds
-		this.delta = current - this.lastTime;
-		this.lastTime = current;
-		
+	ChesterGL.drawScene = function () {		
 		if (this.webglMode) {
 			var gl = this.gl;
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -634,11 +638,16 @@ vec2.create = function (vec) {
 				this.gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 				this.gl.drawImage(this.offCanvas, 0, 0);
 			}
-		}		
+		}
+		
+		// for actions and other stuff
+		var current = Date.now(); // milliseconds
+		this.delta = current - this.lastTime;
+		this.lastTime = current;	
 	}
 	
 	/**
-	 * updates the internal FPS counter
+	 * updates the internal frame counter
 	 */
 	/** @ignore */
 	ChesterGL.lastDebug_ = Date.now();
@@ -647,16 +656,21 @@ vec2.create = function (vec) {
 	/** @ignore */
 	ChesterGL.countDelta_ = 0;
 	/** @ignore */
-	ChesterGL.updateFPS = function () {
-		if (this.debugSpan) {
-			var now = Date.now();
-			this.sumDelta_ += this.delta;
-			this.countDelta_ ++;
-			if (now - this.lastDebug_ > 1000) {
-				this.debugSpan.textContent = (this.sumDelta_ / this.countDelta_).toFixed(2);
-				this.sumDelta_ = this.countDelta_ = 0;
-				this.lastDebug_ = now;
+	ChesterGL.updateDebugTime = function () {
+		var now = Date.now();
+		this.sumDelta_ += this.delta;
+		this.countDelta_ ++;
+		if (now - this.lastDebug_ > 1000) {
+			var avg = (this.sumDelta_ / this.countDelta_);
+			if (this.debugSpan) {
+				this.debugSpan.textContent = avg.toFixed(2);
 			}
+			if (this.useGoogleAnalytics) {
+				// track how well we're performing
+				_gaq.push(['_trackEvent', 'ChesterGL', 'renderTime', ChesterGL.runningScene.title, avg]);
+			}
+			this.sumDelta_ = this.countDelta_ = 0;
+			this.lastDebug_ = now;
 		}
 	}
 	
@@ -666,9 +680,9 @@ vec2.create = function (vec) {
 	 */
 	ChesterGL.run = function () {
 		ChesterGL.drawScene();
-		window.requestAnimFrame(ChesterGL.run, ChesterGL.canvas);
-		ChesterGL.updateFPS();
-		ChesterGL.update && ChesterGL.update(ChesterGL.delta);
+		ChesterGL.ActionManager.tick(ChesterGL.delta);
+		ChesterGL.updateDebugTime();
+		window.requestAnimFrame(ChesterGL.run);
 	}
 	
 	// export symbols
