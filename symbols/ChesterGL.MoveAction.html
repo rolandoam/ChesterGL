@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - BlockFrames</title>
+		<title>JsDoc Reference - ChesterGL.MoveAction</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -195,9 +195,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/ChesterGL.html">ChesterGL</a></li>
 	
+	<li><a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a></li>
+	
+	<li><a href="../symbols/ChesterGL.ActionManager.html">ChesterGL.ActionManager</a></li>
+	
 	<li><a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a></li>
 	
 	<li><a href="../symbols/ChesterGL.BlockGroup.html">ChesterGL.BlockGroup</a></li>
+	
+	<li><a href="../symbols/ChesterGL.MoveAction.html">ChesterGL.MoveAction</a></li>
 	
 	<li><a href="../symbols/ChesterGL.TMXBlock.html">ChesterGL.TMXBlock</a></li>
 	
@@ -212,25 +218,27 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace BlockFrames
+				Class ChesterGL.MoveAction
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/BlockFrames.js.html">BlockFrames.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/Actions.js.html">Actions.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class BlockFrames.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.MoveAction.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -242,7 +250,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/BlockFrames.html#constructor">BlockFrames</a></b>
+								<b><a href="../symbols/ChesterGL.MoveAction.html#constructor">ChesterGL.MoveAction</a></b>(block, totalTime, finalPosition)
 							</div>
 							<div class="description"></div>
 						</td>
@@ -253,12 +261,44 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.MoveAction.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/ChesterGL.MoveAction.html#finalPosition">finalPosition</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+				<dl class="inheritsList">
+				<dt>Fields borrowed from class <a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>: </dt><dd><a href="../symbols/ChesterGL.Action.html#block">block</a>, <a href="../symbols/ChesterGL.Action.html#currentTime">currentTime</a>, <a href="../symbols/ChesterGL.Action.html#elapsed">elapsed</a>, <a href="../symbols/ChesterGL.Action.html#finished">finished</a>, <a href="../symbols/ChesterGL.Action.html#totalTime">totalTime</a></dd>
+				</dl>
+				
+			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class BlockFrames.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.MoveAction.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -269,29 +309,11 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">BlockFrames.<b><a href="../symbols/BlockFrames.html#.getFrame">getFrame</a></b>(frameName)
+								<div class="fixedFont"><b><a href="../symbols/ChesterGL.MoveAction.html#update">update</a></b>(delta)
 								</div>
 								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">BlockFrames.<b><a href="../symbols/BlockFrames.html#.loadFrames">loadFrames</a></b>(path, callback)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">BlockFrames.<b><a href="../symbols/BlockFrames.html#.loadJSON">loadJSON</a></b>(data)
-								</div>
-								<div class="description">loads the json data (callback for the ajax call)</div>
 							</td>
 						</tr>
 					
@@ -299,6 +321,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -308,11 +334,11 @@ ul.inheritsList
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>BlockFrames</b>
+						<b>ChesterGL.MoveAction</b>(block, totalTime, finalPosition)
 				</div>
 				
 				<div class="description">
@@ -324,9 +350,39 @@ ul.inheritsList
 				
 				
 					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span>  <b>block</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>totalTime</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{vec3}</span>  <b>finalPosition</b>
+								
+							</dt>
+								<dd></dd>
+						
+						</dl>
 					
 					
 					
+					
+					
+						<dl class="detailList">
+						<dt class="heading">Returns:</dt>
+						
+								<dd>ChesterGL.MoveAction</dd>
+						
+						</dl>
 					
 					
 					
@@ -336,6 +392,33 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="finalPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>finalPosition</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
 
 <!-- ============================== method details ========================= -->		
 			
@@ -343,54 +426,11 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".getFrame"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					<span class="light">{Object}</span>
-					<span class="light">BlockFrames.</span><b>getFrame</b>(frameName)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
+					<a name="update"> </a>
+					<div class="fixedFont">
 					
 					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>frameName</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{Object}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".loadFrames"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">BlockFrames.</span><b>loadFrames</b>(path, callback)
+					<b>update</b>(delta)
 					
 					</div>
 					<div class="description">
@@ -406,52 +446,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>path</b>
+									<span class="light fixedFont">{number}</span> <b>delta</b>
 									
 								</dt>
-								<dd>The path for the json file (TexturePacker format)</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function()=}</span> <b>callback</b>
-									
-								</dt>
-								<dd>The callback to be called after everything is ready</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".loadJSON"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">BlockFrames.</span><b>loadJSON</b>(data)
-					
-					</div>
-					<div class="description">
-						loads the json data (callback for the ajax call)
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Object}</span> <b>data</b>
-									
-								</dt>
-								<dd></dd>
+								<dd>miliseconds from last time we updated</dd>
 							
 							</dl>
 						
@@ -476,7 +474,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 31 2011 16:18:30 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 31 2011 16:16:46 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

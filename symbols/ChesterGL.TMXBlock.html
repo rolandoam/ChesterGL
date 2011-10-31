@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - ChesterGL.BlockGroup</title>
+		<title>JsDoc Reference - ChesterGL.TMXBlock</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -212,7 +212,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class ChesterGL.BlockGroup
+				Class ChesterGL.TMXBlock
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -225,13 +225,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/BlockGroup.js.html">BlockGroup.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/TMXBlock.js.html">TMXBlock.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.BlockGroup.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.TMXBlock.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -244,9 +244,10 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.BlockGroup.html#constructor">ChesterGL.BlockGroup</a></b>(texture, noChildren)
+								<b><a href="../symbols/ChesterGL.TMXBlock.html#constructor">ChesterGL.TMXBlock</a></b>(tmxFile)
 							</div>
-							<div class="description">creates a new block group</div>
+							<div class="description">Creates a new TMXBlock (from a TMX file)
+The first line of children are the layers of the tmx map and they're all BlockGroups</div>
 						</td>
 					</tr>
 				</tbody>
@@ -257,7 +258,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.BlockGroup.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.TMXBlock.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -268,10 +269,10 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.BlockGroup.html#indexBuffer">indexBuffer</a></b>
+								ChesterGL.TMXBlock.<b><a href="../symbols/ChesterGL.TMXBlock.html#.maps">maps</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -281,7 +282,17 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.BlockGroup.html#indexBufferData">indexBufferData</a></b>
+								<b><a href="../symbols/ChesterGL.TMXBlock.html#mapTileSize">mapTileSize</a></b>
+								</div>
+								<div class="description">The tile size in the map</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/ChesterGL.TMXBlock.html#margin">margin</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -291,7 +302,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.BlockGroup.html#isChildDirty">isChildDirty</a></b>
+								<b><a href="../symbols/ChesterGL.TMXBlock.html#spacing">spacing</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -301,9 +312,19 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.BlockGroup.html#maxChildren">maxChildren</a></b>
+								<b><a href="../symbols/ChesterGL.TMXBlock.html#tileSize">tileSize</a></b>
 								</div>
-								<div class="description">The max number of children this blockgroup can hold (this is here for the buffer data)</div>
+								<div class="description">The size (in pixels) of the tiles (in the texture)</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/ChesterGL.TMXBlock.html#totalTiles">totalTiles</a></b>
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -322,7 +343,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.BlockGroup.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.TMXBlock.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -333,56 +354,12 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.BlockGroup.html#addChild">addChild</a></b>(block)
+								<div class="fixedFont">ChesterGL.TMXBlock.<b><a href="../symbols/ChesterGL.TMXBlock.html#.loadTMX">loadTMX</a></b>(path)
 								</div>
-								<div class="description">adds a child</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.BlockGroup.html#createBlock">createBlock</a></b>(rect)
-								</div>
-								<div class="description">creates a block that can be added to this block group</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.BlockGroup.html#recreateIndices">recreateIndices</a></b>(startIdx)
-								</div>
-								<div class="description">when the block list changes, the indices array must be recreated</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.BlockGroup.html#removeBlock">removeBlock</a></b>(b)
-								</div>
-								<div class="description">removes a block from the group</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.BlockGroup.html#render">render</a></b>()
-								</div>
-								<div class="description">actually render the block group</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.BlockGroup.html#visit">visit</a></b>()
-								</div>
-								<div class="description">where the fun begins</div>
+								<div class="description">Will load a TMX file, parse it when loaded and add the metadata to create
+the TMX block later</div>
 							</td>
 						</tr>
 					
@@ -392,7 +369,7 @@ ul.inheritsList
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>: </dt><dd><a href="../symbols/ChesterGL.Block.html#moveBy">moveBy</a>, <a href="../symbols/ChesterGL.Block.html#moveTo">moveTo</a>, <a href="../symbols/ChesterGL.Block.html#rotateBy">rotateBy</a>, <a href="../symbols/ChesterGL.Block.html#rotateTo">rotateTo</a>, <a href="../symbols/ChesterGL.Block.html#setColor">setColor</a>, <a href="../symbols/ChesterGL.Block.html#setContentSize">setContentSize</a>, <a href="../symbols/ChesterGL.Block.html#setFrame">setFrame</a>, <a href="../symbols/ChesterGL.Block.html#setScale">setScale</a>, <a href="../symbols/ChesterGL.Block.html#setTexture">setTexture</a>, <a href="../symbols/ChesterGL.Block.html#transform">transform</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>: </dt><dd><a href="../symbols/ChesterGL.Block.html#addChild">addChild</a>, <a href="../symbols/ChesterGL.Block.html#moveBy">moveBy</a>, <a href="../symbols/ChesterGL.Block.html#moveTo">moveTo</a>, <a href="../symbols/ChesterGL.Block.html#render">render</a>, <a href="../symbols/ChesterGL.Block.html#rotateBy">rotateBy</a>, <a href="../symbols/ChesterGL.Block.html#rotateTo">rotateTo</a>, <a href="../symbols/ChesterGL.Block.html#setColor">setColor</a>, <a href="../symbols/ChesterGL.Block.html#setContentSize">setContentSize</a>, <a href="../symbols/ChesterGL.Block.html#setFrame">setFrame</a>, <a href="../symbols/ChesterGL.Block.html#setScale">setScale</a>, <a href="../symbols/ChesterGL.Block.html#setTexture">setTexture</a>, <a href="../symbols/ChesterGL.Block.html#transform">transform</a>, <a href="../symbols/ChesterGL.Block.html#visit">visit</a></dd>
 				</dl>
 				
 			
@@ -407,11 +384,12 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>ChesterGL.BlockGroup</b>(texture, noChildren)
+						<b>ChesterGL.TMXBlock</b>(tmxFile)
 				</div>
 				
 				<div class="description">
-					creates a new block group
+					Creates a new TMXBlock (from a TMX file)
+The first line of children are the layers of the tmx map and they're all BlockGroups
 					
 				</div>
 				
@@ -423,16 +401,10 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{string}</span>  <b>texture</b>
+								<span class="light fixedFont">{string}</span>  <b>tmxFile</b>
 								
 							</dt>
-								<dd>An optional texture that will be shared with all children</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number=}</span>  <b>noChildren</b>
-								
-							</dt>
-								<dd>The optional initial number of maxChidlren. Defaults to 10</dd>
+								<dd></dd>
 						
 						</dl>
 					
@@ -443,7 +415,7 @@ ul.inheritsList
 						<dl class="detailList">
 						<dt class="heading">Returns:</dt>
 						
-								<dd>ChesterGL.BlockGroup</dd>
+								<dd>ChesterGL.TMXBlock</dd>
 						
 						</dl>
 					
@@ -459,33 +431,11 @@ ul.inheritsList
 					Field Detail
 				</div>
 				
-					<a name="indexBuffer"> </a>
-					<div class="fixedFont">
+					<a name=".maps"> </a>
+					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<b>indexBuffer</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="indexBufferData"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>indexBufferData</b>
+					<span class="light">ChesterGL.TMXBlock.</span><b>maps</b>
 					
 					</div>
 					<div class="description">
@@ -503,11 +453,33 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="isChildDirty"> </a>
+					<a name="mapTileSize"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>isChildDirty</b>
+					<b>mapTileSize</b>
+					
+					</div>
+					<div class="description">
+						The tile size in the map
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="margin"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>margin</b>
 					
 					</div>
 					<div class="description">
@@ -525,15 +497,59 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="maxChildren"> </a>
+					<a name="spacing"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>maxChildren</b>
+					<b>spacing</b>
 					
 					</div>
 					<div class="description">
-						The max number of children this blockgroup can hold (this is here for the buffer data)
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="tileSize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>tileSize</b>
+					
+					</div>
+					<div class="description">
+						The size (in pixels) of the tiles (in the texture)
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="totalTiles"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>totalTiles</b>
+					
+					</div>
+					<div class="description">
+						
 						
 						
 					</div>
@@ -555,15 +571,16 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="addChild"> </a>
-					<div class="fixedFont">
+					<a name=".loadTMX"> </a>
+					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<b>addChild</b>(block)
+					<span class="light">ChesterGL.TMXBlock.</span><b>loadTMX</b>(path)
 					
 					</div>
 					<div class="description">
-						adds a child
+						Will load a TMX file, parse it when loaded and add the metadata to create
+the TMX block later
 						
 						
 					</div>
@@ -575,170 +592,12 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span> <b>block</b>
+									<span class="light fixedFont">{string}</span> <b>path</b>
 									
 								</dt>
 								<dd></dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="createBlock"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>createBlock</b>(rect)
-					
-					</div>
-					<div class="description">
-						creates a block that can be added to this block group
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{quat4}</span> <b>rect</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="recreateIndices"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>recreateIndices</b>(startIdx)
-					
-					</div>
-					<div class="description">
-						when the block list changes, the indices array must be recreated
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{number}</span> <b>startIdx</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="removeBlock"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>removeBlock</b>(b)
-					
-					</div>
-					<div class="description">
-						removes a block from the group
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span> <b>b</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="render"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>render</b>()
-					
-					</div>
-					<div class="description">
-						actually render the block group
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="visit"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>visit</b>()
-					
-					</div>
-					<div class="description">
-						where the fun begins
-						
-						
-					</div>
-					
-					
-					
 						
 						
 						

@@ -199,7 +199,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/ChesterGL.BlockGroup.html">ChesterGL.BlockGroup</a></li>
 	
-	<li><a href="../symbols/TMXBlock.html">TMXBlock</a></li>
+	<li><a href="../symbols/ChesterGL.TMXBlock.html">ChesterGL.TMXBlock</a></li>
 	
 	<li><a href="../symbols/vec2.create.html">vec2.create</a></li>
 	
@@ -319,9 +319,19 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								ChesterGL.<b><a href="../symbols/ChesterGL.html#.debugFPS">debugFPS</a></b>
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.debugSpan">debugSpan</a></b>
 								</div>
-								<div class="description">the span that will hold the fps counter</div>
+								<div class="description">the span that will hold the debug info</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.debugSpanId">debugSpanId</a></b>
+								</div>
+								<div class="description">the id of the span that will hold the debug info.</div>
 							</td>
 						</tr>
 					
@@ -399,7 +409,7 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								ChesterGL.<b><a href="../symbols/ChesterGL.html#.rootBlock">rootBlock</a></b>
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.runningScene">runningScene</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -413,6 +423,16 @@ ul.inheritsList
 								</div>
 								<div class="description">the global update function, to be called every
 frame - with the delta from last frame</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.useGoogleAnalytics">useGoogleAnalytics</a></b>
+								</div>
+								<div class="description">For debug/performance metrics.</div>
 							</td>
 						</tr>
 					
@@ -490,15 +510,6 @@ frame - with the delta from last frame</div>
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.drawScene">drawScene</a></b>()
 								</div>
 								<div class="description">main draw function, will call the root block</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.extend">extend</a></b>(target, parent)
-								</div>
-								<div class="description">extend an object with another object (for super naive 1-level inheritance).</div>
 							</td>
 						</tr>
 					
@@ -609,15 +620,6 @@ fallback: canvas</div>
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.setupPerspective">setupPerspective</a></b>()
 								</div>
 								<div class="description">setups the perspective (2d or 3d)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.updateFPS">updateFPS</a></b>()
-								</div>
-								<div class="description">updates the internal FPS counter</div>
 							</td>
 						</tr>
 					
@@ -776,15 +778,37 @@ fallback: canvas</div>
 
 					<hr />
 				
-					<a name=".debugFPS"> </a>
+					<a name=".debugSpan"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">ChesterGL.</span><b>debugFPS</b>
+					<span class="light">ChesterGL.</span><b>debugSpan</b>
 					
 					</div>
 					<div class="description">
-						the span that will hold the fps counter
+						the span that will hold the debug info
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".debugSpanId"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>debugSpanId</b>
+					
+					</div>
+					<div class="description">
+						the id of the span that will hold the debug info. Defaults to "debug-info"
 						
 						
 					</div>
@@ -952,11 +976,11 @@ fallback: canvas</div>
 
 					<hr />
 				
-					<a name=".rootBlock"> </a>
+					<a name=".runningScene"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">ChesterGL.</span><b>rootBlock</b>
+					<span class="light">ChesterGL.</span><b>runningScene</b>
 					
 					</div>
 					<div class="description">
@@ -992,6 +1016,36 @@ frame - with the delta from last frame
 
 						
 						
+						
+						
+
+					<hr />
+				
+					<a name=".useGoogleAnalytics"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>useGoogleAnalytics</b>
+					
+					</div>
+					<div class="description">
+						For debug/performance metrics. You can set this to false to ignore analytics (no data will be sent).
+This will use whatever profile you have for analytics on the game page
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+							<dd></dd>
+							
+							</dl>
 						
 						
 
@@ -1202,72 +1256,6 @@ frame - with the delta from last frame
 					
 					
 					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".extend"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">ChesterGL.</span><b>extend</b>(target, parent)
-					
-					</div>
-					<div class="description">
-						extend an object with another object (for super naive 1-level inheritance).
-When extending classes, you would usually use ChesterGL.extend(B.prototype, A.prototype) to
-inherit from A.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var a = {
-  prop1 = function () {...},
-  prop2 = function () {...}
-}
-
-var b = {
-  prop2 = function () {...}
-}
-
-ChesterGL.extend(b, a);
-
-// now you can call b.prop2() and from within prop2, you can
-// call the parent's version:
-
-var b = {
-  prop2 = function () {
-    prop2_(); // call the parent's version
-  }
-}</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Object}</span> <b>target</b>
-									
-								</dt>
-								<dd>the object that will be extended</dd>
-							
-								<dt>
-									<span class="light fixedFont">{Object}</span> <b>parent</b>
-									
-								</dt>
-								<dd>the parent object</dd>
-							
-							</dl>
 						
 						
 						
@@ -1744,31 +1732,6 @@ modify the status property.
 						
 						
 
-					<hr />
-				
-					<a name=".updateFPS"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">ChesterGL.</span><b>updateFPS</b>()
-					
-					</div>
-					<div class="description">
-						updates the internal FPS counter
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
 					
 				
 			
@@ -1783,7 +1746,7 @@ modify the status property.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 29 2011 15:31:27 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 31 2011 16:18:30 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

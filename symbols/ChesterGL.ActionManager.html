@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - BlockFrames</title>
+		<title>JsDoc Reference - ChesterGL.ActionManager</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -195,9 +195,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/ChesterGL.html">ChesterGL</a></li>
 	
+	<li><a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a></li>
+	
+	<li><a href="../symbols/ChesterGL.ActionManager.html">ChesterGL.ActionManager</a></li>
+	
 	<li><a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a></li>
 	
 	<li><a href="../symbols/ChesterGL.BlockGroup.html">ChesterGL.BlockGroup</a></li>
+	
+	<li><a href="../symbols/ChesterGL.MoveAction.html">ChesterGL.MoveAction</a></li>
 	
 	<li><a href="../symbols/ChesterGL.TMXBlock.html">ChesterGL.TMXBlock</a></li>
 	
@@ -212,7 +218,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace BlockFrames
+				Namespace ChesterGL.ActionManager
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -223,13 +229,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/BlockFrames.js.html">BlockFrames.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/Actions.js.html">Actions.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class BlockFrames.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.ActionManager.">
 				<caption>Namespace Summary</caption>
 				<thead>
 					<tr>
@@ -242,9 +248,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/BlockFrames.html#constructor">BlockFrames</a></b>
+								<b><a href="../symbols/ChesterGL.ActionManager.html#constructor">ChesterGL.ActionManager</a></b>
 							</div>
-							<div class="description"></div>
+							<div class="description">global action manager</div>
 						</td>
 					</tr>
 				</tbody>
@@ -258,7 +264,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class BlockFrames.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.ActionManager.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -271,27 +277,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">BlockFrames.<b><a href="../symbols/BlockFrames.html#.getFrame">getFrame</a></b>(frameName)
+								<div class="fixedFont">ChesterGL.ActionManager.<b><a href="../symbols/ChesterGL.ActionManager.html#.scheduleAction">scheduleAction</a></b>(action)
 								</div>
-								<div class="description"></div>
+								<div class="description">adds an action to the scheduler</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">BlockFrames.<b><a href="../symbols/BlockFrames.html#.loadFrames">loadFrames</a></b>(path, callback)
+								<div class="fixedFont">ChesterGL.ActionManager.<b><a href="../symbols/ChesterGL.ActionManager.html#.tick">tick</a></b>(delta)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">BlockFrames.<b><a href="../symbols/BlockFrames.html#.loadJSON">loadJSON</a></b>(data)
-								</div>
-								<div class="description">loads the json data (callback for the ajax call)</div>
+								<div class="description">Iterate over all scheduled actions</div>
 							</td>
 						</tr>
 					
@@ -312,11 +309,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>BlockFrames</b>
+						<b>ChesterGL.ActionManager</b>
 				</div>
 				
 				<div class="description">
-					
+					global action manager
 					
 				</div>
 				
@@ -343,15 +340,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".getFrame"> </a>
+					<a name=".scheduleAction"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					<span class="light">{Object}</span>
-					<span class="light">BlockFrames.</span><b>getFrame</b>(frameName)
+					
+					<span class="light">ChesterGL.ActionManager.</span><b>scheduleAction</b>(action)
 					
 					</div>
 					<div class="description">
-						
+						adds an action to the scheduler
 						
 						
 					</div>
@@ -363,59 +360,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>frameName</b>
+									<span class="light fixedFont">{<a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>}</span> <b>action</b>
 									
 								</dt>
 								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{Object}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".loadFrames"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">BlockFrames.</span><b>loadFrames</b>(path, callback)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>path</b>
-									
-								</dt>
-								<dd>The path for the json file (TexturePacker format)</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function()=}</span> <b>callback</b>
-									
-								</dt>
-								<dd>The callback to be called after everything is ready</dd>
 							
 							</dl>
 						
@@ -428,15 +376,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".loadJSON"> </a>
+					<a name=".tick"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">BlockFrames.</span><b>loadJSON</b>(data)
+					<span class="light">ChesterGL.ActionManager.</span><b>tick</b>(delta)
 					
 					</div>
 					<div class="description">
-						loads the json data (callback for the ajax call)
+						Iterate over all scheduled actions
 						
 						
 					</div>
@@ -448,10 +396,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>data</b>
+									<span class="light fixedFont">{number}</span> <b>delta</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>number of miliseconds to run in all actions</dd>
 							
 							</dl>
 						
@@ -476,7 +424,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 31 2011 16:18:30 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 31 2011 16:16:46 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

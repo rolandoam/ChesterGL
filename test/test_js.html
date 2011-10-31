@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script type="text/javascript">
+$(document).ready(function () {
+	var start = Date.now();
+	setTimeout(function () {
+		var end = Date.now();
+		console.log("delta: " + (end - start) / 1000.0);
+	}, 1000);
+});
+	</script>
+</head>
+<body>
+</body>
+</html>

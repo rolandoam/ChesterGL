@@ -1,0 +1,89 @@
+<html>
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/base64.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	setupGame();
+
+	function setupGame() {
+		ChesterGL.setup("demo-canvas");
+		var width = ChesterGL.gl.viewportWidth;
+		var height = ChesterGL.gl.viewportHeight;
+		var totalBlocks = 500;
+
+		ChesterGL.loadAsset("texture", "images/star.png");
+		ChesterGL.assetsLoaded("texture", function () {
+			$("#loading").html("Test BlockGroup");
+			// finish with the setup and run the game
+			ChesterGL.setupPerspective();
+			
+			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::BlockGroup";
+			ChesterGL.runningScene = sceneBlock;
+			
+			var group = new ChesterGL.BlockGroup("images/star.png", totalBlocks);
+			
+			// add lots of blocks
+			for (var i=0; i < totalBlocks; i++) {
+				var b = group.createBlock();
+				b.moveTo([Math.random() * width, Math.random() * height, 0]);
+				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
+				b.update = function () {
+					this.moveBy(this.speed);
+					if (this.position[0] >= width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
+					if (this.position[1] >= width || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
+				}
+				group.addChild(b);
+			}
+			
+			sceneBlock.addChild(group);
+			ChesterGL.run();
+			// draw a single frame (for debug purposes)
+			// ChesterGL.drawScene();
+		});
+	} // setupGame()
+});
+    </script>
+    <style type="text/css">
+#loading {
+    color: #fff;
+    text-shadow: 2px 2px 2px #000;
+    font-weight: bold;
+    font-size: 18pt;
+    padding: 1em;
+}
+    </style>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_setDomainName', 'github.com']);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div>
+		<div id="loading" style="position: absolute; z-index: 100;"></div>
+		<canvas id="demo-canvas" width="500" height="500"></canvas><br/>
+		<p><span id="debug-info">00</span> ms per frame</p>
+	</div>
+	<div style="width: 80%">
+	    <p><em>Notes</em></p>
+	    <ul>
+			<li>Rendering the scene as a "batch" - using gl.drawElements</li>
+			<li>When the number of blocks is big (>2000) you can see the performance difference between this call and single sprites</li>
+	    </ul>
+	</div>
+</body>
+</html>
