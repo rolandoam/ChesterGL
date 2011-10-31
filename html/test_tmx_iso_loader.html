@@ -23,7 +23,11 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
-			ChesterGL.rootBlock = new ChesterGL.TMXBlock("images/iso.tmx");
+			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::TMX iso";
+			ChesterGL.runningScene = sceneBlock;
+			
+			sceneBlock.addChild(new ChesterGL.TMXBlock("images/iso.tmx"));
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)

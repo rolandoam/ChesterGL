@@ -22,6 +22,10 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
+			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::BlockGroup";
+			ChesterGL.runningScene = sceneBlock;
+			
 			var group = new ChesterGL.BlockGroup("images/star.png", totalBlocks);
 			
 			// add lots of blocks
@@ -37,7 +41,7 @@ $(document).ready(function () {
 				group.addChild(b);
 			}
 			
-			ChesterGL.rootBlock = group;
+			sceneBlock.addChild(group);
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
 			// ChesterGL.drawScene();

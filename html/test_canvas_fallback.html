@@ -27,9 +27,8 @@ $(document).ready(function () {
 			ChesterGL.setupPerspective();
 			
 			var sceneBlock = new ChesterGL.Block();
-			// no render for this block
-			sceneBlock.render = function () {};			
-			ChesterGL.rootBlock = sceneBlock;
+			sceneBlock.title = "Test::CanvasFallback";
+			ChesterGL.runningScene = sceneBlock;
 			
 			// add lots of blocks
 			for (var i=0; i < 100; i++) {

@@ -93,8 +93,7 @@ vec2.create = function (vec) {
 	/**
 	 * @type {?ChesterGL.Block}
 	 */
-	ChesterGL.rootBlock = null;
-	ChesterGL['rootBlock'] = ChesterGL.rootBlock;
+	ChesterGL.runningScene = null;
 	
 	/**
 	 * @type {?Element}
@@ -625,8 +624,8 @@ vec2.create = function (vec) {
 		}
 		
 		// start mayhem
-		if (this.rootBlock) {
-			this.rootBlock.visit();
+		if (this.runningScene) {
+			this.runningScene.visit();
 		}
 		
 		if (!this.webglMode) {

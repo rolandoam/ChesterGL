@@ -95,7 +95,8 @@
 	ChesterGL.Block.TYPE = {
 		STANDALONE: 0,
 		BLOCKGROUP: 1,
-		TMXBLOCK:   2
+		SCENE:      2,
+		TMXBLOCK:   3
 	};
 	
 	/**
@@ -132,6 +133,11 @@
 	 * @type {vec2}
 	 */
 	ChesterGL.Block.SizeZero = vec2.create([0.0, 0.0]);
+	
+	/**
+	 * @type {string}
+	 */
+	ChesterGL.Block.prototype.title = "";
 	
 	/**
 	 * @type {?mat4}
@@ -470,6 +476,10 @@
 	ChesterGL.Block.prototype.render = function () {
 		if (this.type == ChesterGL.Block.TYPE.BLOCKGROUP) {
 			throw "Cannot call render on a BlockGroup block!";
+		}
+		// empty render for scene blocks
+		if (this.type == ChesterGL.Block.TYPE.SCENE) {
+			return;
 		}
 		
 		if (ChesterGL.webglMode) {
