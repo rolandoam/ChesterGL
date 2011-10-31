@@ -30,6 +30,12 @@ clean:
 
 doc: ${SOURCES}
 	${JAVA} -jar ${JSDOC_HOME}/jsrun.jar ${JSDOC_HOME}/app/run.js -v -a -t=${JSDOC_HOME}/templates/jsdoc ${SOURCES} -d=${DOC_OUTPUT}
+	mkdir -p doc/test
+	cp html/test_* doc/test/
+	cp -r html/images doc/test/
+	cp -r html/shaders doc/test/
+	cp -r html/externals doc/test/
+	cp -r html/index.html doc/test/
 
 server:
 	ruby -rwebrick -e's = WEBrick::HTTPServer.new(:Port => 3000, :DocumentRoot => "${OUTPUT_DIR}"); trap("INT"){ s.shutdown }; s.start'
