@@ -17,8 +17,14 @@ And point your browser to http://localhost:3000, pick one of the test*.html file
 
      make doc
 
+Or look at the (not always updated) [online documentation](http://funkaster.github.com/ChesterGL/)
+
 Sorry, the doc is not yet complete, but it will at some point :)
 Just look at the examples and figure your way out from there. It shouldn't be too hard
+
+## How to just check this working
+
+Point your browser (even your mobile browser!) to: [http://funkaster.github.com/ChesterGL/test/](http://funkaster.github.com/ChesterGL/test/)
 
 ## How to compile
 
@@ -29,32 +35,32 @@ You will need to modify the Makefile and change the location of closure compiler
 * glMatrix-0.9.5.js
 * webkit_console.js
 
-All of them are in the svn repo of google closure, except the glMatrix one, you can find that in the following gist: https://gist.github.com/1248396 (it's not complete, it just fills the functions I'm using in ChesterGL)
+All of them are in the svn repo of google closure, except the glMatrix one, you can find that in the following gist: [https://gist.github.com/1248396](https://gist.github.com/1248396) (it's not complete, it just fills the functions I'm using in ChesterGL)
 
 ## Known problems
 
-There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page
+<strike>There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page</strike>
 
 ## Known problems in canvas mode
 
-* Apart from the texture loading problem, you will not get a z-position, for really obvious reasons.
+* You will not get a z-position, for really obvious reasons.
 * Color tinting will not work (I haven't found a way to replace that part)
-* Block groups (batched sprites) will not add any improvement, for obvious reasons
+* Block groups (batched sprites) will not add any improvement, for obvious reasons - I have [an idea](https://github.com/funkaster/ChesterGL/issues/8) about this though.
 
 ## Roadmap
 
 ### 1.0
 
-You can always look at the issues on the github project and look for the right milestone.
+You can always look at the issues on the [github project](https://github.com/funkaster/ChesterGL/issues) and look for the right milestone.
 
-* Fix BlockGroup (batched blocks in a single gl call)
-* Add time-based animations (shouldn't be too hard)
-* Improve canvas fallback
+* <strike>Fix BlockGroup (batched blocks in a single gl call)</strike>
+* <strike>Improve canvas fallback</strike>
+* <strike>Improve support for tile maps</strike>
 * Improve speed on iOS (see test_ios.html). Right now we can get:
  * ~26fps with 12 moving sprites on an iPhone 4, iOS 4.3.5
  * ~35fps with 42 moving sprites on iTouch 4gen, iOS 5.0
 * Improve support for Texture Packer sprite sheets
-* Improve support for tile maps
+* Add time-based animations (shouldn't be too hard)
 
 ### 2.0
 
