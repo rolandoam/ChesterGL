@@ -4,7 +4,7 @@ CLOSURE_JAR = compiler.jar
 OUTPUT_DIR ?= $(PWD)/html
 # default name for library
 OUTPUT_FILE = chester.js
-SOURCES = core.js Block.js BlockGroup.js BlockFrames.js TMXBlock.js
+SOURCES = core.js Block.js BlockGroup.js BlockFrames.js TMXBlock.js Actions.js
 # externs should live in the same dir as the compiler.jar
 EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js
 COMPILE_LEVEL = SIMPLE_OPTIMIZATIONS
@@ -36,6 +36,7 @@ doc: ${SOURCES}
 	cp -r html/shaders doc/test/
 	cp -r html/externals doc/test/
 	cp -r html/index.html doc/test/
+	cp -r html/chester.js doc/test/
 
 server:
 	ruby -rwebrick -e's = WEBrick::HTTPServer.new(:Port => 3000, :DocumentRoot => "${OUTPUT_DIR}"); trap("INT"){ s.shutdown }; s.start'

@@ -25,21 +25,25 @@
 
 (function (window) {
 	var ChesterGL = window['ChesterGL'];
-	var Block = ChesterGL['Block'];
 	
 	/**
-	 * @name Action
-	 * @class
 	 * @constructor
+	 * @param {ChesterGL.Block} block
+	 * @param {number=} totalTime
+	 * @return ChesterGL.Action
 	 */
-	var Action = function () {};
+	ChesterGL.Action = function (block, totalTime) {
+		this.block = block;
+		this.totalTime = totalTime * 1000;
+		this.elapsed = 0;
+	};
 	
 	/**
 	 * The block to which this action will be applied
 	 * 
-	 * @type {?Block}
+	 * @type {?ChesterGL.Block}
 	 */
-	Action.prototype.block = null;
+	ChesterGL.Action.prototype.block = null;
 	
 	/**
 	 * The total time in seconds this action should take
@@ -47,58 +51,115 @@
 	 * 
 	 * @type {number}
 	 */
-	Action.prototype.totalTime = 0;
+	ChesterGL.Action.prototype.totalTime = 0;
+
+	/**
+	 * Current time in seconds of the action
+	 * (might not be relevant for all actions)
+	 * 
+	 * @type {number}
+	 */
+	ChesterGL.Action.prototype.elapsed = 0;
 	
 	/**
 	 * The current time of the action
 	 * @type {number}
 	 */
-	Action.prototype.currentTime = 0;
+	ChesterGL.Action.prototype.currentTime = 0;
+
+	/**
+	 * The current time of the action
+	 * @type {boolean}
+	 */
+	ChesterGL.Action.prototype.finished = false;
 	
 	/**
 	 * This is the default delta function (does nothing)
 	 * @param {number} delta
 	 */
-	Action.prototype.update = function (delta) {
+	ChesterGL.Action.prototype.update = function (delta) {
+		this.elapsed += delta;
+		if (this.elapsed >= this.totalTime) {
+			this.finished = true;
+		}
 	};
 	
 	/**
-	 * Creates an action with a block
-	 *
-	 * @param {Block} block
-	 * @param {number=} totalTime
+	 * @constructor
+	 * @extends ChesterGL.Action
+	 * @param {ChesterGL.Block} block
+	 * @param {number} totalTime
+	 * @param {vec3} finalPosition
+	 * @return ChesterGL.MoveAction
 	 */
-	Action.create = function (block, totalTime) {
-		var a = new Action();
-		a.block = block;
-		a.totalTime = totalTime;
+	ChesterGL.MoveAction = function (block, totalTime, finalPosition) {
+		ChesterGL.Action.call(this, block, totalTime);
+		this.finalPosition = finalPosition;
+		this.startPosition = vec3.create(block.position);
+		this.deltaPosition = vec3.create();
+		vec3.subtract(this.finalPosition, this.startPosition, this.deltaPosition);
+	};
+	
+	/**
+	 * extend from Action
+	 * @ignore
+	 */
+	ChesterGL.MoveAction.prototype = Object.create(ChesterGL.Action.prototype);
+	
+	/**
+	 * @type {vec3}
+	 */
+	ChesterGL.MoveAction.prototype.finalPosition = null;
+	
+	/**
+	 * @param {number} delta miliseconds from last time we updated
+	 */
+	ChesterGL.MoveAction.prototype.update = function (delta) {
+		ChesterGL.Action.prototype.update.call(this, delta);
+		if (this.finished) {
+			this.block.moveTo(this.finalPosition);
+		} else {		
+			var t = Math.min(1, this.elapsed / this.totalTime);
+			var st = this.startPosition;
+			var d = this.deltaPosition;
+			var dx = d[0] * t;
+			// console.log("t: " + t + "\t(" + dx + ")");
+			this.block.moveTo([st[0] + d[0] * t, st[1] + d[1] * t, st[2] + d[2] * t]);		
+		}
+	}
 		
-		return a;
+	/**
+	 * global action manager
+	 * @namespace
+	 */
+	ChesterGL.ActionManager = {};
+	
+	
+	/**
+	 * the list of scheduled actions
+	 * @ignore
+	 * @type {Array.<ChesterGL.Action>}
+	 */
+	ChesterGL.ActionManager.scheduledActions_ = [];
+	
+	/**
+	 * adds an action to the scheduler
+	 * 
+	 * @param {ChesterGL.Action} action
+	 */
+	ChesterGL.ActionManager.scheduleAction = function (action) {
+		this.scheduledActions_.push(action);
 	}
 	
 	/**
-	 * @name MoveAction
-	 * @class
-	 * @constructor
+	 * Iterate over all scheduled actions
+	 * @param {number} delta number of miliseconds to run in all actions
 	 */
-	var MoveAction = function () {};
-	
-	/**
-	 * @type {Object.<string,number>}
-	 */
-	MoveAction.prototype.finalPosition = null;
-	
-	MoveAction.prototype.update = function (delta) {
-		
+	ChesterGL.ActionManager.tick = function (delta) {
+		var i = 0, len = this.scheduledActions_.length;
+		for (i=0; i < len; i++) {
+			var a = this.scheduledActions_[i];
+			!a.finished && a.update(delta);
+		}
 	}
-	
-	MoveAction.create = Action.create;
-	ChesterGL.extend(MoveAction.prototype, Action.prototype);
-	
-	/**
-	 * @name ActionManager
-	 * @class
-	 * @constructor
-	 */
-	var ActionManager = function () {};
 })(window);

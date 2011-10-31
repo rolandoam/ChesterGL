@@ -311,8 +311,13 @@
 	 * @param {number=} time The time it should take to move to that position. Don't pass time to make it instantly
 	 */
 	ChesterGL.Block.prototype.moveTo = function (vec, time) {
-		this.position = vec3.create(vec);
-		this.isTransformDirty = true;
+		if (time) {
+			var a = new ChesterGL.MoveAction(this, time, vec);
+			ChesterGL.ActionManager.scheduleAction(a);
+		} else {
+			this.position = vec3.create(vec);
+			this.isTransformDirty = true;
+		}
 	}
 	
 	/**
