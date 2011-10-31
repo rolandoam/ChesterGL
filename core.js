@@ -546,6 +546,7 @@ vec2.create = function (vec) {
 		var imgtype = (/[.]/.exec(path)) ? /[^.]+$/.exec(path) : undefined;
 		var img = new Image();
 		var rawData = base64.encode(data);
+		/** @ignore */
 		img.onload = function () {
 			if (ChesterGL.webglMode) {
 				img.tex = ChesterGL.gl.createTexture();

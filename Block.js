@@ -34,6 +34,7 @@
 	 * @param {Object.<string,number>|string=} rect
 	 * @param {number=} type
 	 * @param {ChesterGL.Block=} parent
+	 * @return ChesterGL.Block
 	 */
 	ChesterGL.Block = function (rect, type, parent) {
 		this.type = type || ChesterGL.Block.TYPE.STANDALONE;
@@ -320,19 +321,19 @@
 	
 	/**
 	 * rotates the box to a specific angle (degrees, CW)
+	 * @param {number} angle
 	 */
 	ChesterGL.Block.prototype.rotateTo = function (angle) {
-		this.rotation = -(angle * ChesterGL.Block.DEG_TO_RAD);
+		this.rotation = (ChesterGL.webglMode ? -1 : 1) * (angle * ChesterGL.Block.DEG_TO_RAD);
 		this.isTransformDirty = true;
 	}
 	
 	/**
 	 * rotates the box by a specific angle (degrees, CW)
-	 * 
 	 * @param {number} angle
 	 */
 	ChesterGL.Block.prototype.rotateBy = function (angle) {
-		this.rotation += -(angle * ChesterGL.Block.DEG_TO_RAD);
+		this.rotation += (ChesterGL.webglMode ? -1 : 1) * (angle * ChesterGL.Block.DEG_TO_RAD);
 		this.isTransformDirty = true;
 	}
 	

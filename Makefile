@@ -16,7 +16,7 @@ DOC_OUTPUT = doc
 
 JS_SOURCES = $(foreach i,${SOURCES},--js $i)
 EXTERNS_TMP = $(foreach i,${EXTERNS},--externs $(CLOSURE_HOME)/$i)
-COMPILER_ARGUMENTS = --compilation_level $(COMPILE_LEVEL) $(EXTERNS_TMP) --warning_level VERBOSE --summary_detail_level 2 --js deps.js
+COMPILER_ARGUMENTS = --compilation_level $(COMPILE_LEVEL) $(EXTERNS_TMP) --warning_level VERBOSE --summary_detail_level 2 --externs deps.js
 
 compile:
 	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} ${COMPILER_ARGUMENTS} ${JS_SOURCES} --js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE)

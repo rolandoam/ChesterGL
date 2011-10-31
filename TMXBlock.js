@@ -59,6 +59,7 @@
 	 * @constructor
 	 * @extends ChesterGL.Block
 	 * @param {string} tmxFile
+	 * @return ChesterGL.TMXBlock
 	 */
 	ChesterGL.TMXBlock = function (tmxFile) {
 		// first, get the map from the map list

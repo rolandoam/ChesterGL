@@ -33,6 +33,7 @@
 	 * @extends ChesterGL.Block
 	 * @param {string} texture An optional texture that will be shared with all children
 	 * @param {number=} noChildren The optional initial number of maxChidlren. Defaults to 10
+	 * @return ChesterGL.BlockGroup
 	 */
 	ChesterGL.BlockGroup = function (texture, noChildren) {
 		if (!ChesterGL.webglMode) {
@@ -204,8 +205,6 @@
 		var texOff = 3 * 4,
 			colorOff = texOff + 2 * 4,
 			stride = ChesterGL.Block.QUAD_SIZE;
-		
-		gl.uniform1f(program.opacityUniform, this.opacity);
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		

@@ -61,3 +61,25 @@ ChesterGL.BlockFrames.getFrame = function (frameName) {};
  * @param {string} tmxFile
  */
 ChesterGL.TMXBlock = function (tmxFile) {};
+
+/**
+ * @constructor
+ * @param {ChesterGL.Block} block
+ * @param {number=} totalTime
+ */
+ChesterGL.Action = function (block, totalTime) {};
+
+/**
+ * @constructor
+ * @extends ChesterGL.Action
+ * @param {ChesterGL.Block} block
+ * @param {number} totalTime
+ * @param {vec3} finalPosition
+ */
+ChesterGL.MoveAction = function (block, totalTime, finalPosition) {};
+
+/**
+ * google analytics
+ * @type {Array}
+ */
+var _gaq = [];
