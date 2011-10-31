@@ -426,11 +426,12 @@
 			if (this.isColorDirty) {
 				_idx = 5 + this.baseBufferIndex * ChesterGL.Block.BUFFER_SIZE;
 				var color = this.color;
+				var opacity = this.opacity;
 				for (var i=0; i < 4; i++) {
-					bufferData[_idx     + offset*i] = color[0];
-					bufferData[_idx + 1 + offset*i] = color[1];
-					bufferData[_idx + 2 + offset*i] = color[2];
-					bufferData[_idx + 3 + offset*i] = color[3];
+					bufferData[_idx     + offset*i] = color[0] * opacity;
+					bufferData[_idx + 1 + offset*i] = color[1] * opacity;
+					bufferData[_idx + 2 + offset*i] = color[2] * opacity;
+					bufferData[_idx + 3 + offset*i] = color[3] * opacity;
 				}
 			}
 			if (ChesterGL.webglMode && !inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
@@ -482,8 +483,6 @@
 			
 			gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 			gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
-
-			gl.uniform1f(program.opacityUniform, this.opacity);
 
 			if (this.program == ChesterGL.Block.PROGRAM.DEFAULT) {
 				// no extra attributes for the shader

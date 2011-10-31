@@ -270,8 +270,6 @@ vec2.create = function (vec) {
 		this.initShader("default", function (program) {
 			program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
 			program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
-			program.opacityUniform = gl.getUniformLocation(program, "opacity");
-			
 			program.attribs = {
 				'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
 				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
@@ -282,7 +280,6 @@ vec2.create = function (vec) {
 			program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
 			program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
 			program.samplerUniform = gl.getUniformLocation(program, "uSampler");
-			program.opacityUniform = gl.getUniformLocation(program, "opacity");
 			program.attribs = {
 				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor"),
 				'textureCoordAttribute': gl.getAttribLocation(program, "aTextureCoord"),
