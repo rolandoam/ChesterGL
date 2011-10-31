@@ -70,10 +70,17 @@
 		// create the map from the metadata
 		for (var i=0; i < map['layers'].length; i++) {
 			var layer = map['layers'][i];
-			var l = new ChesterGL.BlockGroup(map['texture'], layer['blocks'].length);
+			// this is while block group is not supported on canvas fallback
+			var l = (ChesterGL.webglMode ? new ChesterGL.BlockGroup(map['texture'], layer['blocks'].length) : new ChesterGL.Block());
 			for (var n=0; n < layer['blocks'].length; n++) {
 				var block = layer['blocks'][n];
-				var b = l.createBlock(block['frame']);
+				var b = undefined;
+				if (ChesterGL.webglMode) {
+					b = l.createBlock(block['frame']);
+				} else {
+					b = new ChesterGL.Block(block['frame']);
+					b.setTexture(map['texture']);
+				}
 				b.moveTo(block['position']);
 				l.addChild(b);
 			}
