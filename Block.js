@@ -523,7 +523,7 @@
 				var m = this.mvMatrix;
 				var texture = ChesterGL.getAsset('texture', this.texture);
 				gl.globalAlpha = this.opacity;
-				gl.setTransform(m[0], m[1], m[4], m[5], m[12], m[13]);
+				gl.setTransform(m[0], m[1], m[4], m[5], m[12], gl.viewportHeight - m[13]);
 				var w = this.contentSize[0], h = this.contentSize[1];
 				var frame = this.frame;
 				gl.drawImage(texture, frame[0], texture.height - (frame[1] + h), frame[2], frame[3], -w/2, -h/2, w, h);
