@@ -48,12 +48,12 @@ $(document).ready(function () {
 			var someBlock = new ChesterGL.Block();
 			someBlock.setTexture("images/test.png")
 			// someBlock.rotateBy(-45);
-			someBlock.moveTo(vec3.create([width/2, height/2, 0]));
+			someBlock.moveTo([width/2, height/2, 0]);
 			
 			var someBlock2 = new ChesterGL.Block();
 			someBlock2.setTexture("images/star.png");
 			someBlock2.opacity = 0.5;
-			someBlock2.moveTo(vec3.create([60, 0, 0]));
+			someBlock2.moveTo([60, 0, 0]);
 			someBlock.addChild(someBlock2);
 			
 			sceneBlock.addChild(someBlock);

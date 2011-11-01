@@ -34,15 +34,15 @@ $(document).ready(function () {
 			
 			var b1 = new ChesterGL.Block();
 			b1.setTexture("images/star.png")
-			b1.moveTo(vec3.create([0, height/2, 0]));
+			b1.moveTo([0, height/2, 0]);
 			// move to the other side of the screen in two seconds
-			b1.moveTo(vec3.create([width, height/2, 0]), actionTime);
+			b1.moveTo([width, height/2, 0], actionTime);
 
 			var b2 = new ChesterGL.Block();
 			b2.setTexture("images/star.png")
-			b2.moveTo(vec3.create([width/2, height, 0]));
+			b2.moveTo([width/2, height, 0]);
 			// move to the other side of the screen in two seconds
-			b2.moveTo(vec3.create([width/2, 0, 0]), actionTime);
+			b2.moveTo([width/2, 0, 0], actionTime);
 			
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
