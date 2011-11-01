@@ -151,7 +151,7 @@ vec2.create = function (vec) {
 	 * the time last frame was rendered
 	 * @type {number}
 	 */
-	ChesterGL.lastTime = Date.now();
+	ChesterGL.lastTime = new Date;
 	
 	/**
 	 * delta in seconds from last frame
@@ -641,36 +641,61 @@ vec2.create = function (vec) {
 		}
 		
 		// for actions and other stuff
-		var current = Date.now(); // milliseconds
+		var current = new Date; // milliseconds
 		this.delta = current - this.lastTime;
+		if (this.delta > 150) {
+			this.delta = 30; // set a lower delta when debugging
+		}
 		this.lastTime = current;	
 	}
 	
 	/**
 	 * updates the internal frame counter
 	 */
-	/** @ignore */
-	ChesterGL.lastDebug_ = Date.now();
-	/** @ignore */
-	ChesterGL.sumDelta_ = 0;
-	/** @ignore */
-	ChesterGL.countDelta_ = 0;
+	/**
+	 * @type {Date}
+	 * @ignore
+	 */
+	ChesterGL.lastDebugSecond_ = new Date;
+	/**
+	 * @type {number}
+	 * @ignore
+	 */
+	ChesterGL.elapsed_ = 0;
+	/**
+	 * @type {number}
+	 * @ignore
+	 */
+	ChesterGL.frames_ = 0;
+	/**
+	 * @type {number}
+	 * @ignore
+	 */
+	ChesterGL.sampledAvg = 0;
+	/**
+	 * @type {number}
+	 * @ignore
+	 */
+	ChesterGL.sumAvg = 0;
 	/** @ignore */
 	ChesterGL.updateDebugTime = function () {
-		var now = Date.now();
-		this.sumDelta_ += this.delta;
-		this.countDelta_ ++;
-		if (now - this.lastDebug_ > 1000) {
-			var avg = (this.sumDelta_ / this.countDelta_);
+		var now = new Date;
+		this.elapsed_ += this.delta;
+		this.frames_ ++;
+		if (now - this.lastDebugSecond_ > 1000) {
+			var avg = (this.elapsed_ / this.frames_);
+			this.sumAvg += avg;
+			this.sampledAvg ++;
 			if (this.debugSpan) {
 				this.debugSpan.textContent = avg.toFixed(2);
 			}
-			if (this.useGoogleAnalytics) {
-				// track how well we're performing
-				_gaq.push(['_trackEvent', 'ChesterGL', 'renderTime', ChesterGL.runningScene.title, avg]);
+			// track how well we're performing - every 8 seconds
+			if (this.sampledAvg > 8 && this.useGoogleAnalytics) {
+				_gaq.push(['_trackEvent', 'ChesterGL', 'renderTime', ChesterGL.runningScene.title, this.sumAvg/this.sampledAvg]);
+				this.sumAvg = this.sampledAvg = 0;
 			}
-			this.sumDelta_ = this.countDelta_ = 0;
-			this.lastDebug_ = now;
+			this.elapsed_ = this.frames_ = 0;
+			this.lastDebugSecond_ = now;
 		}
 	}
 	
@@ -679,10 +704,10 @@ vec2.create = function (vec) {
 	 * @function
 	 */
 	ChesterGL.run = function () {
+		window.requestAnimFrame(ChesterGL.run, ChesterGL.canvas);
 		ChesterGL.drawScene();
 		ChesterGL.ActionManager.tick(ChesterGL.delta);
 		ChesterGL.updateDebugTime();
-		window.requestAnimFrame(ChesterGL.run);
 	}
 	
 	// export symbols
