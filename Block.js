@@ -315,7 +315,7 @@
 			var a = new ChesterGL.MoveAction(this, time, vec);
 			ChesterGL.ActionManager.scheduleAction(a);
 		} else {
-			vec3.set(vec, this.position);
+			this.position = vec3.create(vec);
 			this.isTransformDirty = true;
 		}
 	}
