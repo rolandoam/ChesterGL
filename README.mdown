@@ -1,10 +1,10 @@
 # ChesterGL
 
-This is a WIP!!
-
 ## What is this?
 
 It's a simple WebGL 2d library/demo (mostly a proof of concept) that I've been writing since early 2011 just to teach myself OpenGL-ES 2.0 and other stuff. Nothing more than that. If you can build a game with this, awesome :) (and let me know)
+
+The API is somewhat inspired in [cocos2d-iphone](https://github.com/cocos2d/cocos2d-iphone), but just inspired. It's not intended to be a port of cocos2d for WebGL.
 
 ## How to have fun
 
