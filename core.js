@@ -82,7 +82,7 @@ vec2.create = function (vec) {
 	 * @type {boolean}
 	 * @see {ChesterGL.analyticsProfile}
 	 */
-	ChesterGL.useGoogleAnalytics = true;
+	ChesterGL.useGoogleAnalytics = false;
 			
 	/**
 	 * @type {Object.<string,WebGLProgram>}
