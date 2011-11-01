@@ -149,7 +149,7 @@ vec2.create = function (vec) {
 	
 	/**
 	 * the time last frame was rendered
-	 * @type {number}
+	 * @type {Date}
 	 */
 	ChesterGL.lastTime = new Date;
 	
