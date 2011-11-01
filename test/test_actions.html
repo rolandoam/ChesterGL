@@ -13,6 +13,7 @@ $(document).ready(function () {
 	setupGame();
 	function setupGame() {
 		// ChesterGL.webglMode = false;
+		ChesterGL.useGoogleAnalytics = true;
 		ChesterGL.setup("demo-canvas");
 		var width = ChesterGL.gl.viewportWidth;
 		var height = ChesterGL.gl.viewportHeight;
