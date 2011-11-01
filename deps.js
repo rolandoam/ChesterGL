@@ -77,9 +77,3 @@ ChesterGL.Action = function (block, totalTime) {};
  * @param {vec3} finalPosition
  */
 ChesterGL.MoveAction = function (block, totalTime, finalPosition) {};
-
-/**
- * google analytics
- * @type {Array}
- */
-var _gaq = [];

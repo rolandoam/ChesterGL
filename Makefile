@@ -6,7 +6,7 @@ OUTPUT_DIR ?= $(PWD)/html
 OUTPUT_FILE = chester.js
 SOURCES = core.js Block.js BlockGroup.js BlockFrames.js TMXBlock.js Actions.js
 # externs should live in the same dir as the compiler.jar
-EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js
+EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js google_analytics_api.js
 COMPILE_LEVEL = SIMPLE_OPTIMIZATIONS
 # the next line just for docs
 JSDOC_HOME = /Users/rolando/Applications/jsdoc-toolkit
