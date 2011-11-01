@@ -691,7 +691,13 @@ vec2.create = function (vec) {
 			}
 			// track how well we're performing - every 8 seconds
 			if (this.sampledAvg > 8 && this.useGoogleAnalytics) {
-				_gaq.push(['_trackEvent', 'ChesterGL', 'renderTime', ChesterGL.runningScene.title, this.sumAvg/this.sampledAvg]);
+				_gaq.push([
+					'_trackEvent',
+					'ChesterGL',
+					'renderTime',
+					ChesterGL.runningScene.title,
+					Math.floor(this.sumAvg/this.sampledAvg)
+				]);
 				this.sumAvg = this.sampledAvg = 0;
 			}
 			this.elapsed_ = this.frames_ = 0;
