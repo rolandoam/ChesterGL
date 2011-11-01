@@ -234,7 +234,7 @@ vec2.create = function (vec) {
 		try {
 			this.canvas = canvas;
 			if (this.webglMode) {
-				this.gl = canvas.getContext("experimental-webgl");
+				this.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false});
 			}
 		} catch (e) {
 			console.log("ERROR: " + e);
