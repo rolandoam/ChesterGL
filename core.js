@@ -689,8 +689,8 @@ vec2.create = function (vec) {
 			if (this.debugSpan) {
 				this.debugSpan.textContent = avg.toFixed(2);
 			}
-			// track how well we're performing - every 8 seconds
-			if (this.sampledAvg > 8 && this.useGoogleAnalytics) {
+			// track how well we're performing - every 3 seconds
+			if (this.useGoogleAnalytics && this.sampledAvg > 3) {
 				_gaq.push([
 					'_trackEvent',
 					'ChesterGL',
