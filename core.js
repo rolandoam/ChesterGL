@@ -204,8 +204,6 @@ vec2.create = function (vec) {
 				// console.log("  enabling attribute " + attr);
 				gl.enableVertexAttribArray(prog.attribs[attr]);
 			}
-			// set the projection matrix
-			gl.uniformMatrix4fv(prog.pMatrixUniform, false, this.pMatrix);
 		}
 		return prog;
 	}
@@ -276,8 +274,7 @@ vec2.create = function (vec) {
 		var gl = this.gl;
 					
 		this.initShader("default", function (program) {
-			program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
-			program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
+			program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
 			program.attribs = {
 				'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
 				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
@@ -285,8 +282,7 @@ vec2.create = function (vec) {
 		});
 		
 		this.initShader("texture", function (program) {
-			program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
-			program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
+			program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
 			program.samplerUniform = gl.getUniformLocation(program, "uSampler");
 			program.attribs = {
 				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor"),
@@ -582,7 +578,13 @@ vec2.create = function (vec) {
 		}
 		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
-		gl.clearDepth(1.0);
+		// gl.clearDepth(1.0);
+		
+		// global blending options
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		gl.enable(gl.BLEND);
+		// disable depth test
+		gl.disable(gl.DEPTH_TEST)
 		
 		var width = gl.viewportWidth;
 		var height = gl.viewportHeight;
@@ -613,16 +615,13 @@ vec2.create = function (vec) {
 	/**
 	 * main draw function, will call the root block
 	 */
-	ChesterGL.drawScene = function () {		
+	ChesterGL.drawScene = function () {
+		var gl = undefined;
 		if (this.webglMode) {
-			var gl = this.gl;
-			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-			// global blending options
-			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-			gl.enable(gl.BLEND);
+			gl = this.gl;
+			// gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		} else {
-			var gl = this.offContext;
+			gl = this.offContext;
 			gl.setTransform(1, 0, 0, 1, 0, 0);
 			gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 		}
@@ -635,8 +634,8 @@ vec2.create = function (vec) {
 		if (!this.webglMode) {
 			// copy back the off context (if we use one)
 			if (this.usesOffscreenBuffer) {
-				this.gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
-				this.gl.drawImage(this.offCanvas, 0, 0);
+				gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
+				gl.drawImage(this.offCanvas, 0, 0);
 			}
 		}
 		

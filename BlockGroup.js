@@ -224,7 +224,10 @@
 		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-		gl.uniformMatrix4fv(program.mvMatrixUniform, false, this.mvMatrix);
+		
+		// set the matrix uniform (the multiplied model view projection matrix)
+		mat4.multiply(ChesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+		gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 		// gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4 * this.children.length);
 		gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
 	}

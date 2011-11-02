@@ -68,6 +68,7 @@
 		
 		// always create the mvMatrix
 		this.mvMatrix = mat4.create();
+		this.mvpMatrix = mat4.create();
 		mat4.identity(this.mvMatrix);
 	}
 	
@@ -143,6 +144,11 @@
 	 * @type {?mat4}
 	 */
 	ChesterGL.Block.prototype.mvMatrix = null;
+
+	/**
+	 * @type {?mat4}
+	 */
+	ChesterGL.Block.prototype.mvpMatrix = null;
 	
 	/**
 	 * @type {boolean}
@@ -513,8 +519,12 @@
 				gl.uniform1i(program.samplerUniform, 0);				
 			}
 
-			// set the matrix uniform (actually, only the model view matrix)
-			gl.uniformMatrix4fv(program.mvMatrixUniform, false, this.mvMatrix);
+			// set the matrix uniform (the multiplied model view projection matrix)
+			var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
+			if (transformDirty) {
+				mat4.multiply(ChesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+			}
+			gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		} else {
 			var gl = ChesterGL.offContext;
