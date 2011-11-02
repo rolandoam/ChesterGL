@@ -38,6 +38,12 @@ $(document).ready(function () {
 			
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
+
+			ChesterGL.addMouseHandler(function (pt, type) {
+				if (type == ChesterGL.mouseEvents.DOWN) {
+					b1.moveTo(pt, 1.0);
+				}
+			});
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)

@@ -44,6 +44,22 @@ vec2.create = function (vec) {
 	return dest;
 };
 
+HTMLCanvasElement._canvas_tmp_mouse = vec3.create();
+HTMLCanvasElement.prototype.relativePosition = function (event) {
+	var pt = HTMLCanvasElement._canvas_tmp_mouse;
+	pt[0] = 0, pt[1] = 0;
+	if (event.x != undefined && event.y != undefined) {
+		pt[0] = event.x;
+		pt[1] = event.y;
+	} else {
+		pt[0] = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+		pt[1] = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+	}
+	pt[0] -= this.offsetLeft;
+	pt[1]  = this.height - (pt[1] - this.offsetTop);
+	return pt;
+};
+
 (function (window) {	
 	/**
 	 * @name ChesterGL
@@ -186,6 +202,21 @@ vec2.create = function (vec) {
 	ChesterGL.update = null;
 	
 	/**
+	 * @enum {number}
+	 */
+	ChesterGL.mouseEvents = {
+		DOWN: 0,
+		MOVE: 1,
+		UP: 2
+	}
+	
+	/**
+	 * the global list of mouse down handlers
+	 * @type {Array.<function(vec3, number)>}
+	 */
+	ChesterGL.mouseHandlers = [];
+	
+	/**
 	 * sets the current program, also sets the uniforms for that shader
 	 * 
 	 * @function
@@ -265,6 +296,9 @@ vec2.create = function (vec) {
 		this.gl.viewportHeight = canvas.height;
 		this.gl['viewportWidth'] = this.gl.viewportWidth;
 		this.gl['viewportHeight'] = this.gl.viewportHeight;
+		
+		// install touch handler
+		this.installMouseHandlers();
 	}
 	
 	/**
@@ -701,6 +735,67 @@ vec2.create = function (vec) {
 			}
 			this.elapsed_ = this.frames_ = 0;
 			this.lastDebugSecond_ = now;
+		}
+	}
+	
+	/**
+	 * install all handlers on the canvas element
+	 */
+	ChesterGL.installMouseHandlers = function () {
+		$(this.canvas).mousedown(ChesterGL.mouseDownHandler);
+		$(this.canvas).mousemove(ChesterGL.mouseMoveHandler);
+		$(this.canvas).mouseup(ChesterGL.mouseUpHandler);
+	}
+	
+	/**
+	 * @param {Event} event
+	 */
+	ChesterGL.mouseDownHandler = function (event) {
+		var pt = ChesterGL.canvas.relativePosition(event);
+		var i = 0, len = ChesterGL.mouseHandlers.length;
+		for (; i < len; i++) {
+			ChesterGL.mouseHandlers[i](pt, ChesterGL.mouseEvents.DOWN);
+		}
+	}
+
+	/**
+	 * @param {Event} event
+	 */
+	ChesterGL.mouseMoveHandler = function (event) {
+		var pt = ChesterGL.canvas.relativePosition(event);
+		var i = 0, len = ChesterGL.mouseHandlers.length;
+		for (; i < len; i++) {
+			ChesterGL.mouseHandlers[i](pt, ChesterGL.mouseEvents.MOVE);
+		}
+	}
+
+	/**
+	 * @param {Event} event
+	 */
+	ChesterGL.mouseUpHandler = function (event) {
+		var pt = ChesterGL.canvas.relativePosition(event);
+		var i = 0, len = ChesterGL.mouseHandlers.length;
+		for (; i < len; i++) {
+			ChesterGL.mouseHandlers[i](pt, ChesterGL.mouseEvents.UP);
+		}
+	}
+	
+	/**
+	 * @param {function(vec3, number)} callback
+	 */
+	ChesterGL.addMouseHandler = function (callback) {
+		if (this.mouseHandlers.indexOf(callback) == -1) {
+			this.mouseHandlers.push(callback);
+		}
+	}
+	
+	/**
+	 * @param {function(vec3, number)} callback
+	 */
+	ChesterGL.removeMouseHandler = function (callback) {
+		var idx = this.mouseHandlers.indexOf(callback);
+		if (idx > 0) {
+			this.mouseHandlers.splice(idx, 1);
 		}
 	}
 	
