@@ -35,15 +35,41 @@ $(document).ready(function () {
 			// ChesterGL.drawScene();
 		});
 	} // setupGame()
+
+	var fullScreen = false;
+	$("#scaling").click(function () {
+		var canvas = document.getElementById("demo-canvas");
+		canvas.onwebkitfullscreenchange = function () {
+			fullScreen = !fullScreen;
+			console.log("we went full screen: " + fullScreen);
+			if (!fullScreen) {
+				$("#demo-canvas").css('width', '500px');
+				$("#demo-canvas").css('height', '280px');
+			}
+		}
+		if (!fullScreen) {
+			$("#demo-canvas").css('width', '800px');
+			$("#demo-canvas").css('height', '450px');
+			canvas.webkitRequestFullScreen();
+		}
+	});
 });
     </script>
     <style type="text/css">
+body {
+	margin: 0;
+	padding: 0;
+}
 #loading {
     color: #fff;
     text-shadow: 2px 2px 2px #000;
     font-weight: bold;
     font-size: 18pt;
     padding: 1em;
+}
+#demo-canvas {
+	margin-left: auto;
+	margin-right: auto;
 }
     </style>
 	<script type="text/javascript">
@@ -61,16 +87,13 @@ _gaq.push(['_trackPageview']);
 	</script>
 </head>
 <body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
 	<div>
-		<!-- <div id="loading" style="position: absolute; z-index: 100;"></div> -->
-		<canvas id="demo-canvas" width="500" height="500"></canvas><br/>
-		<p><span id="debug-info">00</span> ms per frame</p>
+		<canvas id="demo-canvas" width="500" height="280"></canvas><br/>
 	</div>
-	<div id="debug-img"></div>
-	<div style="width: 80%">
-	    <p><em>Notes</em></p>
-	    <ul>
-	    </ul>
+	<p><span id="debug-info">00</span> ms per frame</p>
+	<div id="controls">
+		<input type="button" value="Go Full Screen" id="scaling"/>
 	</div>
 </body>
 </html>

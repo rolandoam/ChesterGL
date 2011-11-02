@@ -72,22 +72,30 @@ $(document).ready(function () {
 			someBlock2.update = function () {
 				this.rotateBy(-1);
 			};
-			
-			$("#next-frame").click(function () {
-				ChesterGL.drawScene();
-			});
-			$("#clear-frame").click(function () {
-				ChesterGL.gl.fillRect(0, 0, 500, 500);
-			});
-			
+						
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
 			// ChesterGL.drawScene();
 		});
 	} // setupGame()
+
+	var scaled = false;
+	$("#scaling").click(function () {
+		if (scaled) {
+			$("#demo-canvas").css('width', '500px');
+			scaled = false;
+		} else {
+			$("#demo-canvas").css('width', '100%');
+			scaled = true;
+		}
+	});
 });
     </script>
     <style type="text/css">
+body {
+	margin: 0;
+	padding: 0;
+}
 #loading {
     color: #fff;
     text-shadow: 2px 2px 2px #000;
@@ -95,9 +103,9 @@ $(document).ready(function () {
     font-size: 18pt;
     padding: 1em;
 }
-body {
-	padding: 0;
-	margin: 0;
+#demo-canvas {
+	margin-left: auto;
+	margin-right: auto;
 }
     </style>
 	<script type="text/javascript">
@@ -115,21 +123,13 @@ _gaq.push(['_trackPageview']);
 	</script>
 </head>
 <body onload="setTimeout(function() { window.scrollTo(0, 1) }, 100);">
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
 	<div>
-		<!-- <div id="loading" style="position: absolute; z-index: 100;"></div> -->
-		<canvas id="demo-canvas" width="480" height="320"></canvas><br/>
-		<p><span id="debug-info">00</span> ms per frame</p>
+		<canvas id="demo-canvas" width="500" height="280"></canvas><br/>
 	</div>
-	<!-- <div id="debug-console">
-		<input type="button" id="next-frame" value="Next Frame"/>
-		<input type="button" id="clear-frame" value="Clear"/>
-	</div> -->
-	<div id="debug-img">
-		<img src="images/test.png">
-		<img src="images/star.png">
-	</div>
-	<div style="width: 80%">
-	    <p><em>Notes</em></p>
+	<p><span id="debug-info">00</span> ms per frame</p>
+	<div id="controls">
+		<input type="button" value="Switch CSS Scaling" id="scaling"/>
 	</div>
 </body>
 </html>
