@@ -11,7 +11,7 @@ The API is somewhat inspired in [cocos2d-iphone](https://github.com/cocos2d/coco
      make debug
      make server
 
-And point your browser to http://localhost:3000, pick one of the test*.html files.
+And point your browser to [http://localhost:3000](http://localhost:3000), pick one of the test entries. Alternatively, you can point your browser to the [online tests](http://funkaster.github.com/ChesterGL/test/)
 
 ## How to create fun
 
