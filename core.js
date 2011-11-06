@@ -165,9 +165,9 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * the time last frame was rendered
-	 * @type {Date}
+	 * @type {number}
 	 */
-	ChesterGL.lastTime = new Date;
+	ChesterGL.lastTime = new Date().getTime();
 	
 	/**
 	 * delta in seconds from last frame
@@ -220,7 +220,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 * sets the current program, also sets the uniforms for that shader
 	 * 
 	 * @function
-	 * @param {String} program
+	 * @param {string} program
 	 */
 	ChesterGL.selectProgram = function (program) {
 		var prog = this.programs[program];
@@ -674,7 +674,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 		}
 		
 		// for actions and other stuff
-		var current = new Date; // milliseconds
+		var current = new Date().getTime(); // milliseconds
 		this.delta = current - this.lastTime;
 		if (this.delta > 150) {
 			this.delta = 30; // set a lower delta when debugging
@@ -686,10 +686,10 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 * updates the internal frame counter
 	 */
 	/**
-	 * @type {Date}
+	 * @type {number}
 	 * @ignore
 	 */
-	ChesterGL.lastDebugSecond_ = new Date;
+	ChesterGL.lastDebugSecond_ = new Date().getTime();
 	/**
 	 * @type {number}
 	 * @ignore
@@ -712,7 +712,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	ChesterGL.sumAvg = 0;
 	/** @ignore */
 	ChesterGL.updateDebugTime = function () {
-		var now = new Date;
+		var now = new Date().getTime();
 		this.elapsed_ += this.delta;
 		this.frames_ ++;
 		if (now - this.lastDebugSecond_ > 1000) {
@@ -727,7 +727,8 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 				_gaq.push([
 					'_trackEvent',
 					'ChesterGL',
-					'renderTime',
+					// Let us know if this is WebGL or canvas mode
+					'renderTime-' + (this.webglMode),
 					ChesterGL.runningScene.title,
 					Math.floor(this.sumAvg/this.sampledAvg)
 				]);
