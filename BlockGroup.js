@@ -163,7 +163,7 @@
 	 */
 	ChesterGL.BlockGroup.prototype.visit = function () {
 		if (this.update) {
-			this.update();
+			this.update(ChesterGL.delta);
 		}
 		if (!this.visible) {
 			return;
