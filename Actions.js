@@ -92,39 +92,41 @@
 	 * @param {vec3} finalPosition
 	 * @return ChesterGL.MoveAction
 	 */
-	ChesterGL.MoveAction = function (block, totalTime, finalPosition) {
+	ChesterGL.MoveToAction = function (block, totalTime, finalPosition) {
 		ChesterGL.Action.call(this, block, totalTime);
-		this.finalPosition = finalPosition;
+		this.finalPosition = vec3.create(finalPosition);
 		this.startPosition = vec3.create(block.position);
-		this.deltaPosition = vec3.create();
-		vec3.subtract(this.finalPosition, this.startPosition, this.deltaPosition);
 	};
 	
 	/**
 	 * extend from Action
 	 * @ignore
 	 */
-	ChesterGL.MoveAction.prototype = Object.create(ChesterGL.Action.prototype);
-	
+	ChesterGL.MoveToAction.prototype = Object.create(ChesterGL.Action.prototype);
+		
 	/**
-	 * @type {vec3}
+	 * @type {?Object}
 	 */
-	ChesterGL.MoveAction.prototype.finalPosition = null;
+	ChesterGL.MoveToAction.prototype.finalPosition = null;
+
+	/**
+	 * @type {?Object}
+	 */
+	ChesterGL.MoveToAction.prototype.startPosition = null;
 	
 	/**
 	 * @param {number} delta miliseconds from last time we updated
 	 */
-	ChesterGL.MoveAction.prototype.update = function (delta) {
+	ChesterGL.MoveToAction.prototype.update = function (delta) {
 		ChesterGL.Action.prototype.update.call(this, delta);
+		var block = this.block;
 		if (this.finished) {
-			this.block.moveTo(this.finalPosition);
+			block.moveTo(this.finalPosition);
 		} else {		
 			var t = Math.min(1, this.elapsed / this.totalTime);
-			var st = this.startPosition;
-			var d = this.deltaPosition;
-			var dx = d[0] * t;
 			// console.log("t: " + t + "\t(" + dx + ")");
-			this.block.moveTo([st[0] + d[0] * t, st[1] + d[1] * t, st[2] + d[2] * t]);		
+			vec3.lerp(this.startPosition, this.finalPosition, t, block.position);
+			block.isTransformDirty = true;
 		}
 	}
 		

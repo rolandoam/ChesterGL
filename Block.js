@@ -97,7 +97,8 @@
 		STANDALONE: 0,
 		BLOCKGROUP: 1,
 		SCENE:      2,
-		TMXBLOCK:   3
+		TMXBLOCK:   3,
+		PARTICLE:   4
 	};
 	
 	/**
@@ -118,6 +119,11 @@
 	 * @const
 	 */
 	ChesterGL.Block.DEG_TO_RAD = Math.PI / 180.0;
+	
+	/**
+	 * @const
+	 */
+	ChesterGL.Block.RAD_TO_DEG = 180.0 / Math.PI;
 	
 	/**
 	 * the full frame
@@ -226,7 +232,7 @@
 			
 	/**
 	 * update function
-	 * @type {?function()}
+	 * @type {?function(number)}
 	 */
 	ChesterGL.Block.prototype.update = null;
 	
@@ -318,7 +324,7 @@
 	 */
 	ChesterGL.Block.prototype.moveTo = function (vec, time) {
 		if (time) {
-			var a = new ChesterGL.MoveAction(this, time, vec);
+			var a = new ChesterGL.MoveToAction(this, time, vec);
 			ChesterGL.ActionManager.scheduleAction(a);
 		} else {
 			this.position = vec3.create(vec);
@@ -460,7 +466,7 @@
 	
 	ChesterGL.Block.prototype.visit = function () {
 		if (this.update) {
-			this.update();
+			this.update(ChesterGL.delta);
 		}
 		if (!this.visible) {
 			return;
