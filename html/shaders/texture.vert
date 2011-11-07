@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 attribute vec3 aVertexPosition;
 attribute vec4 aVertexColor;
 attribute vec2 aTextureCoord;
