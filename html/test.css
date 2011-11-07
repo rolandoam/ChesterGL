@@ -1,0 +1,23 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+#loading {
+    color: #fff;
+    text-shadow: 2px 2px 2px #000;
+    font-weight: bold;
+    font-size: 18pt;
+    padding: 1em;
+}
+#demo-canvas {
+	padding: 0px;
+	display: block;
+}
+#game-container {
+	padding: 1em;
+	width: 640px;
+	border: 1px solid #999;
+	border-radius: 5px;
+	margin-left: auto;
+	margin-right: auto;
+}

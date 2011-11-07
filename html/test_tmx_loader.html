@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
@@ -28,7 +29,22 @@ $(document).ready(function () {
 			sceneBlock.title = "Test::TMX";
 			ChesterGL.runningScene = sceneBlock;
 			
-			sceneBlock.addChild(new ChesterGL.TMXBlock('images/test-plain.tmx'));
+			var tmx = new ChesterGL.TMXBlock('images/test-plain.tmx');
+			sceneBlock.addChild(tmx);
+			
+			var stPoint = null;
+			ChesterGL.addMouseHandler(function (pt, type) {
+				if (type == ChesterGL.mouseEvents.DOWN) {
+					stPoint = vec3.create(pt);
+				} else if (type == ChesterGL.mouseEvents.MOVE && stPoint) {
+					var tmp = vec3.create();
+					vec3.subtract(pt, stPoint, tmp);
+					tmx.moveBy(tmp);
+					vec3.set(pt, stPoint);
+				} else {
+					stPoint = null;
+				}
+			});
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
@@ -55,23 +71,6 @@ $(document).ready(function () {
 	});
 });
     </script>
-    <style type="text/css">
-body {
-	margin: 0;
-	padding: 0;
-}
-#loading {
-    color: #fff;
-    text-shadow: 2px 2px 2px #000;
-    font-weight: bold;
-    font-size: 18pt;
-    padding: 1em;
-}
-#demo-canvas {
-	margin-left: auto;
-	margin-right: auto;
-}
-    </style>
 	<script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-77863-9']);
@@ -88,12 +87,12 @@ _gaq.push(['_trackPageview']);
 </head>
 <body>
 	<div id="loading" style="position: absolute; z-index: 100;"></div>
-	<div>
-		<canvas id="demo-canvas" width="500" height="280"></canvas><br/>
-	</div>
-	<p><span id="debug-info">00</span> ms per frame</p>
-	<div id="controls">
-		<input type="button" value="Go Full Screen" id="scaling"/>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
+			<span id="debug-info">00</span> ms per frame
+		</div>
 	</div>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
@@ -38,12 +39,10 @@ $(document).ready(function () {
 			
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
-
-			ChesterGL.addMouseHandler(function (pt, type) {
-				if (type == ChesterGL.mouseEvents.DOWN) {
-					b1.moveTo(pt, 1.0);
-				}
-			});
+			
+			b1.update = function () {
+				this.rotateBy(1);
+			}
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
@@ -51,14 +50,16 @@ $(document).ready(function () {
 		});
 	} // setupGame()
 	
-	var scaled = false;
-	$("#scaling").click(function () {
-		if (scaled) {
-			$("#demo-canvas").css('width', '500px');
-			scaled = false;
-		} else {
-			$("#demo-canvas").css('width', '100%');
-			scaled = true;
+	var fullScreen = false;
+	$("#fullScreen").click(function () {
+		var canvas = document.getElementById("game-container");
+		canvas.onwebkitfullscreenchange = function () {
+			fullScreen = !fullScreen;
+			console.log("we went full screen: " + fullScreen);
+			canvas.webkitCancelFullScreen();
+		}
+		if (!fullScreen) {
+			canvas.webkitRequestFullScreen();
 		}
 	});
 });
@@ -96,12 +97,12 @@ _gaq.push(['_trackPageview']);
 </head>
 <body>
 	<div id="loading" style="position: absolute; z-index: 100;"></div>
-	<div>
-		<canvas id="demo-canvas" width="500" height="280"></canvas>
-	</div>
-	<p><span id="debug-info">00</span> ms per frame</p>
-	<div id="controls">
-		<input type="button" value="Switch CSS Scaling" id="scaling"/>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
+			<span id="debug-info">00</span> ms per frame
+		</div>
 	</div>
 </body>
 </html>
