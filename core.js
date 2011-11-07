@@ -92,6 +92,12 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	ChesterGL.gl = null;
 	
 	/**
+	 * @type {boolean}
+	 * @ignore
+	 */
+	ChesterGL._paused = false;
+	
+	/**
 	 * For debug/performance metrics. You can set this to false to ignore analytics (no data will be sent).
 	 * This will use whatever profile you have for analytics on the game page
 	 * 
@@ -802,13 +808,26 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * run at browser's native animation speed
-	 * @function
 	 */
 	ChesterGL.run = function () {
-		window.requestAnimFrame(ChesterGL.run, ChesterGL.canvas);
-		ChesterGL.drawScene();
-		ChesterGL.ActionManager.tick(ChesterGL.delta);
-		ChesterGL.updateDebugTime();
+		if (!ChesterGL._paused) {
+			window.requestAnimFrame(ChesterGL.run, ChesterGL.canvas);
+			ChesterGL.drawScene();
+			ChesterGL.ActionManager.tick(ChesterGL.delta);
+			ChesterGL.updateDebugTime();
+		}
+	}
+	
+	/**
+	 * toggle pause - events will still execute
+	 */
+	ChesterGL.togglePause = function () {
+		if (!ChesterGL._paused) {
+			ChesterGL._paused = true;
+		} else {
+			ChesterGL._paused = false;
+			ChesterGL.run();
+		}
 	}
 	
 	// export symbols
