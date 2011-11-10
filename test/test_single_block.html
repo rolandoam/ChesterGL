@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
@@ -48,12 +49,12 @@ $(document).ready(function () {
 			var someBlock = new ChesterGL.Block();
 			someBlock.setTexture("images/test.png")
 			// someBlock.rotateBy(-45);
-			someBlock.moveTo(vec3.create([width/2, height/2, 0]));
+			someBlock.moveTo([width/2, height/2, 0]);
 			
 			var someBlock2 = new ChesterGL.Block();
 			someBlock2.setTexture("images/star.png");
 			someBlock2.opacity = 0.5;
-			someBlock2.moveTo(vec3.create([60, 0, 0]));
+			someBlock2.moveTo([60, 0, 0]);
 			someBlock.addChild(someBlock2);
 			
 			sceneBlock.addChild(someBlock);
@@ -75,17 +76,21 @@ $(document).ready(function () {
 			// ChesterGL.drawScene();
 		});
 	} // setupGame()
+
+	var fullScreen = false;
+	$("#fullScreen").click(function () {
+		var canvas = document.getElementById("game-container");
+		canvas.onwebkitfullscreenchange = function () {
+			fullScreen = !fullScreen;
+			console.log("we went full screen: " + fullScreen);
+			canvas.webkitCancelFullScreen();
+		}
+		if (!fullScreen) {
+			canvas.webkitRequestFullScreen();
+		}
+	});
 });
     </script>
-    <style type="text/css">
-#loading {
-    color: #fff;
-    text-shadow: 2px 2px 2px #000;
-    font-weight: bold;
-    font-size: 18pt;
-    padding: 1em;
-}
-    </style>
 	<script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-77863-9']);
@@ -101,16 +106,13 @@ _gaq.push(['_trackPageview']);
 	</script>
 </head>
 <body>
-	<div>
-		<!-- <div id="loading" style="position: absolute; z-index: 100;"></div> -->
-		<canvas id="demo-canvas" width="500" height="500"></canvas><br/>
-		<p><span id="debug-info">00</span> ms per frame</p>
-	</div>
-	<div id="debug-img"></div>
-	<div style="width: 80%">
-	    <p><em>Notes</em></p>
-	    <ul>
-	    </ul>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
+			<span id="debug-info">00</span> ms per frame
+		</div>
 	</div>
 </body>
 </html>

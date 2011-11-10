@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
@@ -28,24 +29,43 @@ $(document).ready(function () {
 			sceneBlock.title = "Test::TMX iso";
 			ChesterGL.runningScene = sceneBlock;
 			
-			sceneBlock.addChild(new ChesterGL.TMXBlock("images/iso.tmx"));
+			var tmx = new ChesterGL.TMXBlock("images/iso.tmx");
+			sceneBlock.addChild(tmx);
+			
+			var stPoint = null;
+			ChesterGL.addMouseHandler(function (pt, type) {
+				if (type == ChesterGL.mouseEvents.DOWN) {
+					stPoint = vec3.create(pt);
+				} else if (type == ChesterGL.mouseEvents.MOVE && stPoint) {
+					var tmp = vec3.create();
+					vec3.subtract(pt, stPoint, tmp);
+					tmx.moveBy(tmp);
+					vec3.set(pt, stPoint);
+				} else {
+					stPoint = null;
+				}
+			});
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
 			// ChesterGL.drawScene();
 		});
 	} // setupGame()
+
+	var fullScreen = false;
+	$("#fullScreen").click(function () {
+		var canvas = document.getElementById("game-container");
+		canvas.onwebkitfullscreenchange = function () {
+			fullScreen = !fullScreen;
+			console.log("we went full screen: " + fullScreen);
+			canvas.webkitCancelFullScreen();
+		}
+		if (!fullScreen) {
+			canvas.webkitRequestFullScreen();
+		}
+	});
 });
     </script>
-    <style type="text/css">
-#loading {
-    color: #fff;
-    text-shadow: 2px 2px 2px #000;
-    font-weight: bold;
-    font-size: 18pt;
-    padding: 1em;
-}
-    </style>
 	<script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-77863-9']);
@@ -61,16 +81,13 @@ _gaq.push(['_trackPageview']);
 	</script>
 </head>
 <body>
-	<div>
-		<!-- <div id="loading" style="position: absolute; z-index: 100;"></div> -->
-		<canvas id="demo-canvas" width="500" height="500"></canvas><br/>
-		<p><span id="debug-info">00</span> ms per frame</p>
-	</div>
-	<div id="debug-img"></div>
-	<div style="width: 80%">
-	    <p><em>Notes</em></p>
-	    <ul>
-	    </ul>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
+			<span id="debug-info">00</span> ms per frame
+		</div>
 	</div>
 </body>
 </html>

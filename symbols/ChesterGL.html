@@ -203,7 +203,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/ChesterGL.BlockGroup.html">ChesterGL.BlockGroup</a></li>
 	
-	<li><a href="../symbols/ChesterGL.MoveAction.html">ChesterGL.MoveAction</a></li>
+	<li><a href="../symbols/ChesterGL.MoveToAction.html">ChesterGL.MoveToAction</a></li>
 	
 	<li><a href="../symbols/ChesterGL.TMXBlock.html">ChesterGL.TMXBlock</a></li>
 	
@@ -385,6 +385,26 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.mouseEvents">mouseEvents</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.mouseHandlers">mouseHandlers</a></b>
+								</div>
+								<div class="description">the global list of mouse down handlers</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								ChesterGL.<b><a href="../symbols/ChesterGL.html#.pMatrix">pMatrix</a></b>
 								</div>
 								<div class="description"></div>
@@ -486,6 +506,15 @@ frame - with the delta from last frame</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.addMouseHandler">addMouseHandler</a></b>(callback)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.assetsLoaded">assetsLoaded</a></b>(type, callback)
 								</div>
 								<div class="description">adds a listener for when all assets are loaded</div>
@@ -560,6 +589,15 @@ fallback: canvas</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.installMouseHandlers">installMouseHandlers</a></b>()
+								</div>
+								<div class="description">install all handlers on the canvas element</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.loadAsset">loadAsset</a></b>(type, path, callback)
 								</div>
 								<div class="description">loads and asset asynchronically</div>
@@ -578,6 +616,33 @@ fallback: canvas</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.mouseDownHandler">mouseDownHandler</a></b>(event)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.mouseMoveHandler">mouseMoveHandler</a></b>(event)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.mouseUpHandler">mouseUpHandler</a></b>(event)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.prepareWebGLTexture">prepareWebGLTexture</a></b>(texture)
 								</div>
 								<div class="description">handles a loaded texture - should only be called on a webGL mode</div>
@@ -590,6 +655,15 @@ fallback: canvas</div>
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.registerAssetHandler">registerAssetHandler</a></b>(type, handler)
 								</div>
 								<div class="description">registers an asset loader (which is basically a function).</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.removeMouseHandler">removeMouseHandler</a></b>(callback)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -626,6 +700,15 @@ fallback: canvas</div>
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.setupPerspective">setupPerspective</a></b>()
 								</div>
 								<div class="description">setups the perspective (2d or 3d)</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.togglePause">togglePause</a></b>()
+								</div>
+								<div class="description">toggle pause - events will still execute</div>
 							</td>
 						</tr>
 					
@@ -916,6 +999,50 @@ fallback: canvas</div>
 
 					<hr />
 				
+					<a name=".mouseEvents"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>mouseEvents</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mouseHandlers"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>mouseHandlers</b>
+					
+					</div>
+					<div class="description">
+						the global list of mouse down handlers
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".pMatrix"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1108,6 +1235,42 @@ This will use whatever profile you have for analytics on the game page
 				<div class="sectionTitle">
 					Method Detail
 				</div>
+				
+					<a name=".addMouseHandler"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>addMouseHandler</b>(callback)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function(vec3|number)}</span> <b>callback</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
 				
 					<a name=".assetsLoaded"> </a>
 					<div class="fixedFont">&lt;static&gt; 
@@ -1419,6 +1582,31 @@ fallback: canvas
 
 					<hr />
 				
+					<a name=".installMouseHandlers"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>installMouseHandlers</b>()
+					
+					</div>
+					<div class="description">
+						install all handlers on the canvas element
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".loadAsset"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1494,6 +1682,114 @@ fallback: canvas
 							
 								<dt>
 									<b>type</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mouseDownHandler"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>mouseDownHandler</b>(event)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mouseMoveHandler"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>mouseMoveHandler</b>(event)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mouseUpHandler"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>mouseUpHandler</b>(event)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
 									
 								</dt>
 								<dd></dd>
@@ -1618,6 +1914,42 @@ modify the status property.
 
 					<hr />
 				
+					<a name=".removeMouseHandler"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>removeMouseHandler</b>(callback)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function(vec3|number)}</span> <b>callback</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".run"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1663,7 +1995,7 @@ modify the status property.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>program</b>
+									<span class="light fixedFont">{string}</span> <b>program</b>
 									
 								</dt>
 								<dd></dd>
@@ -1738,6 +2070,31 @@ modify the status property.
 						
 						
 
+					<hr />
+				
+					<a name=".togglePause"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>togglePause</b>()
+					
+					</div>
+					<div class="description">
+						toggle pause - events will still execute
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -1752,7 +2109,7 @@ modify the status property.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Nov 01 2011 14:12:44 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Nov 09 2011 20:46:18 GMT-0800 (PST)
 		</div>
 	</body>
 </html>

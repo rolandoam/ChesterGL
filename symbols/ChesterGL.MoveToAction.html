@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - vec2.create</title>
+		<title>JsDoc Reference - ChesterGL.MoveToAction</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -218,24 +218,26 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class vec2.create
+				Class ChesterGL.MoveToAction
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/core.js.html">core.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/Actions.js.html">Actions.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class vec2.create.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.MoveToAction.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -248,7 +250,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/vec2.create.html#constructor">vec2.create</a></b>(vec)
+								<b><a href="../symbols/ChesterGL.MoveToAction.html#constructor">ChesterGL.MoveToAction</a></b>(block, totalTime, finalPosition)
 							</div>
 							<div class="description"></div>
 						</td>
@@ -259,8 +261,81 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.MoveToAction.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/ChesterGL.MoveToAction.html#finalPosition">finalPosition</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/ChesterGL.MoveToAction.html#startPosition">startPosition</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+				<dl class="inheritsList">
+				<dt>Fields borrowed from class <a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>: </dt><dd><a href="../symbols/ChesterGL.Action.html#block">block</a>, <a href="../symbols/ChesterGL.Action.html#currentTime">currentTime</a>, <a href="../symbols/ChesterGL.Action.html#elapsed">elapsed</a>, <a href="../symbols/ChesterGL.Action.html#finished">finished</a>, <a href="../symbols/ChesterGL.Action.html#totalTime">totalTime</a></dd>
+				</dl>
+				
+			
 
 <!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.MoveToAction.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/ChesterGL.MoveToAction.html#update">update</a></b>(delta)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+				<dl class="inheritsList">
+				
+				</dl>
+				
 			
 <!-- ============================== events summary ======================== -->
 			
@@ -273,7 +348,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>vec2.create</b>(vec)
+						<b>ChesterGL.MoveToAction</b>(block, totalTime, finalPosition)
 				</div>
 				
 				<div class="description">
@@ -289,7 +364,19 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{(<a href="../symbols/_global_.html#vec2">vec2</a>|Array)=}</span>  <b>vec</b>
+								<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span>  <b>block</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>totalTime</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{vec3}</span>  <b>finalPosition</b>
 								
 							</dt>
 								<dd></dd>
@@ -303,7 +390,7 @@ ul.inheritsList
 						<dl class="detailList">
 						<dt class="heading">Returns:</dt>
 						
-								<dd><span class="light fixedFont">{<a href="../symbols/_global_.html#vec2">vec2</a>}</span> </dd>
+								<dd>ChesterGL.MoveAction</dd>
 						
 						</dl>
 					
@@ -315,8 +402,98 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="finalPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>finalPosition</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="startPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>startPosition</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
 
 <!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="update"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>update</b>(delta)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>delta</b>
+									
+								</dt>
+								<dd>miliseconds from last time we updated</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
 			
 			
 <!-- ============================== event details ========================= -->		
