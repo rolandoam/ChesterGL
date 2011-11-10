@@ -71,6 +71,13 @@ ChesterGL.TMXBlock = function (tmxFile) {};
 
 /**
  * @constructor
+ * @extends ChesterGL.Block
+ * @param {Object} properties
+ */
+ChesterGL.ParticleSystem = function (properties) {};
+
+/**
+ * @constructor
  * @param {ChesterGL.Block} block
  * @param {number=} totalTime
  */
