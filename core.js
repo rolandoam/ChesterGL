@@ -45,6 +45,7 @@ vec2.create = function (vec) {
 };
 
 HTMLCanvasElement._canvas_tmp_mouse = vec3.create();
+/** @ignore */
 HTMLCanvasElement.prototype.relativePosition = function (event) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
 	pt[0] = 0, pt[1] = 0;
