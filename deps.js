@@ -22,6 +22,13 @@
  * THE SOFTWARE.
  */
 
+/**
+ * @fileoverview Externs for ChesterGL
+ *
+ * @see https://github.com/funkaster/ChesterGL
+ * @externs
+ */
+
 /** @type {Object} */
 var ChesterGL = {};
 
@@ -76,4 +83,4 @@ ChesterGL.Action = function (block, totalTime) {};
  * @param {number} totalTime
  * @param {vec3} finalPosition
  */
-ChesterGL.MoveAction = function (block, totalTime, finalPosition) {};
+ChesterGL.MoveToAction = function (block, totalTime, finalPosition) {};
