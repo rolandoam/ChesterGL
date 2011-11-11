@@ -372,6 +372,21 @@
 		this.children.push(block);
 		block.parent = this;
 	}
+
+	/**
+	 * removes a block from the children list
+	 * 
+	 * @param {ChesterGL.Block} block
+	 */
+	ChesterGL.Block.prototype.remove = function (block) {
+		if (!block.parent || block.parent != this) {
+			throw "not our child!";
+		}
+		var idx = this.children.indexOf(block);
+		if (idx > 0) {
+			this.children.splice(idx,1);
+		}
+	}
 	
 	ChesterGL.Block.prototype.transform = function () {
 		var gl = ChesterGL.gl;
