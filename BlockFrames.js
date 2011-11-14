@@ -25,12 +25,14 @@
 
 (function (window) {
 	var ChesterGL = window['ChesterGL'];
-	var BlockFrames = {};
 	
 	/**
-	 * @name BlockFrames
 	 * @namespace
-	 * @type {Object.<string,Object>}
+	 */
+	var BlockFrames = {};
+		
+	/**
+	 * @type {Object.<string,ChesterGL.BlockFrames.frameType>}
 	 */
 	BlockFrames.frames = {};
 	
@@ -42,20 +44,21 @@
 	BlockFrames.loadJSON = function (data) {
 		// first, get the meta data
 		if (data['meta'] && data['meta']['version'] == '1.0') {
-			var texture = data['meta']['image'];
-			ChesterGL.loadAsset('texture', texture, function (img) {
+			var texName = data['meta']['image'];
+			ChesterGL.loadAsset('texture', texName, function (img) {
 				var imgHeight = img.height;
 				var frames = data['frames'];
 				for (var frameName in frames) {
 					var f = frames[frameName];
-					BlockFrames.frames[frameName] = {};
-					BlockFrames.frames[frameName]['frame'] = quat4.create([
+					/** @type {ChesterGL.BlockFrames.frameType} */ var realFrame = {frame: {}, texture: ""};
+					realFrame.frame = quat4.create([
 						f['frame']['x'],
 						imgHeight - (f['frame']['y'] + f['frame']['h']),
 						f['frame']['w'],
 						f['frame']['h']
 					]);
-					BlockFrames.frames[frameName]['texture'] = texture;
+					realFrame.texture = texName;
+					BlockFrames.frames[frameName] = realFrame;
 				}
 			});
 		} else {
@@ -64,8 +67,10 @@
 	}
 	
 	/**
+	 * Returns a named frame.
+	 *
 	 * @param {string} frameName
-	 * @return {Object}
+	 * @return {ChesterGL.BlockFrames.frameType}
 	 */
 	BlockFrames.getFrame = function (frameName) {
 		return BlockFrames.frames[frameName];
@@ -76,6 +81,7 @@
 	 * @param {function()=} callback The callback to be called after everything is ready
 	 */
 	BlockFrames.loadFrames = function (path, callback) {
+		console.log("loadFrames: will fetch " + path);
 		$.ajax({
 			url: path,
 			async: false,
@@ -89,8 +95,8 @@
 	};
 	
 	// export symbols
-	BlockFrames['getFrame'] = BlockFrames.getFrame;
-	BlockFrames['loadFrames'] = BlockFrames.loadFrames;
-	
-	window['ChesterGL']['BlockFrames'] = BlockFrames;
+	ChesterGL['BlockFrames'] = BlockFrames;
+	// class methods
+	ChesterGL.exportProperty(BlockFrames, 'getFrame', BlockFrames.getFrame);
+	ChesterGL.exportProperty(BlockFrames, 'loadFrames', BlockFrames.loadFrames);
 })(window);

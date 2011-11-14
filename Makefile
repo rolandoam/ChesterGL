@@ -16,14 +16,18 @@ DOC_OUTPUT = doc
 
 JS_SOURCES = $(foreach i,${SOURCES},--js $i)
 EXTERNS_TMP = $(foreach i,${EXTERNS},--externs $(CLOSURE_HOME)/$i)
-COMPILER_ARGUMENTS = $(EXTERNS_TMP) --warning_level VERBOSE --summary_detail_level 2 --externs deps.js
+COMPILER_ARGUMENTS = $(EXTERNS_TMP) --externs deps.js --compilation_level $(COMPILE_LEVEL) --warning_level VERBOSE --jscomp_warning=checkTypes --summary_detail_level 3
 
 compile:
 	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} ${COMPILER_ARGUMENTS} ${JS_SOURCES} --js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE)
 
-# just cat everything into chester.js
+# just like compile, but pretty print to be able to make debugging easier
 debug:
 	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} ${COMPILER_ARGUMENTS} --formatting PRETTY_PRINT ${JS_SOURCES} --js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE)
+
+# just cat everything into chester.js
+debug-plain:
+	cat ${SOURCES} > $(OUTPUT_DIR)/$(OUTPUT_FILE)
 
 clean:
 	rm -f $(OUTPUT_DIR)/$(OUTPUT_FILE)

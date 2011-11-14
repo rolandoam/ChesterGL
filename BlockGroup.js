@@ -40,12 +40,12 @@
 			throw "BlockGroup only works on WebGL mode";
 		}
 		// call "super"
-		ChesterGL.Block.call(this, null, ChesterGL.Block.TYPE.BLOCKGROUP);
+		ChesterGL.Block.call(this, null, ChesterGL.Block.TYPE['BLOCKGROUP']);
 		if (texture) {
 			this.texture = texture;
-			this.program = ChesterGL.Block.PROGRAM.TEXTURE;
+			this.program = ChesterGL.Block.PROGRAM['TEXTURE'];
 		} else {
-			this.program = ChesterGL.Block.PROGRAM.DEFAULT;
+			this.program = ChesterGL.Block.PROGRAM['DEFAULT'];
 		}
 		this.maxChildren = noChildren || 10;
 		
@@ -97,7 +97,7 @@
 	 * @param {quat4} rect
 	 */
 	ChesterGL.BlockGroup.prototype.createBlock = function (rect) {
-		var b = new ChesterGL.Block(rect, ChesterGL.Block.TYPE.STANDALONE, this);
+		var b = new ChesterGL.Block(rect, ChesterGL.Block.TYPE['STANDALONE'], this);
 		if (this.texture) {
 			b.setTexture(this.texture);
 		}
@@ -112,15 +112,15 @@
 		if (this.children.length >= this.maxChildren) {
 			throw "Error: too many children - Make the initial size of the BlockGroup larger"
 		}
+		if (block.parent != this) {
+			throw "Invalid child: can only add children created with BlockGroup.create";
+		}
 		if (!this.texture) {
 			this.texture = block.texture;
 		} else {
 			if (this.texture != block.texture) {
 				throw "Invalid child: only can add child with the same texture";
 			}
-		}
-		if (block.parent != this) {
-			throw "Invalid child: can only add children created with BlockGroup.create";
 		}
 		this.children.push(block);
 		
@@ -209,9 +209,9 @@
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		
 		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
-		if (this.program == ChesterGL.Block.PROGRAM.DEFAULT) {
+		if (this.program == ChesterGL.Block.PROGRAM['DEFAULT']) {
 			// no extra attributes for the shader
-		} else if (this.program == ChesterGL.Block.PROGRAM.TEXTURE) {
+		} else if (this.program == ChesterGL.Block.PROGRAM['TEXTURE']) {
 			var texture = ChesterGL.getAsset('texture', this.texture);
 			
 			// pass the texture attributes
@@ -237,4 +237,6 @@
 	
 	// export the symbol
 	ChesterGL['BlockGroup'] = ChesterGL.BlockGroup;
+	// instance methods
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'createBlock', ChesterGL.BlockGroup.prototype.createBlock);
 })(window);

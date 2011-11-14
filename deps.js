@@ -53,14 +53,15 @@ ChesterGL.Block = function (rect, type, parent) {};
  */
 ChesterGL.BlockGroup = function (texture, noChildren) {};
 
-/** @type {Object} */
-ChesterGL.BlockFrames = {};
+/**
+ * @namespace
+ */
+ChesterGL.BlockFrames;
 
 /**
- * @param {string} frameName
- * @return {Object}
+ * @typedef {{frame, texture}}
  */
-ChesterGL.BlockFrames.getFrame = function (frameName) {};
+ChesterGL.BlockFrames.frameType;
 
 /**
  * @constructor
@@ -91,3 +92,37 @@ ChesterGL.Action = function (block, totalTime) {};
  * @param {vec3} finalPosition
  */
 ChesterGL.MoveToAction = function (block, totalTime, finalPosition) {};
+
+
+
+// external - request animation frame for different browsers and base64
+
+/**
+ * @param {function()} callback
+ * @param {Element=} element
+ */
+window.requestAnimationFrame = function (callback, element) {};
+
+/**
+ * @param {function()} callback
+ * @param {Element=} element
+ */
+window.webkitRequestAnimationFrame = function (callback, element) {};
+
+/**
+ * @param {function()} callback
+ * @param {Element=} element
+ */
+window.mozRequestAnimationFrame = function (callback, element) {};
+
+/**
+ * @param {function()} callback
+ * @param {Element=} element
+ */
+window.oRequestAnimationFrame = function (callback, element) {};
+
+/**
+ * @param {function()} callback
+ * @param {Element=} element
+ */
+window.msRequestAnimationFrame = function (callback, element) {};

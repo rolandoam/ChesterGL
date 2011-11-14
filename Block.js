@@ -37,17 +37,17 @@
 	 * @return ChesterGL.Block
 	 */
 	ChesterGL.Block = function (rect, type, parent) {
-		this.type = type || ChesterGL.Block.TYPE.STANDALONE;
+		this.type = type || ChesterGL.Block.TYPE['STANDALONE'];
 		if (parent) {
 			this.parent = parent;
 		}
 		
 		this.children = [];
-		this.program = ChesterGL.Block.PROGRAM.DEFAULT;
+		this.program = ChesterGL.Block.PROGRAM['DEFAULT'];
 		
 		if (rect) {
 			if (typeof(rect) === 'string') {
-				var f = ChesterGL.BlockFrames.getFrame(rect);
+				/** @type {ChesterGL.BlockFrames.frameType} */ var f = ChesterGL.BlockFrames.getFrame(rect);
 				this.setTexture(f.texture);
 				this.setFrame(f.frame);
 			} else {
@@ -55,11 +55,11 @@
 			}
 		}
 		// set default color
-		if (this.type == ChesterGL.Block.TYPE.STANDALONE) {
+		if (this.type == ChesterGL.Block.TYPE['STANDALONE']) {
 			this.setColor([1, 1, 1, 1]);
 		}
 		
-		if (ChesterGL.webglMode && this.type == ChesterGL.Block.TYPE.STANDALONE && (!parent || parent.type != ChesterGL.Block.TYPE.BLOCKGROUP)) {
+		if (ChesterGL.webglMode && this.type == ChesterGL.Block.TYPE['STANDALONE'] && (!parent || parent.type != ChesterGL.Block.TYPE['BLOCKGROUP'])) {
 			var gl = ChesterGL.gl;
 			// just a single buffer for all data (a 4x"quad")
 			this.glBuffer = gl.createBuffer();
@@ -77,13 +77,14 @@
 	 * @enum {number}
 	 */
 	ChesterGL.Block.PROGRAM = {
-		DEFAULT: 0,
-		TEXTURE: 1
+		'DEFAULT': 0,
+		'TEXTURE': 1
 	};
 	
 	/**
 	 * program names
 	 * @const
+	 * @type {Array.<string>}
 	 */
 	ChesterGL.Block.PROGRAM_NAME = [
 		"default",
@@ -91,20 +92,22 @@
 	];
 	
 	/**
+	 * Different types of blocks
 	 * @enum {number}
 	 */
 	ChesterGL.Block.TYPE = {
-		STANDALONE: 0,
-		BLOCKGROUP: 1,
-		SCENE:      2,
-		TMXBLOCK:   3,
-		PARTICLE:   4
+		'STANDALONE': 0,
+		'BLOCKGROUP': 1,
+		'SCENE':      2,
+		'TMXBLOCK':   3,
+		'PARTICLE':   4
 	};
 	
 	/**
 	 * This is the size of one quad, the buffer data length (in bytes) will be 4 * QUAD_SIZE
 	 * 12 (verts, 3 floats) + 8 (tex coords, 2 floats) + 16 (color, 4 floats)
 	 * @const
+	 * @type {number}
 	 */
 	ChesterGL.Block.QUAD_SIZE = 36;
 	
@@ -112,16 +115,19 @@
 	 * This is how many items the buffer data must have.
 	 * 3 (vert) + 2 (tex) + 4 (color) = 9; 9 * 4 (verts) = 36
 	 * @const
+	 * @type {number}
 	 */
 	ChesterGL.Block.BUFFER_SIZE = 36;
 	
 	/**
 	 * @const
+	 * @type {number}
 	 */
 	ChesterGL.Block.DEG_TO_RAD = Math.PI / 180.0;
 	
 	/**
 	 * @const
+	 * @type {number}
 	 */
 	ChesterGL.Block.RAD_TO_DEG = 180.0 / Math.PI;
 	
@@ -299,10 +305,14 @@
 		this.isColorDirty = true;
 	}
 	
+	/**
+	 * sets the texture of the block - the texture will be loaded if needed
+	 * @param {string} texturePath
+	 */
 	ChesterGL.Block.prototype.setTexture = function (texturePath) {
 		this.texture = texturePath;
 		// force program to texture program
-		this.program = ChesterGL.Block.PROGRAM.TEXTURE;
+		this.program = ChesterGL.Block.PROGRAM['TEXTURE'];
 		var block = this;
 		ChesterGL.loadAsset("texture", texturePath, function (t) {
 			// set the default frame for all our blocks (if it's not set)
@@ -372,7 +382,25 @@
 		this.children.push(block);
 		block.parent = this;
 	}
+
+	/**
+	 * removes a block from the children list
+	 * 
+	 * @param {ChesterGL.Block} block
+	 */
+	ChesterGL.Block.prototype.remove = function (block) {
+		if (!block.parent || block.parent != this) {
+			throw "not our child!";
+		}
+		var idx = this.children.indexOf(block);
+		if (idx > 0) {
+			this.children.splice(idx,1);
+		}
+	}
 	
+	/**
+	 * actually performs the transformation
+	 */
 	ChesterGL.Block.prototype.transform = function () {
 		var gl = ChesterGL.gl;
 		var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
@@ -389,12 +417,12 @@
 		}
 		
 		// bail out if we're a block group
-		if (this.type == ChesterGL.Block.TYPE.BLOCKGROUP) {
+		if (this.type == ChesterGL.Block.TYPE['BLOCKGROUP']) {
 			return;
 		}
 		
 		var bufferData = this.glBufferData;
-		var inBlockGroup = this.parent && this.parent.type == ChesterGL.Block.TYPE.BLOCKGROUP;
+		var inBlockGroup = this.parent && this.parent.type == ChesterGL.Block.TYPE['BLOCKGROUP'];
 		
 		if (ChesterGL.webglMode) {
 			if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
@@ -432,7 +460,7 @@
 					bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = 0;
 				}
 
-				if (this.program == ChesterGL.Block.PROGRAM.TEXTURE) {
+				if (this.program == ChesterGL.Block.PROGRAM['TEXTURE']) {
 					var tex = ChesterGL.getAsset("texture", this.texture);
 					var texW = tex.width,
 						texH = tex.height;
@@ -464,6 +492,9 @@
 		}
 	}
 	
+	/**
+	 * prepares the block for the rendering (transforms if necessary)
+	 */
 	ChesterGL.Block.prototype.visit = function () {
 		if (this.update) {
 			this.update(ChesterGL.delta);
@@ -480,7 +511,7 @@
 		}
 		
 		// render this block if not in a block group
-		if (!this.parent || this.parent.type != ChesterGL.Block.TYPE.BLOCKGROUP) {
+		if (!this.parent || this.parent.type != ChesterGL.Block.TYPE['BLOCKGROUP']) {
 			this.render();
 		}
 		// reset our dirty markers
@@ -491,11 +522,11 @@
 	 * render (only will work for non-blockgroup blocks)
 	 */
 	ChesterGL.Block.prototype.render = function () {
-		if (this.type == ChesterGL.Block.TYPE.BLOCKGROUP) {
+		if (this.type == ChesterGL.Block.TYPE['BLOCKGROUP']) {
 			throw "Cannot call render on a BlockGroup block!";
 		}
 		// empty render for scene blocks
-		if (this.type == ChesterGL.Block.TYPE.SCENE) {
+		if (this.type == ChesterGL.Block.TYPE['SCENE']) {
 			return;
 		}
 		
@@ -512,9 +543,9 @@
 			gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 			gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
 
-			if (this.program == ChesterGL.Block.PROGRAM.DEFAULT) {
+			if (this.program == ChesterGL.Block.PROGRAM['DEFAULT']) {
 				// no extra attributes for the shader
-			} else if (this.program == ChesterGL.Block.PROGRAM.TEXTURE) {
+			} else if (this.program == ChesterGL.Block.PROGRAM['TEXTURE']) {
 				var texture = ChesterGL.getAsset('texture', this.texture);
 
 				// pass the texture attributes
@@ -548,36 +579,37 @@
 	}
 		
 	// export symbols
+	ChesterGL['Block'] = ChesterGL.Block;
 	// constants / enums
-	ChesterGL.Block['FullFrame'] = ChesterGL.Block.FullFrame;
-	ChesterGL.Block['SizeZero']  = ChesterGL.Block.SizeZero;
-	ChesterGL.Block['TYPE']      = ChesterGL.Block.TYPE;
+	ChesterGL.exportProperty(ChesterGL.Block, 'FullFrame', ChesterGL.Block.FullFrame);
+	ChesterGL.exportProperty(ChesterGL.Block, 'SizeZero', ChesterGL.Block.SizeZero);
+	ChesterGL.exportProperty(ChesterGL.Block, 'TYPE', ChesterGL.Block.TYPE);		
+	ChesterGL.exportProperty(ChesterGL.Block, 'PROGRAM', ChesterGL.Block.PROGRAM);
+	ChesterGL.exportProperty(ChesterGL.Block, 'PROGRAM_NAME', ChesterGL.Block.PROGRAM_NAME);
 	// class methods
-	ChesterGL.Block['create'] = ChesterGL.Block.create;
+	ChesterGL.exportProperty(ChesterGL.Block, 'create', ChesterGL.Block.create);
 	// properties
-	ChesterGL.Block.prototype['visible'] = ChesterGL.Block.prototype.visible;
-	ChesterGL.Block.prototype['position'] = ChesterGL.Block.prototype.position;
-	ChesterGL.Block.prototype['contentSize'] = ChesterGL.Block.prototype.contentSize;
-	ChesterGL.Block.prototype['color'] = ChesterGL.Block.prototype.color;
-	ChesterGL.Block.prototype['texture'] = ChesterGL.Block.prototype.texture;
-	ChesterGL.Block.prototype['opacity'] = ChesterGL.Block.prototype.opacity;
-	ChesterGL.Block.prototype['rotation'] = ChesterGL.Block.prototype.rotation;
-	ChesterGL.Block.prototype['scale'] = ChesterGL.Block.prototype.scale;
-	ChesterGL.Block.prototype['update'] = ChesterGL.Block.prototype.update;
-	ChesterGL.Block.prototype['frame'] = ChesterGL.Block.prototype.frame;
-	ChesterGL.Block.prototype['parent'] = ChesterGL.Block.prototype.parent;
-	ChesterGL.Block.prototype['children'] = ChesterGL.Block.prototype.children;
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'visible', ChesterGL.Block.prototype.visible);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'position', ChesterGL.Block.prototype.position);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'contentSize', ChesterGL.Block.prototype.contentSize);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'color', ChesterGL.Block.prototype.color);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'texture', ChesterGL.Block.prototype.texture);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'opacity', ChesterGL.Block.prototype.opacity);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotation', ChesterGL.Block.prototype.rotation);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'scale', ChesterGL.Block.prototype.scale);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'update', ChesterGL.Block.prototype.update);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'frame', ChesterGL.Block.prototype.frame);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'parent', ChesterGL.Block.prototype.parent);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'children', ChesterGL.Block.prototype.children);
 	// instance methods
-	ChesterGL.Block.prototype['setFrame'] = ChesterGL.Block.prototype.setFrame;
-	ChesterGL.Block.prototype['setContentSize'] = ChesterGL.Block.prototype.setContentSize;
-	ChesterGL.Block.prototype['setScale'] = ChesterGL.Block.prototype.setScale;
-	ChesterGL.Block.prototype['setColor'] = ChesterGL.Block.prototype.setColor;
-	ChesterGL.Block.prototype['setTexture'] = ChesterGL.Block.prototype.setTexture;
-	ChesterGL.Block.prototype['moveTo'] = ChesterGL.Block.prototype.moveTo;
-	ChesterGL.Block.prototype['moveBy'] = ChesterGL.Block.prototype.moveBy;
-	ChesterGL.Block.prototype['rotateTo'] = ChesterGL.Block.prototype.rotateTo;
-	ChesterGL.Block.prototype['rotateBy'] = ChesterGL.Block.prototype.rotateBy;
-	ChesterGL.Block.prototype['addChild'] = ChesterGL.Block.prototype.addChild;
-	
-	window['ChesterGL']['Block'] = ChesterGL.Block;
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setFrame', ChesterGL.Block.prototype.setFrame);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setContentSize', ChesterGL.Block.prototype.setContentSize);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setScale', ChesterGL.Block.prototype.setScale);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setColor', ChesterGL.Block.prototype.setColor);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setTexture', ChesterGL.Block.prototype.setTexture);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'moveTo', ChesterGL.Block.prototype.moveTo);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'moveBy', ChesterGL.Block.prototype.moveBy);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotateTo', ChesterGL.Block.prototype.rotateTo);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotateBy', ChesterGL.Block.prototype.rotateBy);
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'addChild', ChesterGL.Block.prototype.addChild);	
 })(window);

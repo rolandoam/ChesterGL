@@ -27,7 +27,7 @@ $(document).ready(function () {
 			
 			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::TMX iso";
-			ChesterGL.runningScene = sceneBlock;
+			ChesterGL.setRunningScene(sceneBlock);
 			
 			var tmx = new ChesterGL.TMXBlock("images/iso.tmx");
 			sceneBlock.addChild(tmx);
