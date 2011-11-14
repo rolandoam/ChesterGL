@@ -26,7 +26,7 @@ $(document).ready(function () {
 			
 			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::BlockGroup";
-			ChesterGL.runningScene = sceneBlock;
+			ChesterGL.setRunningScene(sceneBlock);
 			
 			var group = new ChesterGL.BlockGroup("images/star.png", totalBlocks);
 			
@@ -85,6 +85,7 @@ _gaq.push(['_trackPageview']);
 		<div>
 			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
+			<a href="index.html">Test Index</a>
 		</div>
 	</div>
 </body>

@@ -44,8 +44,17 @@ vec2.create = function (vec) {
 	return dest;
 };
 
+/**
+ * @ignore
+ * @type {vec3}
+ */
 HTMLCanvasElement._canvas_tmp_mouse = vec3.create();
-/** @ignore */
+
+/**
+ * @ignore
+ * @param {Event} event
+ * @return {vec3}
+ */
 HTMLCanvasElement.prototype.relativePosition = function (event) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
 	pt[0] = 0, pt[1] = 0;
@@ -61,6 +70,24 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	return pt;
 };
 
+/**
+ * right now we're going to stick with just setTimeout - it apparently
+ * gives us better performance
+ * @ignore
+ * @type {function(function(), Element)}
+ */
+window.requestAnimFrame = (function(){
+	return  window.requestAnimationFrame       ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame    ||
+			window.oRequestAnimationFrame      ||
+			window.msRequestAnimationFrame     ||
+			function(/* function */ callback, /* DOMElement */ element){
+				window.setTimeout(callback, 1000 / 60);
+			};
+})();
+window['requestAnimFrame'] = window.requestAnimFrame;
+
 (function (window) {	
 	/**
 	 * @name ChesterGL
@@ -70,21 +97,17 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	var ChesterGL = {};
 	
 	/**
-	 * right now we're going to stick with just setTimeout - it apparently
-	 * gives us better performance
-	 * @ignore
+	 * "inspired" on goog.exportProperty
+	 * @see http://closure-library.googlecode.com/svn/docs/closure_goog_base.js.source.html
+	 * 
+	 * @param {Object} object
+	 * @param {string} publicName
+	 * @param {*}      symbol
 	 */
-	window.requestAnimFrame = (function(){
-		return  window.requestAnimationFrame       || 
-				window.webkitRequestAnimationFrame || 
-				window.mozRequestAnimationFrame    || 
-				window.oRequestAnimationFrame      || 
-				window.msRequestAnimationFrame     || 
-				function(/* function */ callback, /* DOMElement */ element){
-					window.setTimeout(callback, 1000 / 60);
-				};
-	})();
-	
+	ChesterGL.exportProperty = function(object, publicName, symbol) {
+	  object[publicName] = symbol;
+	};
+
 	/**
 	 * This is the WebGL context
 	 * 
@@ -103,7 +126,6 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 * This will use whatever profile you have for analytics on the game page
 	 * 
 	 * @type {boolean}
-	 * @see {ChesterGL.analyticsProfile}
 	 */
 	ChesterGL.useGoogleAnalytics = false;
 			
@@ -138,14 +160,12 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 * @type {string}
 	 */
 	ChesterGL.projection = "3d";
-	ChesterGL['projection'] = ChesterGL.projection;
 		
 	/**
 	 * are we on webgl?
 	 * @type {boolean}
 	 */
 	ChesterGL.webglMode = true;
-	ChesterGL['webglMode'] = ChesterGL.webglMode;
 	
 	/**
 	 * whether or not to use an offscreen buffer when in not webgl mode
@@ -153,7 +173,6 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 * @type {boolean}
 	 */
 	ChesterGL.usesOffscreenBuffer = false;
-	ChesterGL['usesOffscreenBuffer'] = ChesterGL.usesOffscreenBuffer;
 	
 	/**
 	 * @type {Object.<string,Object>}
@@ -162,8 +181,17 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * the asset-loaded handlers
+	 * @type {Object.<string,function((Object|string),(Object|string),function(boolean)=)>}
 	 */
 	ChesterGL.assetsHandlers = {};
+	
+	/**
+	 * the asset loader: it specifies how a type of asset should be loaded.
+	 * The default for textures is creating a new Image() element, the default for any other
+	 * type is jquery's $.ajax asynchronously.
+	 * @type {Object.<string,function((Object|string),(Object|string))>}
+	 */
+	ChesterGL.assetsLoaders = {};
 	
 	/**
 	 * @type {Object.<string,function ()>}
@@ -226,8 +254,8 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	/**
 	 * sets the current program, also sets the uniforms for that shader
 	 * 
-	 * @function
 	 * @param {string} program
+	 * @return {Object}
 	 */
 	ChesterGL.selectProgram = function (program) {
 		var prog = this.programs[program];
@@ -248,9 +276,10 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * setups the webgl canvas
+	 * @param {string} canvasId
 	 */
-	ChesterGL.setup = function (canvas_id) {
-		var canvas = document.getElementById(canvas_id); // get the DOM element
+	ChesterGL.setup = function (canvasId) {
+		var canvas = document.getElementById(canvasId); // get the DOM element
 		this.initGraphics(canvas);
 		if (this.webglMode) {
 			this.initDefaultShaders();
@@ -259,12 +288,16 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 		this.debugSpan = document.getElementById("debug-info");
 		// register the default handler for textures
 		this.registerAssetHandler('texture', this.defaultTextureHandler);
+		this.registerAssetLoader('texture', this.defaultTextureLoader);
+		this.registerAssetLoader('default', this.defaultAssetLoader);
 	}
 	
 	/**
 	 * tryies to init the graphics stuff:
 	 * 1st attempt: webgl
 	 * fallback: canvas
+	 * 
+	 * @param {Element} canvas
 	 */
 	ChesterGL.initGraphics = function (canvas) {
 		try {
@@ -285,9 +318,9 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 				this.offContext = this.offCanvas.getContext("2d");
 				this.offContext.viewportWidth = canvas.width;
 				this.offContext.viewportHeight = canvas.height;
-				this['offContext'] = this.offContext;
-				this.offContext['viewportWidth'] = this.offContext.viewportWidth;
-				this.offContext['viewportHeight'] = this.offContext.viewportHeight;
+				this.exportProperty(this, 'offContext', this.offContext);
+				this.exportProperty(this.offContext, 'viewportWidth', this.offContext.viewportWidth);
+				this.exportProperty(this.offContext, 'viewportHeight', this.offContext.viewportHeight);
 			} else {
 				this.offContext = this.gl;
 			}
@@ -296,13 +329,13 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 			}
 			this.webglMode = false;
 		}
-		this['gl'] = this.gl;
+		this.exportProperty(this, 'gl', this.gl);
 		
 		// get real width and height
 		this.gl.viewportWidth = canvas.width;
 		this.gl.viewportHeight = canvas.height;
-		this.gl['viewportWidth'] = this.gl.viewportWidth;
-		this.gl['viewportHeight'] = this.gl.viewportHeight;
+		this.exportProperty(this.gl, 'viewportWidth', this.gl.viewportWidth);
+		this.exportProperty(this.gl, 'viewportHeight', this.gl.viewportHeight);
 		
 		// install touch handler
 		this.installMouseHandlers();
@@ -320,6 +353,8 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 				'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
 				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
 			}
+			ChesterGL.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
+			ChesterGL.exportProperty(program, 'attribs', program.attribs);
 		});
 		
 		this.initShader("texture", function (program) {
@@ -330,11 +365,16 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 				'textureCoordAttribute': gl.getAttribLocation(program, "aTextureCoord"),
 				'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition")
 			};
+			ChesterGL.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
+			ChesterGL.exportProperty(program, 'samplerUniform', program.samplerUniform);
+			ChesterGL.exportProperty(program, 'attribs', program.attribs);
 		});
 	}
 	
 	/**
 	 * init shaders (fetches data - in a sync way)
+	 * @param {string} prefix
+	 * @param {function(WebGLProgram)} callback
 	 */
 	ChesterGL.initShader = function (prefix, callback) {
 		var gl = this.gl;
@@ -358,14 +398,13 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 			return;
 		}
 		
-		
 		var program = this.createShader(prefix, fs, vs);
 		if (callback) callback(program);
-		this.initShader1 = true;
 	}
 	
 	/**
 	 * loads the shader data
+	 * @return {(string|Object|null)}
 	 */
 	ChesterGL.loadShader = function (prefix, type) {
 		var shaderData = null;
@@ -386,6 +425,10 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * actually creates the shader
+	 * @param {string} prefix
+	 * @param {(string|Object)} fragmentData
+	 * @param {(string|Object)} vertexData
+	 * @return {(WebGLProgram|null)}
 	 */
 	ChesterGL.createShader = function (prefix, fragmentData, vertexData) {
 		var gl = this.gl;
@@ -396,7 +439,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
 			console.log("problem linking shader");
 		}
-		console.log("creating shader " + prefix);
+		// console.log("creating shader " + prefix);
 		this.programs[prefix] = program;
 		return program;
 	}
@@ -414,7 +457,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 *		// create the image
 	 *		var imgtype = (/[.]/.exec(path)) ? /[^.]+$/.exec(path) : undefined;
 	 *		var img = new Image();
-	 *		var rawData = base64.encode(data);
+	 *		var rawData = window.base64_encode(data);
 	 *		img.onload = function () {
 	 *			if (ChesterGL.webglMode) {
 	 *				img.tex = ChesterGL.gl.createTexture();
@@ -435,69 +478,55 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	}
 	
 	/**
-	 * loads and asset asynchronically
+	 * Register a way to load an asset
+	 * 
+	 * @param {string} type
+	 * @param {function(string,string)} loader
+	 */
+	ChesterGL.registerAssetLoader = function (type, loader) {
+		this.assetsLoaders[type] = loader;
+	}
+	
+	/**
+	 * loads and asset using the registered method to download it
 	 * 
 	 * @param {string} type the type of asset being loaded, it could be "texture", "frameset", "audio"
-	 * @param {string|Object} path the path for the asset
-	 * @param {function(Object)=} callback the callback that will be executed as soon as the asset is loaded
+	 * @param {string|Object} assetPath the path for the asset
+	 * @param {function(Object)=} cb the callback that will be executed as soon as the asset is loaded
 	 */
-	ChesterGL.loadAsset = function (type, path, callback) {
-		var dataType = undefined;
-		if (typeof(path) == 'object') {
-			dataType = path.dataType;
-			path = path.path;
+	ChesterGL.loadAsset = function (type, assetPath, cb) {
+		var dataType_ = undefined;
+		if (typeof(assetPath) == 'object') {
+			dataType_ = assetPath.dataType;
+			assetPath = assetPath.path;
 		}
 		
 		if (!this.assets[type]) {
 			this.assets[type] = {};
 		}
 		var assets = this.assets[type];
-		if (!assets[path]) {
+		if (!assets[assetPath]) {
 			// not in our records
-			console.log("loading asset [" + type + "] " + path);
-			assets[path] = {
+			assets[assetPath] = {
 				data: null,
 				status: 'try',
 				listeners: []
 			}
-			callback && assets[path].listeners.push(callback);
-			this.loadAsset(type, {path: path, dataType: dataType});
-		} else if (assets[path].status == 'loading') {
+			cb && assets[assetPath].listeners.push(cb);
+			this.loadAsset(type, {path: assetPath, dataType: dataType_});
+		} else if (assets[assetPath].status == 'loading') {
 			// created but not yet loaded
-			callback && assets[path].listeners.push(callback);
-		} else if (assets[path].status == 'loaded') {
+			cb && assets[assetPath].listeners.push(cb);
+		} else if (assets[assetPath].status == 'loaded') {
 			// created and loaded, just call the callback
-			callback && callback(assets[path].data);
-		} else if (assets[path].status == 'try') {
-			assets[path].status = 'loading';
-			$.ajax({
-				url: path,
-				dataType: dataType,
-				beforeSend: function (xhr) {
-					// only binary data, please
-					xhr.overrideMimeType('text/plain; charset=x-user-defined');
-				},
-				success: function (data, textStatus) {
-					if (textStatus == "success") {
-						ChesterGL.assetsHandlers[type](path, data, function (handled) {
-							if (!handled) {
-								assets[path].status = 'try';
-								console.log("fetching " + path + " - again");
-								ChesterGL.loadAsset(type, {path: path, dataType: dataType});
-							} else {
-								assets[path].status = 'loaded';
-								// call all listeners
-								var l;
-								while (l = assets[path].listeners.shift()) { l(assets[path].data); }
-								ChesterGL.assetsLoaded(type);
-								ChesterGL.assetsLoaded('all');
-							}
-						});
-					} else {
-						console.log("Error loading asset " + path);
-					}
-				}
-			});
+			cb && cb(assets[assetPath].data);
+		} else if (assets[assetPath].status == 'try') {
+			assets[assetPath].status = 'loading';
+			if (this.assetsLoaders[type])
+				this.assetsLoaders[type](type, {url: assetPath, dataType: dataType_});
+			else
+				this.assetsLoaders['default'](type, {url: assetPath, dataType: dataType_});
+			cb && assets[assetPath].listeners.push(cb);
 		}
 	}
 	
@@ -547,6 +576,9 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * returns the object associated with the requested asset
+	 * @param {string} type
+	 * @param {string} path
+	 * @return {Object}
 	 */
 	ChesterGL.getAsset = function (type, path) {
 		return this.assets[type][path].data;
@@ -554,6 +586,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	
 	/**
 	 * handles a loaded texture - should only be called on a webGL mode
+	 * @param {(Object|HTMLImageElement)} texture
 	 * @return {boolean}
 	 */
 	ChesterGL.prepareWebGLTexture = function (texture) {
@@ -584,27 +617,77 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	 * The default texture handler
 	 * 
 	 * @param {string} path
-	 * @param {string} data
-	 * @param {function(boolean)=} callback
+	 * @param {Object} img
+	 * @return {boolean}
 	 */
-	ChesterGL.defaultTextureHandler = function (path, data, callback) {
-		var imgtype = (/[.]/.exec(path)) ? /[^.]+$/.exec(path) : undefined;
-		var img = new Image();
-		var rawData = base64.encode(data);
-		/** @ignore */
-		img.onload = function () {
-			if (ChesterGL.webglMode) {
-				img.tex = ChesterGL.gl.createTexture();
-			}
-			var texture = ChesterGL.assets['texture'][path];
-			texture.data = img;
-			var result = true;
-			if (ChesterGL.webglMode) {
-				result = ChesterGL.prepareWebGLTexture(img);
-			}
-			callback && callback(result);
+	ChesterGL.defaultTextureHandler = function (path, img) {
+		if (ChesterGL.webglMode) {
+			img.tex = ChesterGL.gl.createTexture();
 		}
-		img.src = "data:image/" + imgtype + ";base64," + rawData;
+		var texture = ChesterGL.assets['texture'][path];
+		texture.data = img;
+		if (ChesterGL.webglMode) {
+			return ChesterGL.prepareWebGLTexture(img);
+		}
+		return true;
+	}
+	
+	/**
+	 * @param {string} type
+	 * @param {Object.<string,string>} params
+	 */
+	ChesterGL.defaultTextureLoader = function (type, params) {
+		var img = new Image();
+		var path = params.url;
+		img.addEventListener("load", function () {
+			var texture = ChesterGL.assets['texture'][path];
+			if (ChesterGL.assetsHandlers[type](path, img)) {
+				// call all listeners
+				texture.status = 'loaded';
+				var l;
+				while (l = texture.listeners.shift()) { l(texture.data); }
+				// test for assets loaded
+				ChesterGL.assetsLoaded(type);
+				ChesterGL.assetsLoaded('all');
+			} else {
+				// requeue
+				texture.status = 'try';
+				ChesterGL.loadAsset(type, path);
+			}
+		}, false);
+		img.src = path;
+	}
+	
+	/**
+	 * @param {string} type
+	 * @param {Object.<string,string>} params
+	 */
+	ChesterGL.defaultAssetLoader = function (type, params) {
+		var path = params.url;
+		$.ajax({
+			url: path,
+			dataType: params.dataType,
+			success: function (data, textStatus) {
+				var asset = ChesterGL.assets[type][path];
+				if (textStatus == "success") {
+					if (ChesterGL.assetsHandlers[type](path, data)) {
+						asset.status = 'loaded';
+						// call all listeners
+						var l;
+						while (l = asset.listeners.shift()) { l(asset.data); }
+						// test for assets loaded
+						ChesterGL.assetsLoaded(type);
+						ChesterGL.assetsLoaded('all');
+					} else {
+						// requeue
+						asset.status = 'try';
+						ChesterGL.loadAsset(type, path);
+					}
+				} else {
+					console.log("Error loading asset " + path);
+				}
+			}
+		})
 	}
 	
 	/**
@@ -654,6 +737,13 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	}
 	
 	/**
+	 * @param {ChesterGL.Block} block
+	 */
+	ChesterGL.setRunningScene = function (block) {
+		this.runningScene = block;
+	}
+	
+	/**
 	 * main draw function, will call the root block
 	 */
 	ChesterGL.drawScene = function () {
@@ -692,11 +782,12 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	/**
 	 * updates the internal frame counter
 	 */
+	
 	/**
 	 * @type {number}
 	 * @ignore
 	 */
-	ChesterGL.lastDebugSecond_ = new Date().getTime();
+	ChesterGL.lastDebugSecond_ = Date.now();
 	/**
 	 * @type {number}
 	 * @ignore
@@ -719,7 +810,7 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 	ChesterGL.sumAvg = 0;
 	/** @ignore */
 	ChesterGL.updateDebugTime = function () {
-		var now = new Date().getTime();
+		var now = Date.now();
 		this.elapsed_ += this.delta;
 		this.frames_ ++;
 		if (now - this.lastDebugSecond_ > 1000) {
@@ -729,8 +820,8 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 			if (this.debugSpan) {
 				this.debugSpan.textContent = avg.toFixed(2);
 			}
-			// track how well we're performing - every 3 seconds
-			if (this.useGoogleAnalytics && this.sampledAvg > 3) {
+			// track how well we're performing - every 5 seconds
+			if (this.useGoogleAnalytics && this.sampledAvg > 5) {
 				_gaq.push([
 					'_trackEvent',
 					'ChesterGL',
@@ -831,14 +922,29 @@ HTMLCanvasElement.prototype.relativePosition = function (event) {
 		}
 	}
 	
-	// export symbols
-	ChesterGL['setup'] = ChesterGL.setup;
-	ChesterGL['registerAssetHandler'] = ChesterGL.registerAssetHandler;
-	ChesterGL['loadAsset'] = ChesterGL.loadAsset;
-	ChesterGL['assetsLoaded'] = ChesterGL.assetsLoaded;
-	ChesterGL['getAsset'] = ChesterGL.getAsset;
-	ChesterGL['drawScene'] = ChesterGL.drawScene;
-	ChesterGL['run'] = ChesterGL.run;
-	
 	window['ChesterGL'] = ChesterGL;
+	// is there any way to automate this? :S
+	// properties
+	ChesterGL.exportProperty(ChesterGL, 'useGoogleAnalytics', ChesterGL.useGoogleAnalytics);
+	ChesterGL.exportProperty(ChesterGL, 'projection', ChesterGL.projection);
+	ChesterGL.exportProperty(ChesterGL, 'webglMode', ChesterGL.webglMode);
+	ChesterGL.exportProperty(ChesterGL, 'usesOffscreenBuffer', ChesterGL.usesOffscreenBuffer);
+	ChesterGL.exportProperty(ChesterGL, 'debugSpanId', ChesterGL.debugSpanId);
+	ChesterGL.exportProperty(ChesterGL, 'update', ChesterGL.update);
+	ChesterGL.exportProperty(ChesterGL, 'mouseEvents', ChesterGL.mouseEvents);
+	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'DOWN', ChesterGL.mouseEvents.DOWN);
+	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'MOVE', ChesterGL.mouseEvents.MOVE);
+	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'UP', ChesterGL.mouseEvents.UP);
+	// methods
+	ChesterGL.exportProperty(ChesterGL, 'setup', ChesterGL.setup);
+	ChesterGL.exportProperty(ChesterGL, 'initShader', ChesterGL.initShader);
+	ChesterGL.exportProperty(ChesterGL, 'registerAssetHandler', ChesterGL.registerAssetHandler);
+	ChesterGL.exportProperty(ChesterGL, 'loadAsset', ChesterGL.loadAsset);
+	ChesterGL.exportProperty(ChesterGL, 'assetsLoaded', ChesterGL.assetsLoaded);
+	ChesterGL.exportProperty(ChesterGL, 'getAsset', ChesterGL.getAsset);
+	ChesterGL.exportProperty(ChesterGL, 'setupPerspective', ChesterGL.setupPerspective);
+	ChesterGL.exportProperty(ChesterGL, 'setRunningScene', ChesterGL.setRunningScene);
+	ChesterGL.exportProperty(ChesterGL, 'drawScene', ChesterGL.drawScene);
+	ChesterGL.exportProperty(ChesterGL, 'run', ChesterGL.run);
+	ChesterGL.exportProperty(ChesterGL, 'togglePause', ChesterGL.togglePause);
 })(window);

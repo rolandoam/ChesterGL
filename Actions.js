@@ -133,6 +133,7 @@
 	/**
 	 * global action manager
 	 * @namespace
+	 * @type {Object.<string,Object>}
 	 */
 	ChesterGL.ActionManager = {};
 	
@@ -164,4 +165,6 @@
 			!a.finished && a.update(delta);
 		}
 	}
+	
+	ChesterGL.exportProperty(ChesterGL.ActionManager, 'scheduleAction', ChesterGL.ActionManager.scheduleAction);
 })(window);

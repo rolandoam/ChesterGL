@@ -42,14 +42,13 @@
 	 * 
 	 * @param {string} path
 	 * @param {string} data
-	 * @param {function(boolean)=} callback
 	 */
-	function handleLoadTMX(path, data, callback) {
+	function handleLoadTMX(path, data) {
 		console.log("tmx loaded: " + path);
 		
 		var map = ChesterGL.assets['tmx'][path];
 		map.data = data;
-		callback && callback(true);
+		return true;
 	}
 	
 	/**
@@ -67,7 +66,7 @@
 		if (!map) {
 			throw "Invalid map - make sure you call loadTMX first";
 		}
-		ChesterGL.Block.call(this, null, ChesterGL.Block.TYPE.TMXBLOCK);
+		ChesterGL.Block.call(this, null, ChesterGL.Block.TYPE['TMXBLOCK']);
 		// create the map from the metadata
 		for (var i=0; i < map['layers'].length; i++) {
 			var layer = map['layers'][i];
@@ -236,6 +235,7 @@
 	ChesterGL.registerAssetHandler('tmx', handleLoadTMX);
 	
 	// export symbols
-	ChesterGL.TMXBlock['loadTMX'] = ChesterGL.TMXBlock.loadTMX;
 	ChesterGL['TMXBlock'] = ChesterGL.TMXBlock;
+	// class methods
+	ChesterGL.exportProperty(ChesterGL.TMXBlock, 'loadTMX', ChesterGL.TMXBlock.loadTMX);
 })(window);
