@@ -304,6 +304,9 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			this.canvas = canvas;
 			if (this.webglMode) {
 				this.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false});
+				if (this.gl && window.WebGLDebugUtils) {
+					this.gl = window.WebGLDebugUtils.makeDebugContext(this.gl);
+				}
 			}
 		} catch (e) {
 			console.log("ERROR: " + e);
