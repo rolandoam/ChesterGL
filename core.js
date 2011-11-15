@@ -333,15 +333,23 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			this.webglMode = false;
 		}
 		this.exportProperty(this, 'gl', this.gl);
+		// first resize of the canvas
+		this.canvasResized();
 		
+		// install touch handler
+		this.installMouseHandlers();
+	}
+	
+	/**
+	 * called when the canvas is resized
+	 */
+	ChesterGL.canvasResized = function () {
+		var canvas = this.canvas;
 		// get real width and height
 		this.gl.viewportWidth = canvas.width;
 		this.gl.viewportHeight = canvas.height;
 		this.exportProperty(this.gl, 'viewportWidth', this.gl.viewportWidth);
 		this.exportProperty(this.gl, 'viewportHeight', this.gl.viewportHeight);
-		
-		// install touch handler
-		this.installMouseHandlers();
 	}
 	
 	/**
@@ -940,6 +948,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'UP', ChesterGL.mouseEvents.UP);
 	// methods
 	ChesterGL.exportProperty(ChesterGL, 'setup', ChesterGL.setup);
+	ChesterGL.exportProperty(ChesterGL, 'canvasResized', ChesterGL.canvasResized);
 	ChesterGL.exportProperty(ChesterGL, 'initShader', ChesterGL.initShader);
 	ChesterGL.exportProperty(ChesterGL, 'registerAssetHandler', ChesterGL.registerAssetHandler);
 	ChesterGL.exportProperty(ChesterGL, 'loadAsset', ChesterGL.loadAsset);
