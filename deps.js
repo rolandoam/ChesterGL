@@ -95,7 +95,7 @@ ChesterGL.MoveToAction = function (block, totalTime, finalPosition) {};
 
 
 
-// external - request animation frame for different browsers and base64
+// external - request animation frame for different browsers and window.WebGLDebugUtils
 
 /**
  * @param {function()} callback
@@ -126,3 +126,13 @@ window.oRequestAnimationFrame = function (callback, element) {};
  * @param {Element=} element
  */
 window.msRequestAnimationFrame = function (callback, element) {};
+
+/**
+ * @namespace
+ */
+window.WebGLDebugUtils;
+
+/**
+ * @param {WebGLRenderingContext} ctx
+ */
+window.WebGLDebugUtils.makeDebugContext = function (ctx) {};
