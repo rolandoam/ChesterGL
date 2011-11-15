@@ -27,11 +27,17 @@
 	var ChesterGL = window['ChesterGL'];
 	
 	/**
-	 * 28 (bytes) ~> 7 == 1 (lifetime) + 3 (start pos) + 3 (end pos)
+	 * @const {number}
+	 * @ignore
+	 */
+	var BUFFER_ELEMENTS = 9;
+	
+	/**
+	 * BUFFER_ELEMENTS * 4 (bytes) ~> BUFFER_ELEMENTS floats == 1 (lifetime) + 1 (start size) + 1 (end size) + 3 (start pos) + 3 (end pos)
 	 * @ignore
 	 * @const {number}
 	 */
-	var PARTICLE_SIZE = 28;
+	var PARTICLE_SIZE = 36;
 	
 	/**
 	 * @param {vec3} original The original vector
@@ -84,10 +90,17 @@
 			program.u_startColor     = gl.getUniformLocation(program, "u_startColor");
 			program.u_endColor       = gl.getUniformLocation(program, "u_endColor");
 			program.attribs = {
-				'a_lifetime': gl.getAttribLocation(program, 'a_lifetime'),
 				'a_startPosition': gl.getAttribLocation(program, 'a_startPosition'),
-				'a_endPosition': gl.getAttribLocation(program, 'a_endPosition')
+				'a_lifetime'  : gl.getAttribLocation(program, 'a_lifetime'),
+				'a_startSize'  : gl.getAttribLocation(program, 'a_startSize'),
+				'a_endSize'  : gl.getAttribLocation(program, 'a_endSize'),
+				'a_speed'        : gl.getAttribLocation(program, 'a_speed')
 			};
+			// test for errors on gl
+			var error = gl.getError();
+			if (error != 0) {
+				console.log("gl error: " + error);
+			}
 		});
 		ChesterGL.ParticleSystem._shadersLoaded = true;
 	}
@@ -111,20 +124,38 @@
 	ChesterGL.ParticleSystem.prototype.maxParticles = 0;
 
 	/**
+	 * The duration of the whole system in seconds. Set it to < 0 to be infinte
+	 * @type {number}
+	 */
+	ChesterGL.ParticleSystem.prototype.duration = 0;
+
+	/**
 	 * The lifetime of the particle (in seconds)
 	 * @type {number}
 	 */
 	ChesterGL.ParticleSystem.prototype.lifetime = 0;
 
 	/**
+	 * The lifetime variance of the particle (in seconds)
+	 * @type {number}
+	 */
+	ChesterGL.ParticleSystem.prototype.lifetimeVariance = 0;
+
+	/**
 	 * The starting color
-	 * @type {quat4}
+	 * @type {?quat4}
 	 */
 	ChesterGL.ParticleSystem.prototype.startColor = null;
 
 	/**
+	 * The starting position variance
+	 * @type {?vec3}
+	 */
+	ChesterGL.ParticleSystem.prototype.positionVariance = null;
+
+	/**
 	 * The end color
-	 * @type {quat4}
+	 * @type {?quat4}
 	 */
 	ChesterGL.ParticleSystem.prototype.endColor = null;
 	
@@ -145,6 +176,12 @@
 	 * @type {number}
 	 */
 	ChesterGL.ParticleSystem.prototype.elapsedTime = 0;
+
+	/**
+	 * The blending options [src, dest]
+	 * @type {Array.<string>}
+	 */
+	ChesterGL.ParticleSystem.prototype.blendOptions = ["SRC_ALPHA", "ONE_MINUS_SRC_ALPHA"];
 	
 	/**
 	 * @param {Object} properties
@@ -156,16 +193,19 @@
 		}
 		this.particleTexture = properties['texture'];
 		this.maxParticles = properties['maxParticles'];
-		this.lifetime = Math.floor(properties['lifetime']) * 1000.0;
+		this.duration = parseFloat(properties['duration']) * 1000.0;
+		this.lifetime = parseFloat(properties['lifetime']) * 1000.0;
+		this.lifetimeVariance = parseFloat(properties['lifetimeVariance']) * 1000.0;
 		this.startColor = quat4.create(properties['startColor']);
+		this.positionVariance = vec3.create(properties['positionVariance']);
 		this.endColor = quat4.create(properties['endColor']);
 		this.particleSpeed = vec3.create(properties['speed']);
 		this.particleSpeedVariance = vec3.create(properties['speedVariance']);
 		this.elapsedTime = 0;
-        
+		this.blendOptions = properties['blendOptions'].slice(0); // copy the array
+		
 		this.glBuffer = ChesterGL.gl.createBuffer();
-		// 7 == 1 (lifetime) + 3 (startPosition) + 3 (endPosition)
-		this.glBufferData = new Float32Array(this.maxParticles * 7);
+		this.glBufferData = new Float32Array(this.maxParticles * BUFFER_ELEMENTS);
 		this.resetParticles();
 	}
 	
@@ -176,22 +216,35 @@
 		var program = ChesterGL.selectProgram("particles");
 		var gl = ChesterGL.gl;
 		for (var i = 0; i < this.maxParticles; i++) {
-			this.glBufferData[i * 7 + 0] = Math.random() * this.lifetime;
+			// lifetime
+			this.glBufferData[i * BUFFER_ELEMENTS + 0] = Math.abs(this.lifetime + this.lifetimeVariance * (Math.random() * 2 - 1));
+			// start size
+			this.glBufferData[i * BUFFER_ELEMENTS + 1] = 40.0;
+			// end size
+			this.glBufferData[i * BUFFER_ELEMENTS + 2] = 1.0;
+			
 			// speed
-			this.glBufferData[i * 7 + 1] = this.particleSpeed[0] + this.particleSpeedVariance[0] * (Math.random() - 0.5);
-			this.glBufferData[i * 7 + 2] = this.particleSpeed[1] + this.particleSpeedVariance[1] * (Math.random() - 0.5);
-			this.glBufferData[i * 7 + 3] = this.particleSpeed[2] + this.particleSpeedVariance[2] * (Math.random() - 0.5);
+			this.glBufferData[i * BUFFER_ELEMENTS + 3] = this.particleSpeed[0] + this.particleSpeedVariance[0] * (Math.random() * 2 - 1);
+			this.glBufferData[i * BUFFER_ELEMENTS + 4] = this.particleSpeed[1] + this.particleSpeedVariance[1] * (Math.random() * 2 - 1);
+			this.glBufferData[i * BUFFER_ELEMENTS + 5] = this.particleSpeed[2] + this.particleSpeedVariance[2] * (Math.random() * 2 - 1);
+			
 			// start position
-			this.glBufferData[i * 7 + 4] = Math.random() * 10 - 5;
-			this.glBufferData[i * 7 + 5] = Math.random() * 10 - 5;
-			this.glBufferData[i * 7 + 6] = Math.random() * 10 - 5;
+			this.glBufferData[i * BUFFER_ELEMENTS + 6] = (Math.random() * 2 - 1) * this.positionVariance[0];
+			this.glBufferData[i * BUFFER_ELEMENTS + 7] = (Math.random() * 2 - 1) * this.positionVariance[1];
+			this.glBufferData[i * BUFFER_ELEMENTS + 8] = (Math.random() * 2 - 1) * this.positionVariance[2];
 		}
 		
 		gl.uniform4fv(program.u_startColor, this.startColor);
 		gl.uniform4fv(program.u_endColor  , this.endColor);
+		gl.uniform1i(program.uSampler, 0);
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);		
+		gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
+		gl.vertexAttribPointer(program.attribs['a_lifetime']     , 3, gl.FLOAT, false, PARTICLE_SIZE, 0);
+		gl.vertexAttribPointer(program.attribs['a_startSize']    , 3, gl.FLOAT, false, PARTICLE_SIZE, 4);
+		gl.vertexAttribPointer(program.attribs['a_endSize']      , 3, gl.FLOAT, false, PARTICLE_SIZE, 8);
+		gl.vertexAttribPointer(program.attribs['a_speed']        , 3, gl.FLOAT, false, PARTICLE_SIZE, 12);
+		gl.vertexAttribPointer(program.attribs['a_startPosition'], 3, gl.FLOAT, false, PARTICLE_SIZE, 24);	
 	}
 	
 	ChesterGL.ParticleSystem.prototype.update = function (delta) {
@@ -200,7 +253,7 @@
 			return;
 		}
 		this.elapsedTime += delta;
-		if (this.elapsedTime > this.lifetime) {
+		if (this.duration > 0 && this.elapsedTime > this.duration) {
 			this.elapsedTime = 0;
 		}
 		ChesterGL.gl.uniform1f(program.u_time, this.elapsedTime);
@@ -217,18 +270,12 @@
 		var gl = ChesterGL.gl;
 		var texture = ChesterGL.getAsset('texture', this.particleTexture);
 		
-		// send the data to the gpu
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-		gl.vertexAttribPointer(program.attribs['a_lifetime']     , 1, gl.FLOAT, false, PARTICLE_SIZE, 0);
-		gl.vertexAttribPointer(program.attribs['a_endPosition']  , 3, gl.FLOAT, false, PARTICLE_SIZE, 4);
-		gl.vertexAttribPointer(program.attribs['a_startPosition'], 3, gl.FLOAT, false, PARTICLE_SIZE, 16);
+		gl.blendFunc(gl[this.blendOptions[0]], gl[this.blendOptions[1]]);
+		gl.enable(gl.BLEND);
 		
 		// activate the texture
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture.tex);
-		gl.uniform1i(program.uSampler, 0);
-		gl.uniform4fv(program.u_startColor, this.startColor);
-		gl.uniform4fv(program.u_endColor  , this.endColor);
 		
 		// and draw:
 		var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));

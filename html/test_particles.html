@@ -7,19 +7,25 @@
 	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<script type="text/javascript" src="externals/colorpicker.js"></script>
-	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="externals/webgl-debug.js"></script>
 	<script type="text/javascript" src="chester.js"></script>
     <script type="text/javascript">
 
-$(document).ready(function () {	
+$(document).ready(function () {
 	var particle_properties = {
-		'texture': 'images/star.png',
-		'maxParticles': 1,
-		'lifetime': 4.0,
-		'startColor': [1, 1, 1, 1],
-		'endColor':     [1, 1, 1, 1],
-		'speed': vec3.create([0, 1, 0]),
-		'speedVariance': vec3.create([0, 0, 0]),
+		'texture': 'images/fire.png',
+		'maxParticles': 2000,
+		'duration': 4.0,
+		'lifetime': 1.15,
+		'lifetimeVariance': 2.82,
+		'startColor': [1, 0.18, 0, 0.62],
+		'startColorVariance': [0, 0, 0, 0],
+		'endColor': [1, 0.46, 0, 0],
+		'endColorVariance': [0, 0, 0, 0],
+		'positionVariance': [160, 0, 0],
+		'speed': vec3.create([0, 0.05, 0]),
+		'speedVariance': vec3.create([0, 0.01, 0]),
+		'blendOptions': ['SRC_ALPHA', 'ONE'],
 		// more paramenters (not working right now)
 		'gravity': vec3.create([0, 0, 0]),
 	};
@@ -41,12 +47,11 @@ $(document).ready(function () {
 			ChesterGL.setupPerspective();
 			
 			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
-			sceneBlock.title = "Test::Actions";
-			ChesterGL.runningScene = sceneBlock;
+			sceneBlock.title = "Test::Particles";
+			ChesterGL.setRunningScene(sceneBlock);
 
 			ps = new ChesterGL.ParticleSystem(particle_properties);
-			ps.setColor([1, 0, 0, 1]);
-			ps.moveTo([width / 2, height / 2, 0]);
+			ps.moveTo([width / 2, 10, 0]);
 			
 			sceneBlock.addChild(ps);
 			
@@ -75,11 +80,15 @@ $(document).ready(function () {
 	
 	function showData() {
 		$("#max_particles").val(particle_properties['maxParticles']);
+		$("#duration").val(particle_properties['duration']);
 		$("#lifetime").val(particle_properties['lifetime']);
+		$("#lifetime_var").val(particle_properties['lifetimeVariance']);
 		var ic = particle_properties['startColor'];
 		var ed = particle_properties['endColor'];
 		$("#initial_color").val("#" + floatToHex(ic[0]) + floatToHex(ic[1]) + floatToHex(ic[2]));
+		$("#initial_color_a").val(ic[3]);
 		$("#end_color").val("#" + floatToHex(ed[0]) + floatToHex(ed[1]) + floatToHex(ed[2]));
+		$("#end_color_a").val(ed[3]);
 		$("#speed-x").val(particle_properties['speed'][0]);
 		$("#speed-y").val(particle_properties['speed'][1]);
 		$("#speed-z").val(particle_properties['speed'][2]);
@@ -90,11 +99,15 @@ $(document).ready(function () {
 	
 	function reloadData() {
 		particle_properties['maxParticles'] = parseInt($("#max_particles").val());
-		particle_properties['lifetime'] = parseInt($("#lifetime").val());
+		particle_properties['duration'] = parseFloat($("#duration").val());
+		particle_properties['lifetime'] = parseFloat($("#lifetime").val());
+		particle_properties['lifetimeVariance'] = parseFloat($("#lifetime_var").val());
 		var str_ic = $("#initial_color").val();
 		var str_ed = $("#end_color").val();
-		particle_properties['startColor'] = [hexToFloat(str_ic.substr(1, 2)), hexToFloat(str_ic.substr(3, 2)), hexToFloat(str_ic.substr(5, 2)), 1];
-		particle_properties['endColor']   = [hexToFloat(str_ed.substr(1, 2)), hexToFloat(str_ed.substr(3, 2)), hexToFloat(str_ed.substr(5, 2)), 1];
+		var ic_a = $("#initial_color_a").val();
+		var ec_a = $("#end_color_a").val();
+		particle_properties['startColor'] = [hexToFloat(str_ic.substr(1, 2)), hexToFloat(str_ic.substr(3, 2)), hexToFloat(str_ic.substr(5, 2)), parseFloat(ic_a)];
+		particle_properties['endColor']   = [hexToFloat(str_ed.substr(1, 2)), hexToFloat(str_ed.substr(3, 2)), hexToFloat(str_ed.substr(5, 2)), parseFloat(ec_a)];
 		particle_properties['speed'][0] = parseFloat($("#speed-x").val());
 		particle_properties['speed'][1] = parseFloat($("#speed-y").val());
 		particle_properties['speed'][2] = parseFloat($("#speed-z").val());
@@ -161,17 +174,19 @@ _gaq.push(['_trackPageview']);
 </head>
 <body>
 	<div style="width: 80%">
-	<div style="float: right; width: 250px; margin-left: 0px;">
+	<div style="float: right; width: 350px; margin-left: 0px;">
 		<em>Particle Properties</em>
 		<div>Max Particles: <input type="text" value="" id="max_particles"/></div>
+		<div>Duration: <input type="text" value="" id="duration"/></div>
 		<div>Lifetime: <input type="text" value="" id="lifetime"/></div>
-		<div>Initial Color: <input type="text" id="initial_color"/></div>
-		<div>End Color: <input type="text" id="end_color"/></div>
+		<div>Lifetime Var: <input type="text" value="" id="lifetime_var"/></div>
+		<div>Initial Color: <input type="text" id="initial_color"/><input type="text" id="initial_color_a" size="2"/></div>
+		<div>End Color: <input type="text" id="end_color"/><input type="text" id="end_color_a" size="2"/></div>
 		<div>Speed: <input type="text" id="speed-x" size="2"/><input type="text" id="speed-y" size="2"/><input type="text" id="speed-z" size="2"/></div>
 		<div>Speed Var: <input type="text" id="vspeed-x" size="2"/><input type="text" id="vspeed-y" size="2"/><input type="text" id="vspeed-z" size="2"/></div>
 		<div><input type="button" value="Reload" id="reload-button"/></div>
 	</div>
-	<div id="game-container">
+	<div id="game-container" style="margin-left: 30px">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
 			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
