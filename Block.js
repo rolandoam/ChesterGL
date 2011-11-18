@@ -388,12 +388,12 @@
 	 * 
 	 * @param {ChesterGL.Block} block
 	 */
-	ChesterGL.Block.prototype.remove = function (block) {
+	ChesterGL.Block.prototype.removeChild = function (block) {
 		if (!block.parent || block.parent != this) {
 			throw "not our child!";
 		}
 		var idx = this.children.indexOf(block);
-		if (idx > 0) {
+		if (idx >= 0) {
 			this.children.splice(idx,1);
 		}
 	}
@@ -612,4 +612,5 @@
 	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotateTo', ChesterGL.Block.prototype.rotateTo);
 	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotateBy', ChesterGL.Block.prototype.rotateBy);
 	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'addChild', ChesterGL.Block.prototype.addChild);	
+	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'removeChild', ChesterGL.Block.prototype.removeChild);
 })(window);
