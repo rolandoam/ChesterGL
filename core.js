@@ -781,9 +781,9 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		// for actions and other stuff
 		var current = new Date().getTime(); // milliseconds
 		this.delta = current - this.lastTime;
-		if (this.delta > 150) {
-			this.delta = 30; // set a lower delta when debugging
-		}
+		// if (this.delta > 150) {
+		// 	this.delta = 31.337; // set a lower delta when debugging
+		// }
 		this.lastTime = current;	
 	}
 	

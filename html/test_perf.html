@@ -1,0 +1,118 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/base64.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	setupGame();
+	var useBlockGroup = true;
+	var totalBlocks = 1500;
+	var sceneBlock, group;
+	$("#totalBlocks").val(totalBlocks);
+
+	function setupGame() {
+		ChesterGL.useGoogleAnalytics = true;
+		ChesterGL.setup("demo-canvas");
+
+		ChesterGL.loadAsset("texture", "images/sprite-default-000.png");
+		ChesterGL.assetsLoaded("texture", function () {
+			$("#loading").html("Test BlockGroup");
+			// finish with the setup and run the game
+			ChesterGL.setupPerspective();
+
+			sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::BlockGroup";
+			ChesterGL.setRunningScene(sceneBlock);
+
+			createGroup();
+
+			sceneBlock.addChild(group);
+			ChesterGL.run();
+			// draw a single frame (for debug purposes)
+			// ChesterGL.drawScene();
+		});
+	} // setupGame()
+	
+	function createGroup() {
+		var useWebgl = ChesterGL.webglMode;
+		group = (useWebgl && useBlockGroup) ? (new ChesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new ChesterGL.Block());
+		var width = ChesterGL.gl.viewportWidth;
+		var height = ChesterGL.gl.viewportHeight;
+		
+		// add lots of blocks
+		for (var i=0; i < totalBlocks; i++) {
+			var b;
+			if (useBlockGroup) {
+				b = group.createBlock();
+			} else {
+				b = new ChesterGL.Block();
+				b.setTexture("images/sprite-default-000.png");
+			}
+			b.setColor([1, 1, 1, 0.1]);
+			b.moveTo([Math.random() * width, Math.random() * height, 0]);
+			group.addChild(b);
+		}
+	}
+
+	var fullScreen = false;
+	$("#fullScreen").click(function () {
+		var canvas = document.getElementById("game-container");
+		canvas.onwebkitfullscreenchange = function () {
+			fullScreen = !fullScreen;
+			console.log("we went full screen: " + fullScreen);
+			canvas.webkitCancelFullScreen();
+		}
+		if (!fullScreen) {
+			canvas.webkitRequestFullScreen();
+		}
+	});
+	
+	$("#reset").click(function () {
+		totalBlocks = parseInt($("#totalBlocks").val());
+		useBlockGroup = $("#useBlockGroup").is(':checked');
+		ChesterGL.togglePause();
+		
+		sceneBlock.removeChild(group);
+		createGroup();
+		sceneBlock.addChild(group);
+		
+		ChesterGL.togglePause();
+	});
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_setDomainName', 'github.com']);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
+			<span id="debug-info">00</span> ms per frame
+			<a href="index.html">Test Index</a>
+			<div>
+				Number of blocks: <input type="text" id="totalBlocks"/> |
+				Use block group (batched sprites): <input id="useBlockGroup" type="checkbox" checked value="1"/>
+				<input type="button" id="reset" value="Reset"/>
+			</div>
+		</div>
+	</div>
+	<div><strong>NOTE</strong> heavily inspired in the perf test made by <a href="http://www.scirra.com/blog/58/html5-2d-gaming-performance-analysis">scirra</a></div>
+</body>
+</html>
