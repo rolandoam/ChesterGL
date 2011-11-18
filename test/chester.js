@@ -1,42 +1,28 @@
-var vec2 = {create:function(f) {
+var vec2 = {create:function(h) {
   var a = new Float32Array(2);
-  f && (a[0] = f[0], a[1] = f[1]);
+  h && (a[0] = h[0], a[1] = h[1]);
   return a
 }};
 HTMLCanvasElement._canvas_tmp_mouse = vec3.create();
-HTMLCanvasElement.prototype.relativePosition = function(f) {
+HTMLCanvasElement.prototype.relativePosition = function(h) {
   var a = HTMLCanvasElement._canvas_tmp_mouse;
   a[0] = 0;
   a[1] = 0;
-  f.x != void 0 && f.y != void 0 ? (a[0] = f.x, a[1] = f.y) : (a[0] = f.clientX + document.body.scrollLeft + document.documentElement.scrollLeft, a[1] = f.clientY + document.body.scrollTop + document.documentElement.scrollTop);
+  h.x != void 0 && h.y != void 0 ? (a[0] = h.x, a[1] = h.y) : (a[0] = h.clientX + document.body.scrollLeft + document.documentElement.scrollLeft, a[1] = h.clientY + document.body.scrollTop + document.documentElement.scrollTop);
   a[0] -= this.offsetLeft;
   a[1] = this.height - (a[1] - this.offsetTop);
   return a
 };
-(function(f) {
-  var a = {};
-  f.requestAnimFrame = function() {
-    return f.requestAnimationFrame || f.webkitRequestAnimationFrame || f.mozRequestAnimationFrame || f.oRequestAnimationFrame || f.msRequestAnimationFrame || function(a) {
-      f.setTimeout(a, 1E3 / 60)
-    }
-  }();
-  a.gl = null;
-  a._paused = !1;
-  a.useGoogleAnalytics = !1;
-  a.programs = {};
-  a.currentProgram = null;
-  a.pMatrix = null;
-  a.runningScene = null;
-  a.canvas = null;
-  a.projection = "3d";
-  a.projection = a.projection;
-  a.webglMode = !0;
-  a.webglMode = a.webglMode;
-  a.usesOffscreenBuffer = !1;
-  a.usesOffscreenBuffer = a.usesOffscreenBuffer;
-  a.assets = {};
-  a.assetsHandlers = {};
-  a.assetsLoadedListeners = {};
+window.requestAnimFrame = function() {
+  return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(h) {
+    window.setTimeout(h, 1E3 / 60)
+  }
+}();
+window.requestAnimFrame = window.requestAnimFrame;
+(function(h) {
+  var a = {exportProperty:function(a, b, d) {
+    a[b] = d
+  }, gl:null, _paused:false, useGoogleAnalytics:false, programs:{}, currentProgram:null, pMatrix:null, runningScene:null, canvas:null, projection:"3d", webglMode:true, usesOffscreenBuffer:false, assets:{}, assetsHandlers:{}, assetsLoaders:{}, assetsLoadedListeners:{}};
   a.lastTime = (new Date).getTime();
   a.delta = 0;
   a.fps = 0;
@@ -61,52 +47,64 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     this.initGraphics(document.getElementById(a));
     this.webglMode && this.initDefaultShaders();
     this.debugSpan = document.getElementById("debug-info");
-    this.registerAssetHandler("texture", this.defaultTextureHandler)
+    this.registerAssetHandler("texture", this.defaultTextureHandler);
+    this.registerAssetLoader("texture", this.defaultTextureLoader);
+    this.registerAssetLoader("default", this.defaultAssetLoader)
   };
   a.initGraphics = function(a) {
     try {
       if(this.canvas = a, this.webglMode) {
-        this.gl = a.getContext("experimental-webgl", {alpha:!1, antialias:!1})
+        this.gl = a.getContext("experimental-webgl", {alpha:false, antialias:false})
       }
     }catch(b) {
       console.log("ERROR: " + b)
     }
     if(!this.gl) {
       this.gl = a.getContext("2d");
-      this.usesOffscreenBuffer ? (this.offCanvas = document.createElement("canvas"), this.offCanvas.width = a.width, this.offCanvas.height = a.height, this.offContext = this.offCanvas.getContext("2d"), this.offContext.viewportWidth = a.width, this.offContext.viewportHeight = a.height, this.offContext = this.offContext, this.offContext.viewportWidth = this.offContext.viewportWidth, this.offContext.viewportHeight = this.offContext.viewportHeight) : this.offContext = this.gl;
+      this.usesOffscreenBuffer ? (this.offCanvas = document.createElement("canvas"), this.offCanvas.width = a.width, this.offCanvas.height = a.height, this.offContext = this.offCanvas.getContext("2d"), this.offContext.viewportWidth = a.width, this.offContext.viewportHeight = a.height, this.exportProperty(this, "offContext", this.offContext), this.exportProperty(this.offContext, "viewportWidth", this.offContext.viewportWidth), this.exportProperty(this.offContext, "viewportHeight", this.offContext.viewportHeight)) : 
+      this.offContext = this.gl;
       if(!this.gl || !this.offContext) {
         throw"Error initializing graphic context!";
       }
-      this.webglMode = !1
+      this.webglMode = false
     }
-    this.gl = this.gl;
-    this.gl.viewportWidth = a.width;
-    this.gl.viewportHeight = a.height;
-    this.gl.viewportWidth = this.gl.viewportWidth;
-    this.gl.viewportHeight = this.gl.viewportHeight;
+    this.exportProperty(this, "gl", this.gl);
+    this.canvasResized();
     this.installMouseHandlers()
   };
+  a.canvasResized = function() {
+    var a = this.canvas;
+    this.gl.viewportWidth = a.width;
+    this.gl.viewportHeight = a.height;
+    this.exportProperty(this.gl, "viewportWidth", this.gl.viewportWidth);
+    this.exportProperty(this.gl, "viewportHeight", this.gl.viewportHeight)
+  };
   a.initDefaultShaders = function() {
-    var a = this.gl;
+    var c = this.gl;
     this.initShader("default", function(b) {
-      b.mvpMatrixUniform = a.getUniformLocation(b, "uMVPMatrix");
-      b.attribs = {vertexPositionAttribute:a.getAttribLocation(b, "aVertexPosition"), vertexColorAttribute:a.getAttribLocation(b, "aVertexColor")}
+      b.mvpMatrixUniform = c.getUniformLocation(b, "uMVPMatrix");
+      b.attribs = {vertexPositionAttribute:c.getAttribLocation(b, "aVertexPosition"), vertexColorAttribute:c.getAttribLocation(b, "aVertexColor")};
+      a.exportProperty(b, "mvpMatrixUniform", b.mvpMatrixUniform);
+      a.exportProperty(b, "attribs", b.attribs)
     });
     this.initShader("texture", function(b) {
-      b.mvpMatrixUniform = a.getUniformLocation(b, "uMVPMatrix");
-      b.samplerUniform = a.getUniformLocation(b, "uSampler");
-      b.attribs = {vertexColorAttribute:a.getAttribLocation(b, "aVertexColor"), textureCoordAttribute:a.getAttribLocation(b, "aTextureCoord"), vertexPositionAttribute:a.getAttribLocation(b, "aVertexPosition")}
+      b.mvpMatrixUniform = c.getUniformLocation(b, "uMVPMatrix");
+      b.samplerUniform = c.getUniformLocation(b, "uSampler");
+      b.attribs = {vertexColorAttribute:c.getAttribLocation(b, "aVertexColor"), textureCoordAttribute:c.getAttribLocation(b, "aTextureCoord"), vertexPositionAttribute:c.getAttribLocation(b, "aVertexPosition")};
+      a.exportProperty(b, "mvpMatrixUniform", b.mvpMatrixUniform);
+      a.exportProperty(b, "samplerUniform", b.samplerUniform);
+      a.exportProperty(b, "attribs", b.attribs)
     })
   };
   a.initShader = function(a, b) {
-    var d = this.gl, e = this.loadShader(a, "frag"), g = this.loadShader(a, "vert"), j = d.createShader(d.FRAGMENT_SHADER);
-    d.shaderSource(j, e);
-    d.compileShader(j);
-    d.getShaderParameter(j, d.COMPILE_STATUS) ? (e = d.createShader(d.VERTEX_SHADER), d.shaderSource(e, g), d.compileShader(e), d.getShaderParameter(e, d.COMPILE_STATUS) ? (d = this.createShader(a, j, e), b && b(d), this.initShader1 = !0) : console.log("problem compiling vertex shader " + a + "(" + d.getShaderInfoLog(e) + "):\n" + g)) : console.log("problem compiling fragment shader " + a + "(" + d.getShaderInfoLog(j) + "):\n" + e)
+    var d = this.gl, e = this.loadShader(a, "frag"), g = this.loadShader(a, "vert"), i = d.createShader(d.FRAGMENT_SHADER);
+    d.shaderSource(i, e);
+    d.compileShader(i);
+    d.getShaderParameter(i, d.COMPILE_STATUS) ? (e = d.createShader(d.VERTEX_SHADER), d.shaderSource(e, g), d.compileShader(e), d.getShaderParameter(e, d.COMPILE_STATUS) ? (d = this.createShader(a, i, e), b && b(d)) : console.log("problem compiling vertex shader " + a + "(" + d.getShaderInfoLog(e) + "):\n" + g)) : console.log("problem compiling fragment shader " + a + "(" + d.getShaderInfoLog(i) + "):\n" + e)
   };
   a.loadShader = function(a, b) {
     var d = null;
-    $.ajax({url:"shaders/" + a + "." + b, async:!1, type:"GET", success:function(a, c) {
+    $.ajax({url:"shaders/" + a + "." + b, async:false, type:"GET", success:function(a, c) {
       c == "success" ? d = a : console.log("error getting the shader data")
     }});
     return d
@@ -117,19 +115,21 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     e.attachShader(g, d);
     e.linkProgram(g);
     e.getProgramParameter(g, e.LINK_STATUS) || console.log("problem linking shader");
-    console.log("creating shader " + a);
     return this.programs[a] = g
   };
   a.registerAssetHandler = function(a, b) {
     this.assetsHandlers[a] = b
   };
-  a.loadAsset = function(c, b, d) {
+  a.registerAssetLoader = function(a, b) {
+    this.assetsLoaders[a] = b
+  };
+  a.loadAsset = function(a, b, d) {
     var e = void 0;
     if(typeof b == "object") {
       e = b.dataType, b = b.path
     }
-    this.assets[c] || (this.assets[c] = {});
-    var g = this.assets[c];
+    this.assets[a] || (this.assets[a] = {});
+    var g = this.assets[a];
     if(g[b]) {
       if(g[b].status == "loading") {
         d && g[b].listeners.push(d)
@@ -138,43 +138,31 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
           d && d(g[b].data)
         }else {
           if(g[b].status == "try") {
-            g[b].status = "loading", $.ajax({url:b, dataType:e, beforeSend:function(a) {
-              a.overrideMimeType("text/plain; charset=x-user-defined")
-            }, success:function(d, h) {
-              if(h == "success") {
-                a.assetsHandlers[c](b, d, function(d) {
-                  if(d) {
-                    for(g[b].status = "loaded";d = g[b].listeners.shift();) {
-                      d(g[b].data)
-                    }
-                    a.assetsLoaded(c);
-                    a.assetsLoaded("all")
-                  }else {
-                    g[b].status = "try", console.log("fetching " + b + " - again"), a.loadAsset(c, {path:b, dataType:e})
-                  }
-                })
-              }else {
-                console.log("Error loading asset " + b)
-              }
-            }})
+            g[b].status = "loading";
+            if(this.assetsLoaders[a]) {
+              this.assetsLoaders[a](a, {url:b, dataType:e})
+            }else {
+              this.assetsLoaders["default"](a, {url:b, dataType:e})
+            }
+            d && g[b].listeners.push(d)
           }
         }
       }
     }else {
-      console.log("loading asset [" + c + "] " + b), g[b] = {data:null, status:"try", listeners:[]}, d && g[b].listeners.push(d), this.loadAsset(c, {path:b, dataType:e})
+      g[b] = {data:null, status:"try", listeners:[]}, d && g[b].listeners.push(d), this.loadAsset(a, {path:b, dataType:e})
     }
   };
   a.assetsLoaded = function(a, b) {
     var d = this.assetsLoadedListeners[a];
     d || (this.assetsLoadedListeners[a] = [], d = this.assetsLoadedListeners[a]);
     b && d.push(b);
-    var e = !0;
+    var e = true;
     if(a == "all") {
       for(var g in this.assets) {
-        var j = this.assets[g], h;
-        for(h in j) {
-          if(j[h].status != "loaded") {
-            e = !1;
+        var i = this.assets[g], f;
+        for(f in i) {
+          if(i[f].status != "loaded") {
+            e = false;
             break
           }
         }
@@ -183,9 +171,9 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
         }
       }
     }else {
-      for(h in j = this.assets[a], j) {
-        if(j[h].status != "loaded") {
-          e = !1;
+      for(f in i = this.assets[a], i) {
+        if(i[f].status != "loaded") {
+          e = false;
           break
         }
       }
@@ -200,34 +188,65 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     return this.assets[a][b].data
   };
   a.prepareWebGLTexture = function(a) {
-    var b = this.gl, d = !0;
+    var b = this.gl, d = true;
     try {
       var e = 0;
       b.pixelStorei(b.UNPACK_FLIP_Y_WEBGL, 1);
       b.bindTexture(b.TEXTURE_2D, a.tex);
       b.texImage2D(b.TEXTURE_2D, 0, b.RGBA, b.RGBA, b.UNSIGNED_BYTE, a);
       e = b.getError();
-      e != 0 && (console.log("gl error " + e), d = !1);
+      e != 0 && (console.log("gl error " + e), d = false);
       b.texParameteri(b.TEXTURE_2D, b.TEXTURE_MAG_FILTER, b.LINEAR);
       b.texParameteri(b.TEXTURE_2D, b.TEXTURE_MIN_FILTER, b.LINEAR);
       b.bindTexture(b.TEXTURE_2D, null)
     }catch(g) {
-      console.log("got some error: " + g), d = !1
+      console.log("got some error: " + g), d = false
     }
     return d
   };
-  a.defaultTextureHandler = function(c, b, d) {
-    var e = /[.]/.exec(c) ? /[^.]+$/.exec(c) : void 0, g = new Image, b = base64.encode(b);
-    g.onload = function() {
-      if(a.webglMode) {
-        g.tex = a.gl.createTexture()
+  a.defaultTextureHandler = function(c, b) {
+    if(a.webglMode) {
+      b.tex = a.gl.createTexture()
+    }
+    a.assets.texture[c].data = b;
+    return a.webglMode ? a.prepareWebGLTexture(b) : true
+  };
+  a.defaultTextureLoader = function(c, b) {
+    var d = new Image, e = b.url;
+    d.addEventListener("load", function() {
+      var b = a.assets.texture[e];
+      if(a.assetsHandlers[c](e, d)) {
+        b.status = "loaded";
+        for(var i;i = b.listeners.shift();) {
+          i(b.data)
+        }
+        a.assetsLoaded(c);
+        a.assetsLoaded("all")
+      }else {
+        b.status = "try", a.loadAsset(c, e)
       }
-      a.assets.texture[c].data = g;
-      var b = !0;
-      a.webglMode && (b = a.prepareWebGLTexture(g));
-      d && d(b)
-    };
-    g.src = "data:image/" + e + ";base64," + b
+    }, false);
+    d.src = e
+  };
+  a.defaultAssetLoader = function(c, b) {
+    var d = b.url;
+    $.ajax({url:d, dataType:b.dataType, success:function(b, g) {
+      var i = a.assets[c][d];
+      if(g == "success") {
+        if(a.assetsHandlers[c](d, b)) {
+          i.status = "loaded";
+          for(var f;f = i.listeners.shift();) {
+            f(i.data)
+          }
+          a.assetsLoaded(c);
+          a.assetsLoaded("all")
+        }else {
+          i.status = "try", a.loadAsset(c, d)
+        }
+      }else {
+        console.log("Error loading asset " + d)
+      }
+    }})
   };
   a.setupPerspective = function() {
     var a = this.gl;
@@ -252,25 +271,25 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       }
     }
   };
+  a.setRunningScene = function(a) {
+    this.runningScene = a
+  };
   a.drawScene = function() {
     var a = void 0;
-    this.webglMode ? a = this.gl : (a = this.offContext, a.setTransform(1, 0, 0, 1, 0, 0), a.fillRect(0, 0, a.viewportWidth, a.viewportHeight));
+    this.webglMode ? (a = this.gl, a.clear(a.COLOR_BUFFER_BIT | a.DEPTH_BUFFER_BIT)) : (a = this.offContext, a.setTransform(1, 0, 0, 1, 0, 0), a.fillRect(0, 0, a.viewportWidth, a.viewportHeight));
     this.runningScene && this.runningScene.visit();
     !this.webglMode && this.usesOffscreenBuffer && (a.fillRect(0, 0, a.viewportWidth, a.viewportHeight), a.drawImage(this.offCanvas, 0, 0));
     a = (new Date).getTime();
     this.delta = a - this.lastTime;
-    if(this.delta > 150) {
-      this.delta = 30
-    }
     this.lastTime = a
   };
-  a.lastDebugSecond_ = (new Date).getTime();
+  a.lastDebugSecond_ = Date.now();
   a.elapsed_ = 0;
   a.frames_ = 0;
   a.sampledAvg = 0;
   a.sumAvg = 0;
   a.updateDebugTime = function() {
-    var c = (new Date).getTime();
+    var c = Date.now();
     this.elapsed_ += this.delta;
     this.frames_++;
     if(c - this.lastDebugSecond_ > 1E3) {
@@ -280,7 +299,7 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       if(this.debugSpan) {
         this.debugSpan.textContent = b.toFixed(2)
       }
-      if(this.useGoogleAnalytics && this.sampledAvg > 3) {
+      if(this.useGoogleAnalytics && this.sampledAvg > 5) {
         _gaq.push(["_trackEvent", "ChesterGL", "renderTime-" + this.webglMode, a.runningScene.title, Math.floor(this.sumAvg / this.sampledAvg)]), this.sumAvg = this.sampledAvg = 0
       }
       this.elapsed_ = this.frames_ = 0;
@@ -315,22 +334,37 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     a > 0 && this.mouseHandlers.splice(a, 1)
   };
   a.run = function() {
-    a._paused || (f.requestAnimFrame(a.run, a.canvas), a.drawScene(), a.ActionManager.tick(a.delta), a.updateDebugTime())
+    a._paused || (h.requestAnimFrame(a.run, a.canvas), a.drawScene(), a.ActionManager.tick(a.delta), a.updateDebugTime())
   };
   a.togglePause = function() {
-    a._paused ? (a._paused = !1, a.run()) : a._paused = !0
+    a._paused ? (a._paused = false, a.run()) : a._paused = true
   };
-  a.setup = a.setup;
-  a.registerAssetHandler = a.registerAssetHandler;
-  a.loadAsset = a.loadAsset;
-  a.assetsLoaded = a.assetsLoaded;
-  a.getAsset = a.getAsset;
-  a.drawScene = a.drawScene;
-  a.run = a.run;
-  f.ChesterGL = a
+  h.ChesterGL = a;
+  a.exportProperty(a, "useGoogleAnalytics", a.useGoogleAnalytics);
+  a.exportProperty(a, "projection", a.projection);
+  a.exportProperty(a, "webglMode", a.webglMode);
+  a.exportProperty(a, "usesOffscreenBuffer", a.usesOffscreenBuffer);
+  a.exportProperty(a, "debugSpanId", a.debugSpanId);
+  a.exportProperty(a, "update", a.update);
+  a.exportProperty(a, "mouseEvents", a.mouseEvents);
+  a.exportProperty(a.mouseEvents, "DOWN", a.mouseEvents.DOWN);
+  a.exportProperty(a.mouseEvents, "MOVE", a.mouseEvents.MOVE);
+  a.exportProperty(a.mouseEvents, "UP", a.mouseEvents.UP);
+  a.exportProperty(a, "setup", a.setup);
+  a.exportProperty(a, "canvasResized", a.canvasResized);
+  a.exportProperty(a, "initShader", a.initShader);
+  a.exportProperty(a, "registerAssetHandler", a.registerAssetHandler);
+  a.exportProperty(a, "loadAsset", a.loadAsset);
+  a.exportProperty(a, "assetsLoaded", a.assetsLoaded);
+  a.exportProperty(a, "getAsset", a.getAsset);
+  a.exportProperty(a, "setupPerspective", a.setupPerspective);
+  a.exportProperty(a, "setRunningScene", a.setRunningScene);
+  a.exportProperty(a, "drawScene", a.drawScene);
+  a.exportProperty(a, "run", a.run);
+  a.exportProperty(a, "togglePause", a.togglePause)
 })(window);
-(function(f) {
-  var a = f.ChesterGL;
+(function(h) {
+  var a = h.ChesterGL;
   a.Block = function(c, b, d) {
     this.type = b || a.Block.TYPE.STANDALONE;
     if(d) {
@@ -359,10 +393,10 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
   a.Block.prototype.title = "";
   a.Block.prototype.mvMatrix = null;
   a.Block.prototype.mvpMatrix = null;
-  a.Block.prototype.visible = !0;
-  a.Block.prototype.isTransformDirty = !1;
-  a.Block.prototype.isColorDirty = !1;
-  a.Block.prototype.isFrameDirty = !1;
+  a.Block.prototype.visible = true;
+  a.Block.prototype.isTransformDirty = false;
+  a.Block.prototype.isColorDirty = false;
+  a.Block.prototype.isFrameDirty = false;
   a.Block.prototype.baseBufferIndex = 0;
   a.Block.prototype.glBuffer = null;
   a.Block.prototype.glBufferData = null;
@@ -380,19 +414,19 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
   a.Block.prototype.setFrame = function(a) {
     this.frame = quat4.create(a);
     this.setContentSize([a[2], a[3]]);
-    this.isFrameDirty = !0
+    this.isFrameDirty = true
   };
   a.Block.prototype.setContentSize = function(a) {
     this.contentSize = vec2.create(a);
-    this.isFrameDirty = !0
+    this.isFrameDirty = true
   };
   a.Block.prototype.setScale = function(a) {
     this.scale = a;
-    this.isTransformDirty = !0
+    this.isTransformDirty = true
   };
   a.Block.prototype.setColor = function(a) {
     this.color = quat4.create(a);
-    this.isColorDirty = !0
+    this.isColorDirty = true
   };
   a.Block.prototype.setTexture = function(c) {
     this.texture = c;
@@ -408,20 +442,20 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       var d = new a.MoveToAction(this, b, c);
       a.ActionManager.scheduleAction(d)
     }else {
-      this.position = vec3.create(c), this.isTransformDirty = !0
+      this.position = vec3.create(c), this.isTransformDirty = true
     }
   };
   a.Block.prototype.moveBy = function(a) {
     vec3.add(this.position, a);
-    this.isTransformDirty = !0
+    this.isTransformDirty = true
   };
   a.Block.prototype.rotateTo = function(c) {
     this.rotation = (a.webglMode ? -1 : 1) * c * a.Block.DEG_TO_RAD;
-    this.isTransformDirty = !0
+    this.isTransformDirty = true
   };
   a.Block.prototype.rotateBy = function(c) {
     this.rotation += (a.webglMode ? -1 : 1) * c * a.Block.DEG_TO_RAD;
-    this.isTransformDirty = !0
+    this.isTransformDirty = true
   };
   a.Block.prototype.addChild = function(a) {
     if(a.parent) {
@@ -429,6 +463,13 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     }
     this.children.push(a);
     a.parent = this
+  };
+  a.Block.prototype.removeChild = function(a) {
+    if(!a.parent || a.parent != this) {
+      throw"not our child!";
+    }
+    a = this.children.indexOf(a);
+    a >= 0 && this.children.splice(a, 1)
   };
   a.Block.prototype.transform = function() {
     var c = a.gl;
@@ -445,38 +486,38 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       if(a.webglMode) {
         !d && (this.isFrameDirty || this.isColorDirty) && c.bindBuffer(c.ARRAY_BUFFER, this.glBuffer);
         if(this.isFrameDirty || d && this.isTransformDirty) {
-          var e = 9, g = this.contentSize[0] * 0.5, j = this.contentSize[1] * 0.5, h = this.baseBufferIndex * a.Block.BUFFER_SIZE, f = this.position[2];
+          var e = 9, g = this.contentSize[0] * 0.5, i = this.contentSize[1] * 0.5, f = this.baseBufferIndex * a.Block.BUFFER_SIZE, h = this.position[2];
           if(d) {
-            var l = [g, j, 0], k = [-g, j, 0], i = [g, -j, 0], g = [-g, -j, 0];
+            var l = [g, i, 0], k = [-g, i, 0], j = [g, -i, 0], g = [-g, -i, 0];
             mat4.multiplyVec3(this.mvMatrix, l);
             mat4.multiplyVec3(this.mvMatrix, k);
             mat4.multiplyVec3(this.mvMatrix, g);
-            mat4.multiplyVec3(this.mvMatrix, i);
-            b[h] = g[0];
-            b[h + 1] = g[1];
-            b[h + 2] = f;
-            b[h + e] = k[0];
-            b[h + 1 + e] = k[1];
-            b[h + 2 + e] = f;
-            b[h + 2 * e] = i[0];
-            b[h + 1 + 2 * e] = i[1];
-            b[h + 2 + 2 * e] = f;
-            b[h + 3 * e] = l[0];
-            b[h + 1 + 3 * e] = l[1];
-            b[h + 2 + 3 * e] = f
+            mat4.multiplyVec3(this.mvMatrix, j);
+            b[f] = g[0];
+            b[f + 1] = g[1];
+            b[f + 2] = h;
+            b[f + e] = k[0];
+            b[f + 1 + e] = k[1];
+            b[f + 2 + e] = h;
+            b[f + 2 * e] = j[0];
+            b[f + 1 + 2 * e] = j[1];
+            b[f + 2 + 2 * e] = h;
+            b[f + 3 * e] = l[0];
+            b[f + 1 + 3 * e] = l[1];
+            b[f + 2 + 3 * e] = h
           }else {
-            b[h] = -g, b[h + 1] = -j, b[h + 2] = 0, b[h + e] = -g, b[h + 1 + e] = j, b[h + 2 + e] = 0, b[h + 2 * e] = g, b[h + 1 + 2 * e] = -j, b[h + 2 + 2 * e] = 0, b[h + 3 * e] = g, b[h + 1 + 3 * e] = j, b[h + 2 + 3 * e] = 0
+            b[f] = -g, b[f + 1] = -i, b[f + 2] = 0, b[f + e] = -g, b[f + 1 + e] = i, b[f + 2 + e] = 0, b[f + 2 * e] = g, b[f + 1 + 2 * e] = -i, b[f + 2 + 2 * e] = 0, b[f + 3 * e] = g, b[f + 1 + 3 * e] = i, b[f + 2 + 3 * e] = 0
           }
           if(this.program == a.Block.PROGRAM.TEXTURE) {
-            f = a.getAsset("texture", this.texture), k = f.width, i = f.height, f = this.frame[0] / k, l = this.frame[1] / i, k = this.frame[2] / k, i = this.frame[3] / i, h += 3, b[h] = f, b[h + 1] = l, b[h + e] = f, b[h + 1 + e] = l + i, b[h + 2 * e] = f + k, b[h + 1 + 2 * e] = l, b[h + 3 * e] = f + k, b[h + 1 + 3 * e] = l + i
+            h = a.getAsset("texture", this.texture), k = h.width, j = h.height, h = this.frame[0] / k, l = this.frame[1] / j, k = this.frame[2] / k, j = this.frame[3] / j, f += 3, b[f] = h, b[f + 1] = l, b[f + e] = h, b[f + 1 + e] = l + j, b[f + 2 * e] = h + k, b[f + 1 + 2 * e] = l, b[f + 3 * e] = h + k, b[f + 1 + 3 * e] = l + j
           }
         }
         if(this.isColorDirty) {
-          h = 5 + this.baseBufferIndex * a.Block.BUFFER_SIZE;
-          f = this.color;
+          f = 5 + this.baseBufferIndex * a.Block.BUFFER_SIZE;
+          h = this.color;
           l = this.opacity;
           for(k = 0;k < 4;k++) {
-            b[h + e * k] = f[0] * l, b[h + 1 + e * k] = f[1] * l, b[h + 2 + e * k] = f[2] * l, b[h + 3 + e * k] = f[3] * l
+            b[f + e * k] = h[0] * l, b[f + 1 + e * k] = h[1] * l, b[f + 2 + e * k] = h[2] * l, b[f + 3 + e * k] = h[3] * l
           }
         }
         a.webglMode && !d && (this.isFrameDirty || this.isColorDirty) && c.bufferData(c.ARRAY_BUFFER, this.glBufferData, c.STATIC_DRAW)
@@ -491,7 +532,7 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
         c[d].visit()
       }
       (!this.parent || this.parent.type != a.Block.TYPE.BLOCKGROUP) && this.render();
-      this.isFrameDirty = this.isColorDirty = this.isTransformDirty = !1
+      this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false
     }
   };
   a.Block.prototype.render = function() {
@@ -503,17 +544,17 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
         var c = a.gl, b = a.selectProgram(a.Block.PROGRAM_NAME[this.program]);
         c.bindBuffer(c.ARRAY_BUFFER, this.glBuffer);
         var d = a.Block.QUAD_SIZE;
-        c.vertexAttribPointer(b.attribs.vertexPositionAttribute, 3, c.FLOAT, !1, d, 0);
-        c.vertexAttribPointer(b.attribs.vertexColorAttribute, 4, c.FLOAT, !1, d, 20);
+        c.vertexAttribPointer(b.attribs.vertexPositionAttribute, 3, c.FLOAT, false, d, 0);
+        c.vertexAttribPointer(b.attribs.vertexColorAttribute, 4, c.FLOAT, false, d, 20);
         if(this.program != a.Block.PROGRAM.DEFAULT && this.program == a.Block.PROGRAM.TEXTURE) {
           var e = a.getAsset("texture", this.texture);
-          c.vertexAttribPointer(b.attribs.textureCoordAttribute, 2, c.FLOAT, !1, d, 12);
+          c.vertexAttribPointer(b.attribs.textureCoordAttribute, 2, c.FLOAT, false, d, 12);
           c.activeTexture(c.TEXTURE0);
           c.bindTexture(c.TEXTURE_2D, e.tex);
           c.uniform1i(b.samplerUniform, 0)
         }
         (this.isTransformDirty || this.parent && this.parent.isTransformDirty) && mat4.multiply(a.pMatrix, this.mvMatrix, this.mvpMatrix);
-        c.uniformMatrix4fv(b.mvpMatrixUniform, !1, this.mvpMatrix);
+        c.uniformMatrix4fv(b.mvpMatrixUniform, false, this.mvpMatrix);
         c.drawArrays(c.TRIANGLE_STRIP, 0, 4)
       }else {
         if(c = a.offContext, this.program == a.Block.PROGRAM.TEXTURE) {
@@ -527,36 +568,39 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       }
     }
   };
-  a.Block.FullFrame = a.Block.FullFrame;
-  a.Block.SizeZero = a.Block.SizeZero;
-  a.Block.TYPE = a.Block.TYPE;
-  a.Block.create = a.Block.create;
-  a.Block.prototype.visible = a.Block.prototype.visible;
-  a.Block.prototype.position = a.Block.prototype.position;
-  a.Block.prototype.contentSize = a.Block.prototype.contentSize;
-  a.Block.prototype.color = a.Block.prototype.color;
-  a.Block.prototype.texture = a.Block.prototype.texture;
-  a.Block.prototype.opacity = a.Block.prototype.opacity;
-  a.Block.prototype.rotation = a.Block.prototype.rotation;
-  a.Block.prototype.scale = a.Block.prototype.scale;
-  a.Block.prototype.update = a.Block.prototype.update;
-  a.Block.prototype.frame = a.Block.prototype.frame;
-  a.Block.prototype.parent = a.Block.prototype.parent;
-  a.Block.prototype.children = a.Block.prototype.children;
-  a.Block.prototype.setFrame = a.Block.prototype.setFrame;
-  a.Block.prototype.setContentSize = a.Block.prototype.setContentSize;
-  a.Block.prototype.setScale = a.Block.prototype.setScale;
-  a.Block.prototype.setColor = a.Block.prototype.setColor;
-  a.Block.prototype.setTexture = a.Block.prototype.setTexture;
-  a.Block.prototype.moveTo = a.Block.prototype.moveTo;
-  a.Block.prototype.moveBy = a.Block.prototype.moveBy;
-  a.Block.prototype.rotateTo = a.Block.prototype.rotateTo;
-  a.Block.prototype.rotateBy = a.Block.prototype.rotateBy;
-  a.Block.prototype.addChild = a.Block.prototype.addChild;
-  f.ChesterGL.Block = a.Block
+  a.Block = a.Block;
+  a.exportProperty(a.Block, "FullFrame", a.Block.FullFrame);
+  a.exportProperty(a.Block, "SizeZero", a.Block.SizeZero);
+  a.exportProperty(a.Block, "TYPE", a.Block.TYPE);
+  a.exportProperty(a.Block, "PROGRAM", a.Block.PROGRAM);
+  a.exportProperty(a.Block, "PROGRAM_NAME", a.Block.PROGRAM_NAME);
+  a.exportProperty(a.Block, "create", a.Block.create);
+  a.exportProperty(a.Block.prototype, "visible", a.Block.prototype.visible);
+  a.exportProperty(a.Block.prototype, "position", a.Block.prototype.position);
+  a.exportProperty(a.Block.prototype, "contentSize", a.Block.prototype.contentSize);
+  a.exportProperty(a.Block.prototype, "color", a.Block.prototype.color);
+  a.exportProperty(a.Block.prototype, "texture", a.Block.prototype.texture);
+  a.exportProperty(a.Block.prototype, "opacity", a.Block.prototype.opacity);
+  a.exportProperty(a.Block.prototype, "rotation", a.Block.prototype.rotation);
+  a.exportProperty(a.Block.prototype, "scale", a.Block.prototype.scale);
+  a.exportProperty(a.Block.prototype, "update", a.Block.prototype.update);
+  a.exportProperty(a.Block.prototype, "frame", a.Block.prototype.frame);
+  a.exportProperty(a.Block.prototype, "parent", a.Block.prototype.parent);
+  a.exportProperty(a.Block.prototype, "children", a.Block.prototype.children);
+  a.exportProperty(a.Block.prototype, "setFrame", a.Block.prototype.setFrame);
+  a.exportProperty(a.Block.prototype, "setContentSize", a.Block.prototype.setContentSize);
+  a.exportProperty(a.Block.prototype, "setScale", a.Block.prototype.setScale);
+  a.exportProperty(a.Block.prototype, "setColor", a.Block.prototype.setColor);
+  a.exportProperty(a.Block.prototype, "setTexture", a.Block.prototype.setTexture);
+  a.exportProperty(a.Block.prototype, "moveTo", a.Block.prototype.moveTo);
+  a.exportProperty(a.Block.prototype, "moveBy", a.Block.prototype.moveBy);
+  a.exportProperty(a.Block.prototype, "rotateTo", a.Block.prototype.rotateTo);
+  a.exportProperty(a.Block.prototype, "rotateBy", a.Block.prototype.rotateBy);
+  a.exportProperty(a.Block.prototype, "addChild", a.Block.prototype.addChild);
+  a.exportProperty(a.Block.prototype, "removeChild", a.Block.prototype.removeChild)
 })(window);
-(function(f) {
-  var a = f.ChesterGL;
+(function(h) {
+  var a = h.ChesterGL;
   a.BlockGroup = function(c, b) {
     if(!a.webglMode) {
       throw"BlockGroup only works on WebGL mode";
@@ -568,7 +612,7 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
   };
   a.BlockGroup.prototype = Object.create(a.Block.prototype);
   a.BlockGroup.prototype.maxChildren = 0;
-  a.BlockGroup.prototype.isChildDirty = !1;
+  a.BlockGroup.prototype.isChildDirty = false;
   a.BlockGroup.prototype.indexBuffer = null;
   a.BlockGroup.prototype.indexBufferData = null;
   a.BlockGroup.prototype.createBuffers = function() {
@@ -587,6 +631,9 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     if(this.children.length >= this.maxChildren) {
       throw"Error: too many children - Make the initial size of the BlockGroup larger";
     }
+    if(a.parent != this) {
+      throw"Invalid child: can only add children created with BlockGroup.create";
+    }
     if(this.texture) {
       if(this.texture != a.texture) {
         throw"Invalid child: only can add child with the same texture";
@@ -594,13 +641,10 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     }else {
       this.texture = a.texture
     }
-    if(a.parent != this) {
-      throw"Invalid child: can only add children created with BlockGroup.create";
-    }
     this.children.push(a);
     a.baseBufferIndex = this.children.length - 1;
     a.glBufferData = this.glBufferData;
-    this.isChildDirty = !0
+    this.isChildDirty = true
   };
   a.BlockGroup.prototype.recreateIndices = function(c) {
     for(var b = (this.indexBufferData[c * 6 - 1] || -1) + 1, d = Math.max(this.children.length, 1);c < d;c++) {
@@ -631,43 +675,44 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       c.bindBuffer(c.ARRAY_BUFFER, this.glBuffer);
       c.bufferData(c.ARRAY_BUFFER, this.glBufferData, c.STATIC_DRAW);
       if(this.isChildDirty) {
-        this.recreateIndices(0), this.isChildDirty = !1
+        this.recreateIndices(0), this.isChildDirty = false
       }
       this.render();
-      this.isFrameDirty = this.isColorDirty = this.isTransformDirty = !1
+      this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false
     }
   };
   a.BlockGroup.prototype.render = function() {
     var c = a.gl, b = a.selectProgram(a.Block.PROGRAM_NAME[this.program]), d = this.children.length, e = a.Block.QUAD_SIZE;
     c.bindBuffer(c.ARRAY_BUFFER, this.glBuffer);
-    c.vertexAttribPointer(b.attribs.vertexPositionAttribute, 3, c.FLOAT, !1, e, 0);
+    c.vertexAttribPointer(b.attribs.vertexPositionAttribute, 3, c.FLOAT, false, e, 0);
     if(this.program != a.Block.PROGRAM.DEFAULT && this.program == a.Block.PROGRAM.TEXTURE) {
       var g = a.getAsset("texture", this.texture);
-      c.vertexAttribPointer(b.attribs.textureCoordAttribute, 2, c.FLOAT, !1, e, 12);
+      c.vertexAttribPointer(b.attribs.textureCoordAttribute, 2, c.FLOAT, false, e, 12);
       c.activeTexture(c.TEXTURE0);
       c.bindTexture(c.TEXTURE_2D, g.tex);
       c.uniform1i(b.samplerUniform, 0)
     }
-    c.vertexAttribPointer(b.attribs.vertexColorAttribute, 4, c.FLOAT, !1, e, 20);
+    c.vertexAttribPointer(b.attribs.vertexColorAttribute, 4, c.FLOAT, false, e, 20);
     c.bindBuffer(c.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     mat4.multiply(a.pMatrix, this.mvMatrix, this.mvpMatrix);
-    c.uniformMatrix4fv(b.mvpMatrixUniform, !1, this.mvpMatrix);
+    c.uniformMatrix4fv(b.mvpMatrixUniform, false, this.mvpMatrix);
     c.drawElements(c.TRIANGLES, d * 6, c.UNSIGNED_SHORT, 0)
   };
-  a.BlockGroup = a.BlockGroup
+  a.BlockGroup = a.BlockGroup;
+  a.exportProperty(a.BlockGroup.prototype, "createBlock", a.BlockGroup.prototype.createBlock)
 })(window);
-(function(f) {
-  var a = f.ChesterGL, c = {frames:{}};
+(function(h) {
+  var a = h.ChesterGL, c = {frames:{}};
   c.loadJSON = function(b) {
     if(b.meta && b.meta.version == "1.0") {
       var d = b.meta.image;
       a.loadAsset("texture", d, function(a) {
-        var a = a.height, g = b.frames, f;
-        for(f in g) {
-          var h = g[f];
-          c.frames[f] = {};
-          c.frames[f].frame = quat4.create([h.frame.x, a - (h.frame.y + h.frame.h), h.frame.w, h.frame.h]);
-          c.frames[f].texture = d
+        var a = a.height, g = b.frames, h;
+        for(h in g) {
+          var f = g[h], u = {frame:{}, texture:""};
+          u.frame = quat4.create([f.frame.x, a - (f.frame.y + f.frame.h), f.frame.w, f.frame.h]);
+          u.texture = d;
+          c.frames[h] = u
         }
       })
     }else {
@@ -678,16 +723,17 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     return c.frames[a]
   };
   c.loadFrames = function(a) {
-    $.ajax({url:a, async:!1, dataType:"json", success:function(a, b) {
+    console.log("loadFrames: will fetch " + a);
+    $.ajax({url:a, async:false, dataType:"json", success:function(a, b) {
       b == "success" && c.loadJSON(a)
     }})
   };
-  c.getFrame = c.getFrame;
-  c.loadFrames = c.loadFrames;
-  f.ChesterGL.BlockFrames = c
+  a.BlockFrames = c;
+  a.exportProperty(c, "getFrame", c.getFrame);
+  a.exportProperty(c, "loadFrames", c.loadFrames)
 })(window);
-(function(f) {
-  var a = f.ChesterGL;
+(function(h) {
+  var a = h.ChesterGL;
   a.TMXBlock = function(c) {
     c = a.TMXBlock.maps[c];
     if(!c) {
@@ -696,10 +742,10 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     a.Block.call(this, null, a.Block.TYPE.TMXBLOCK);
     for(var b = 0;b < c.layers.length;b++) {
       for(var d = c.layers[b], e = a.webglMode ? new a.BlockGroup(c.texture, d.blocks.length) : new a.Block, g = 0;g < d.blocks.length;g++) {
-        var f = d.blocks[g], h = void 0;
-        a.webglMode ? h = e.createBlock(f.frame) : (h = new a.Block(f.frame), h.setTexture(c.texture));
-        h.moveTo(f.position);
-        e.addChild(h)
+        var h = d.blocks[g], f = void 0;
+        a.webglMode ? f = e.createBlock(h.frame) : (f = new a.Block(h.frame), f.setTexture(c.texture));
+        f.moveTo(h.position);
+        e.addChild(f)
       }
       this.addChild(e)
     }
@@ -721,20 +767,20 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
         d.mapTileSize = vec2.create([parseInt(b.attr("tilewidth"), 10), parseInt(b.attr("tileheight"), 10)]);
         e.attr("spacing") && (d.spacing = parseInt(e.attr("spacing"), 10));
         e.attr("margin") && (d.margin = parseInt(e.attr("margin"), 10));
-        var e = e.find("image").first(), f = vec2.create([parseInt(e.attr("width"), 10), parseInt(e.attr("height"), 10)]);
+        var e = e.find("image").first(), h = vec2.create([parseInt(e.attr("width"), 10), parseInt(e.attr("height"), 10)]);
         d.texture = e.attr("source");
         a.loadAsset("texture", d.texture);
         d.layers = [];
         b.find("layer").each(function(a, b) {
-          var c = {blocks:[]}, e = vec2.create([parseInt($(b).attr("width"), 10), parseInt($(b).attr("height"), 10)]), i = $(b).find("data").first();
-          if(i) {
-            if(i.attr("encoding") != "base64" || i.attr("compression")) {
+          var c = {blocks:[]}, e = vec2.create([parseInt($(b).attr("width"), 10), parseInt($(b).attr("height"), 10)]), j = $(b).find("data").first();
+          if(j) {
+            if(j.attr("encoding") != "base64" || j.attr("compression")) {
               throw"Invalid TMX Data";
             }
-            for(var i = i.text().trim(), i = base64.decode(i), o = 0, p = 0;p < e[1];p++) {
+            for(var j = j.text().trim(), j = base64.decode(j), o = 0, p = 0;p < e[1];p++) {
               for(var q = 0;q < e[0];q++) {
-                var n = ((i.charCodeAt(o + 3) & 255) << 24 | (i.charCodeAt(o + 2) & 255) << 16 | (i.charCodeAt(o + 1) & 255) << 8 | i.charCodeAt(o + 0) & 255) - 1, u = {}, s = d.margin || 0, r = d.spacing || 0, m = d.tileSize, t = d.mapTileSize, v = parseInt((f[0] - s * 2 + r) / (m[0] + r), 10), n = quat4.create([n % v * (m[0] + r) + s, f[1] - m[1] - s - r - parseInt(n / v, 10) * (m[1] + r) + s, m[0], m[1]]);
-                u.frame = n;
+                var n = ((j.charCodeAt(o + 3) & 255) << 24 | (j.charCodeAt(o + 2) & 255) << 16 | (j.charCodeAt(o + 1) & 255) << 8 | j.charCodeAt(o + 0) & 255) - 1, v = {}, s = d.margin || 0, r = d.spacing || 0, m = d.tileSize, t = d.mapTileSize, w = parseInt((h[0] - s * 2 + r) / (m[0] + r), 10), n = quat4.create([n % w * (m[0] + r) + s, h[1] - m[1] - s - r - parseInt(n / w, 10) * (m[1] + r) + s, m[0], m[1]]);
+                v.frame = n;
                 if(g == "orthogonal") {
                   n = q * t[0] + m[0] / 2, m = (e[1] - p - 1) * t[1] + m[1] / 2
                 }else {
@@ -744,8 +790,8 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
                     throw"Invalid orientation";
                   }
                 }
-                u.position = [n, m, 0];
-                c.blocks.push(u);
+                v.position = [n, m, 0];
+                c.blocks.push(v);
                 o += 4
               }
             }
@@ -758,16 +804,16 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       a.TMXBlock.maps[c] = d
     })
   };
-  a.registerAssetHandler("tmx", function(c, b, d) {
+  a.registerAssetHandler("tmx", function(c, b) {
     console.log("tmx loaded: " + c);
     a.assets.tmx[c].data = b;
-    d && d(!0)
+    return true
   });
-  a.TMXBlock.loadTMX = a.TMXBlock.loadTMX;
-  a.TMXBlock = a.TMXBlock
+  a.TMXBlock = a.TMXBlock;
+  a.exportProperty(a.TMXBlock, "loadTMX", a.TMXBlock.loadTMX)
 })(window);
-(function(f) {
-  var a = f.ChesterGL;
+(function(h) {
+  var a = h.ChesterGL;
   a.Action = function(a, b) {
     this.block = a;
     this.totalTime = b * 1E3;
@@ -777,11 +823,11 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
   a.Action.prototype.totalTime = 0;
   a.Action.prototype.elapsed = 0;
   a.Action.prototype.currentTime = 0;
-  a.Action.prototype.finished = !1;
+  a.Action.prototype.finished = false;
   a.Action.prototype.update = function(a) {
     this.elapsed += a;
     if(this.elapsed >= this.totalTime) {
-      this.finished = !0
+      this.finished = true
     }
   };
   a.MoveToAction = function(c, b, d) {
@@ -800,7 +846,7 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
     }else {
       var b = Math.min(1, this.elapsed / this.totalTime);
       vec3.lerp(this.startPosition, this.finalPosition, b, c.position);
-      c.isTransformDirty = !0
+      c.isTransformDirty = true
     }
   };
   a.ActionManager = {};
@@ -813,6 +859,7 @@ HTMLCanvasElement.prototype.relativePosition = function(f) {
       var e = this.scheduledActions_[b];
       !e.finished && e.update(a)
     }
-  }
+  };
+  a.exportProperty(a.ActionManager, "scheduleAction", a.ActionManager.scheduleAction)
 })(window);
 

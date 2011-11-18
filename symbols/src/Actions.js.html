@@ -140,36 +140,39 @@
 <span class='line'>133</span> 	</span><span class="COMM">/**
 <span class='line'>134</span> 	 * global action manager
 <span class='line'>135</span> 	 * @namespace
-<span class='line'>136</span> 	 */</span><span class="WHIT">
-<span class='line'>137</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>138</span> </span><span class="WHIT">	
-<span class='line'>139</span> 	
-<span class='line'>140</span> 	</span><span class="COMM">/**
-<span class='line'>141</span> 	 * the list of scheduled actions
-<span class='line'>142</span> 	 * @ignore
-<span class='line'>143</span> 	 * @type {Array.&lt;ChesterGL.Action>}
-<span class='line'>144</span> 	 */</span><span class="WHIT">
-<span class='line'>145</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager.scheduledActions_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>146</span> </span><span class="WHIT">	
-<span class='line'>147</span> 	</span><span class="COMM">/**
-<span class='line'>148</span> 	 * adds an action to the scheduler
-<span class='line'>149</span> 	 * 
-<span class='line'>150</span> 	 * @param {ChesterGL.Action} action
-<span class='line'>151</span> 	 */</span><span class="WHIT">
-<span class='line'>152</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager.scheduleAction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">action</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>153</span> </span><span class="WHIT">		</span><span class="NAME">this.scheduledActions_.push</span><span class="PUNC">(</span><span class="NAME">action</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>154</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>155</span> </span><span class="WHIT">	
-<span class='line'>156</span> 	</span><span class="COMM">/**
-<span class='line'>157</span> 	 * Iterate over all scheduled actions
-<span class='line'>158</span> 	 * @param {number} delta number of miliseconds to run in all actions
-<span class='line'>159</span> 	 */</span><span class="WHIT">
-<span class='line'>160</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager.tick</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">delta</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>161</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">len</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.scheduledActions_.length</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>162</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">len</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>163</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">a</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.scheduledActions_</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>164</span> </span><span class="WHIT">			</span><span class="PUNC">!</span><span class="NAME">a.finished</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">a.update</span><span class="PUNC">(</span><span class="NAME">delta</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>165</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>166</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>167</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>168</span> </span></pre></body></html>
+<span class='line'>136</span> 	 * @type {Object.&lt;string,Object>}
+<span class='line'>137</span> 	 */</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">	
+<span class='line'>140</span> 	
+<span class='line'>141</span> 	</span><span class="COMM">/**
+<span class='line'>142</span> 	 * the list of scheduled actions
+<span class='line'>143</span> 	 * @ignore
+<span class='line'>144</span> 	 * @type {Array.&lt;ChesterGL.Action>}
+<span class='line'>145</span> 	 */</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager.scheduledActions_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">	
+<span class='line'>148</span> 	</span><span class="COMM">/**
+<span class='line'>149</span> 	 * adds an action to the scheduler
+<span class='line'>150</span> 	 * 
+<span class='line'>151</span> 	 * @param {ChesterGL.Action} action
+<span class='line'>152</span> 	 */</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager.scheduleAction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">action</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">		</span><span class="NAME">this.scheduledActions_.push</span><span class="PUNC">(</span><span class="NAME">action</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">	
+<span class='line'>157</span> 	</span><span class="COMM">/**
+<span class='line'>158</span> 	 * Iterate over all scheduled actions
+<span class='line'>159</span> 	 * @param {number} delta number of miliseconds to run in all actions
+<span class='line'>160</span> 	 */</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">	</span><span class="NAME">ChesterGL.ActionManager.tick</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">delta</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">len</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.scheduledActions_.length</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">len</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">a</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.scheduledActions_</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">			</span><span class="PUNC">!</span><span class="NAME">a.finished</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">a.update</span><span class="PUNC">(</span><span class="NAME">delta</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">	
+<span class='line'>169</span> 	</span><span class="NAME">ChesterGL.exportProperty</span><span class="PUNC">(</span><span class="NAME">ChesterGL.ActionManager</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'scheduleAction'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ChesterGL.ActionManager.scheduleAction</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span> </span></pre></body></html>

@@ -191,8 +191,6 @@ ul.inheritsList
 	
 	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
 	
-	<li><a href="../symbols/BlockFrames.html">BlockFrames</a></li>
-	
 	<li><a href="../symbols/ChesterGL.html">ChesterGL</a></li>
 	
 	<li><a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a></li>
@@ -298,6 +296,16 @@ ul.inheritsList
 								ChesterGL.<b><a href="../symbols/ChesterGL.html#.assetsLoadedListeners">assetsLoadedListeners</a></b>
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								ChesterGL.<b><a href="../symbols/ChesterGL.html#.assetsLoaders">assetsLoaders</a></b>
+								</div>
+								<div class="description">the asset loader: it specifies how a type of asset should be loaded.</div>
 							</td>
 						</tr>
 					
@@ -524,6 +532,15 @@ frame - with the delta from last frame</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.canvasResized">canvasResized</a></b>()
+								</div>
+								<div class="description">called when the canvas is resized</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.createShader">createShader</a></b>(prefix, fragmentData, vertexData)
 								</div>
 								<div class="description">actually creates the shader</div>
@@ -533,9 +550,27 @@ frame - with the delta from last frame</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.defaultTextureHandler">defaultTextureHandler</a></b>(path, data, callback)
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.defaultAssetLoader">defaultAssetLoader</a></b>(type, params)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.defaultTextureHandler">defaultTextureHandler</a></b>(path, img)
 								</div>
 								<div class="description">The default texture handler</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.defaultTextureLoader">defaultTextureLoader</a></b>(type, params)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -545,6 +580,15 @@ frame - with the delta from last frame</div>
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.drawScene">drawScene</a></b>()
 								</div>
 								<div class="description">main draw function, will call the root block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.exportProperty">exportProperty</a></b>(object, publicName, symbol)
+								</div>
+								<div class="description">"inspired" on goog.exportProperty</div>
 							</td>
 						</tr>
 					
@@ -598,9 +642,9 @@ fallback: canvas</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.loadAsset">loadAsset</a></b>(type, path, callback)
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.loadAsset">loadAsset</a></b>(type, assetPath, cb)
 								</div>
-								<div class="description">loads and asset asynchronically</div>
+								<div class="description">loads and asset using the registered method to download it</div>
 							</td>
 						</tr>
 					
@@ -661,6 +705,15 @@ fallback: canvas</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.registerAssetLoader">registerAssetLoader</a></b>(type, loader)
+								</div>
+								<div class="description">Register a way to load an asset</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.removeMouseHandler">removeMouseHandler</a></b>(callback)
 								</div>
 								<div class="description"></div>
@@ -688,7 +741,16 @@ fallback: canvas</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.setup">setup</a></b>(canvas_id)
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.setRunningScene">setRunningScene</a></b>(block)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">ChesterGL.<b><a href="../symbols/ChesterGL.html#.setup">setup</a></b>(canvasId)
 								</div>
 								<div class="description">setups the webgl canvas</div>
 							</td>
@@ -810,6 +872,30 @@ fallback: canvas</div>
 					</div>
 					<div class="description">
 						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".assetsLoaders"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>assetsLoaders</b>
+					
+					</div>
+					<div class="description">
+						the asset loader: it specifies how a type of asset should be loaded.
+The default for textures is creating a new Image() element, the default for any other
+type is jquery's $.ajax asynchronously.
 						
 						
 					</div>
@@ -1173,13 +1259,6 @@ This will use whatever profile you have for analytics on the game page
 						
 						
 						
-							<dl class="detailList">
-							<dt class="heading">See:</dt>
-							
-							<dd></dd>
-							
-							</dl>
-						
 						
 
 					<hr />
@@ -1314,10 +1393,35 @@ This will use whatever profile you have for analytics on the game page
 
 					<hr />
 				
-					<a name=".createShader"> </a>
+					<a name=".canvasResized"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
+					<span class="light">ChesterGL.</span><b>canvasResized</b>()
+					
+					</div>
+					<div class="description">
+						called when the canvas is resized
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".createShader"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{(WebGLProgram|null)}</span>
 					<span class="light">ChesterGL.</span><b>createShader</b>(prefix, fragmentData, vertexData)
 					
 					</div>
@@ -1334,19 +1438,68 @@ This will use whatever profile you have for analytics on the game page
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>prefix</b>
+									<span class="light fixedFont">{string}</span> <b>prefix</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>fragmentData</b>
+									<span class="light fixedFont">{(string|Object)}</span> <b>fragmentData</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>vertexData</b>
+									<span class="light fixedFont">{(string|Object)}</span> <b>vertexData</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{(WebGLProgram|null)}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".defaultAssetLoader"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>defaultAssetLoader</b>(type, params)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>type</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object.<string|string>}</span> <b>params</b>
 									
 								</dt>
 								<dd></dd>
@@ -1365,8 +1518,8 @@ This will use whatever profile you have for analytics on the game page
 					<a name=".defaultTextureHandler"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
-					<span class="light">ChesterGL.</span><b>defaultTextureHandler</b>(path, data, callback)
+					<span class="light">{boolean}</span>
+					<span class="light">ChesterGL.</span><b>defaultTextureHandler</b>(path, img)
 					
 					</div>
 					<div class="description">
@@ -1388,13 +1541,56 @@ This will use whatever profile you have for analytics on the game page
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>data</b>
+									<span class="light fixedFont">{Object}</span> <b>img</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".defaultTextureLoader"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>defaultTextureLoader</b>(type, params)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>type</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{function(boolean)=}</span> <b>callback</b>
+									<span class="light fixedFont">{Object.<string|string>}</span> <b>params</b>
 									
 								</dt>
 								<dd></dd>
@@ -1435,10 +1631,65 @@ This will use whatever profile you have for analytics on the game page
 
 					<hr />
 				
-					<a name=".getAsset"> </a>
+					<a name=".exportProperty"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
+					<span class="light">ChesterGL.</span><b>exportProperty</b>(object, publicName, symbol)
+					
+					</div>
+					<div class="description">
+						"inspired" on goog.exportProperty
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>object</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>publicName</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{*}</span> <b>symbol</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd>http://closure-library.googlecode.com/svn/docs/closure_goog_base.js.source.html</dd>
+							
+							</dl>
+						
+
+					<hr />
+				
+					<a name=".getAsset"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{Object}</span>
 					<span class="light">ChesterGL.</span><b>getAsset</b>(type, path)
 					
 					</div>
@@ -1455,13 +1706,13 @@ This will use whatever profile you have for analytics on the game page
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>type</b>
+									<span class="light fixedFont">{string}</span> <b>type</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>path</b>
+									<span class="light fixedFont">{string}</span> <b>path</b>
 									
 								</dt>
 								<dd></dd>
@@ -1471,6 +1722,13 @@ This will use whatever profile you have for analytics on the game page
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -1524,7 +1782,7 @@ fallback: canvas
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>canvas</b>
+									<span class="light fixedFont">{Element}</span> <b>canvas</b>
 									
 								</dt>
 								<dd></dd>
@@ -1560,13 +1818,13 @@ fallback: canvas
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>prefix</b>
+									<span class="light fixedFont">{string}</span> <b>prefix</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>callback</b>
+									<span class="light fixedFont">{function(WebGLProgram)}</span> <b>callback</b>
 									
 								</dt>
 								<dd></dd>
@@ -1611,11 +1869,11 @@ fallback: canvas
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">ChesterGL.</span><b>loadAsset</b>(type, path, callback)
+					<span class="light">ChesterGL.</span><b>loadAsset</b>(type, assetPath, cb)
 					
 					</div>
 					<div class="description">
-						loads and asset asynchronically
+						loads and asset using the registered method to download it
 						
 						
 					</div>
@@ -1633,13 +1891,13 @@ fallback: canvas
 								<dd>the type of asset being loaded, it could be "texture", "frameset", "audio"</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string|Object}</span> <b>path</b>
+									<span class="light fixedFont">{string|Object}</span> <b>assetPath</b>
 									
 								</dt>
 								<dd>the path for the asset</dd>
 							
 								<dt>
-									<span class="light fixedFont">{function(Object)=}</span> <b>callback</b>
+									<span class="light fixedFont">{function(Object)=}</span> <b>cb</b>
 									
 								</dt>
 								<dd>the callback that will be executed as soon as the asset is loaded</dd>
@@ -1658,7 +1916,7 @@ fallback: canvas
 					<a name=".loadShader"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{(string|Object|null)}</span>
 					<span class="light">ChesterGL.</span><b>loadShader</b>(prefix, type)
 					
 					</div>
@@ -1691,6 +1949,13 @@ fallback: canvas
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{(string|Object|null)}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -1825,7 +2090,7 @@ fallback: canvas
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>texture</b>
+									<span class="light fixedFont">{(Object|HTMLImageElement)}</span> <b>texture</b>
 									
 								</dt>
 								<dd></dd>
@@ -1869,7 +2134,7 @@ modify the status property.
 		// create the image
 		var imgtype = (/[.]/.exec(path)) ? /[^.]+$/.exec(path) : undefined;
 		var img = new Image();
-		var rawData = base64.encode(data);
+		var rawData = window.base64_encode(data);
 		img.onload = function () {
 			if (ChesterGL.webglMode) {
 				img.tex = ChesterGL.gl.createTexture();
@@ -1902,6 +2167,48 @@ modify the status property.
 									
 								</dt>
 								<dd>the handler that will be called every time an asset is loaded</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".registerAssetLoader"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>registerAssetLoader</b>(type, loader)
+					
+					</div>
+					<div class="description">
+						Register a way to load an asset
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>type</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(string|string)}</span> <b>loader</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1978,7 +2285,7 @@ modify the status property.
 					<a name=".selectProgram"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{Object}</span>
 					<span class="light">ChesterGL.</span><b>selectProgram</b>(program)
 					
 					</div>
@@ -2006,6 +2313,49 @@ modify the status property.
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".setRunningScene"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">ChesterGL.</span><b>setRunningScene</b>(block)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span> <b>block</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
 						
 						
 
@@ -2015,7 +2365,7 @@ modify the status property.
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">ChesterGL.</span><b>setup</b>(canvas_id)
+					<span class="light">ChesterGL.</span><b>setup</b>(canvasId)
 					
 					</div>
 					<div class="description">
@@ -2031,7 +2381,7 @@ modify the status property.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>canvas_id</b>
+									<span class="light fixedFont">{string}</span> <b>canvasId</b>
 									
 								</dt>
 								<dd></dd>
@@ -2109,7 +2459,7 @@ modify the status property.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Nov 09 2011 20:46:18 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Fri Nov 18 2011 15:34:45 GMT-0800 (PST)
 		</div>
 	</body>
 </html>

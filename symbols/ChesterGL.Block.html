@@ -191,8 +191,6 @@ ul.inheritsList
 	
 	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
 	
-	<li><a href="../symbols/BlockFrames.html">BlockFrames</a></li>
-	
 	<li><a href="../symbols/ChesterGL.html">ChesterGL</a></li>
 	
 	<li><a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a></li>
@@ -326,6 +324,16 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">
 								ChesterGL.Block.<b><a href="../symbols/ChesterGL.Block.html#.DEG_TO_RAD">DEG_TO_RAD</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;inner&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/ChesterGL.Block.html#-f">f</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -548,7 +556,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								ChesterGL.Block.<b><a href="../symbols/ChesterGL.Block.html#.TYPE">TYPE</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">Different types of blocks</div>
 							</td>
 						</tr>
 					
@@ -623,6 +631,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Block.html#removeChild">removeChild</a></b>(block)
+								</div>
+								<div class="description">removes a block from the children list</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Block.html#render">render</a></b>()
 								</div>
 								<div class="description">render (only will work for non-blockgroup blocks)</div>
@@ -689,7 +706,7 @@ the quat4 should be created in the order RGBA</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Block.html#setTexture">setTexture</a></b>(texturePath)
 								</div>
-								<div class="description"></div>
+								<div class="description">sets the texture of the block - the texture will be loaded if needed</div>
 							</td>
 						</tr>
 					
@@ -698,7 +715,7 @@ the quat4 should be created in the order RGBA</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Block.html#transform">transform</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">actually performs the transformation</div>
 							</td>
 						</tr>
 					
@@ -707,7 +724,7 @@ the quat4 should be created in the order RGBA</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Block.html#visit">visit</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">prepares the block for the rendering (transforms if necessary)</div>
 							</td>
 						</tr>
 					
@@ -903,6 +920,28 @@ creation time.
 					
 					
 					<span class="light">ChesterGL.Block.</span><b>DEG_TO_RAD</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="-f"> </a>
+					<div class="fixedFont">&lt;inner&gt; 
+					
+					
+					<b>f</b>
 					
 					</div>
 					<div class="description">
@@ -1391,7 +1430,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						Different types of blocks
 						
 						
 					</div>
@@ -1566,6 +1605,42 @@ You can pass a time in seconds to make this an action
 									
 								</dt>
 								<dd>The time it should take to move to that position. Don't pass time to make it instantly</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeChild"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeChild</b>(block)
+					
+					</div>
+					<div class="description">
+						removes a block from the children list
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span> <b>block</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1833,7 +1908,7 @@ block.setContentSize([128, 128]);</pre>
 					
 					</div>
 					<div class="description">
-						
+						sets the texture of the block - the texture will be loaded if needed
 						
 						
 					</div>
@@ -1845,7 +1920,7 @@ block.setContentSize([128, 128]);</pre>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>texturePath</b>
+									<span class="light fixedFont">{string}</span> <b>texturePath</b>
 									
 								</dt>
 								<dd></dd>
@@ -1869,7 +1944,7 @@ block.setContentSize([128, 128]);</pre>
 					
 					</div>
 					<div class="description">
-						
+						actually performs the transformation
 						
 						
 					</div>
@@ -1894,7 +1969,7 @@ block.setContentSize([128, 128]);</pre>
 					
 					</div>
 					<div class="description">
-						
+						prepares the block for the rendering (transforms if necessary)
 						
 						
 					</div>
@@ -1923,7 +1998,7 @@ block.setContentSize([128, 128]);</pre>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Nov 09 2011 20:46:18 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Fri Nov 18 2011 15:34:45 GMT-0800 (PST)
 		</div>
 	</body>
 </html>
