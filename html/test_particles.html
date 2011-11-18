@@ -7,15 +7,15 @@
 	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<script type="text/javascript" src="externals/colorpicker.js"></script>
-	<script type="text/javascript" src="externals/webgl-debug.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
     <script type="text/javascript">
 
 $(document).ready(function () {
 	var particle_properties = {
 		'texture': 'images/fire.png',
-		'maxParticles': 2000,
-		'duration': 4.0,
+		'maxParticles': 2,
+		'duration': -1.0,
 		'lifetime': 1.15,
 		'lifetimeVariance': 2.82,
 		'startColor': [1, 0.18, 0, 0.62],

@@ -130,9 +130,17 @@ window.msRequestAnimationFrame = function (callback, element) {};
 /**
  * @namespace
  */
-window.WebGLDebugUtils;
+var WebGLDebugUtils;
 
 /**
  * @param {WebGLRenderingContext} ctx
+ * @param {function(Object, string, Object)=} callback
+ * @return {WebGLRenderingContext}
  */
-window.WebGLDebugUtils.makeDebugContext = function (ctx) {};
+WebGLDebugUtils.makeDebugContext = function (ctx, callback) {};
+
+/**
+ * @param {number} err
+ * @return {string}
+ */
+WebGLDebugUtils.glEnumToString = function (err) {};

@@ -86,6 +86,13 @@ window.requestAnimFrame = (function(){
 				window.setTimeout(callback, 1000 / 60);
 			};
 })();
+
+
+/** @ignore */
+function throwOnGLError(err, funcName, args) {
+  console.log(WebGLDebugUtils.glEnumToString(err) + " was caused by call to " + funcName);
+};
+
 window['requestAnimFrame'] = window.requestAnimFrame;
 
 (function (window) {	
@@ -261,7 +268,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		var prog = this.programs[program];
 		var gl = this.gl;
 		if (program != this.currentProgram) {
-			// console.log("selecting program " + program);
+			console.log("selecting program " + program);
 			this.currentProgram = program;
 			gl.validateProgram(prog);
 			gl.useProgram(prog);
@@ -304,8 +311,9 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			this.canvas = canvas;
 			if (this.webglMode) {
 				this.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false});
-				if (this.gl && window.WebGLDebugUtils) {
-					this.gl = window.WebGLDebugUtils.makeDebugContext(this.gl);
+				if (this.gl && window['WebGLDebugUtils']) {
+					console.log("installing debug context");
+					this.gl = WebGLDebugUtils.makeDebugContext(this.gl, throwOnGLError);
 				}
 			}
 		} catch (e) {

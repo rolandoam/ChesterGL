@@ -15,14 +15,19 @@ attribute vec3  a_startPosition;
 varying float   v_lifetime;
 
 void main(void) {
-	v_lifetime = clamp(u_time / a_lifetime, 0.0, 1.0);
-	if (u_time <= a_lifetime)
+	float part_time = (a_lifetime - u_time);
+	v_lifetime = clamp(u_time / part_time, 0.0, 1.0);
+	if (a_lifetime > 0.0 && u_time <= a_lifetime)
 	{
 		float vel = (u_time / 100.0);
-		gl_Position.xyz = a_startPosition + a_speed * u_time;
+		gl_Position.xyz = a_startPosition + a_speed * part_time;
 		gl_Position.w = 1.0;
+		gl_Position = uMVPMatrix * gl_Position;
+		v_lifetime = clamp(v_lifetime, 0.0, 1.0);
+		gl_PointSize = mix(a_startSize, a_endSize, v_lifetime);
+	} else {
+		// put them away
+		gl_Position = vec4(0, 0, 9000.0, 1.0);
+		gl_PointSize = 0.0;
 	}
-	gl_Position = uMVPMatrix * gl_Position;
-	v_lifetime = clamp(v_lifetime, 0.0, 1.0);
-	gl_PointSize = mix(a_startSize, a_endSize, v_lifetime);
 }
