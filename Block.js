@@ -70,6 +70,10 @@
 		this.mvMatrix = mat4.create();
 		this.mvpMatrix = mat4.create();
 		mat4.identity(this.mvMatrix);
+		
+		// create the remove/add lists
+		this._scheduledAdd = [];
+		this._scheduledRemove = [];
 	}
 	
 	/**
@@ -261,6 +265,26 @@
 	ChesterGL.Block.prototype.children = null;
 	
 	/**
+	 * The scheduled list of blocks to add/remove after a visit
+	 * @ignore
+	 * @type {?Array.<ChesterGL.Block>}
+	 */
+	ChesterGL.Block.prototype._scheduledAdd = null;
+	
+	/**
+	 * @ignore
+	 * @type {?Array.<ChesterGL.Block>}
+	 */
+	ChesterGL.Block.prototype._scheduledRemove = null;
+	
+	/**
+	 * Are we visiting this node?
+	 * @ignore
+	 * @type {boolean}
+	 */
+	ChesterGL.Block.prototype._inVisit = false;
+	
+	/**
 	 * sets the frame for this block
 	 * 
 	 * @param {quat4} newFrame
@@ -371,7 +395,8 @@
 	}
 	
 	/**
-	 * adds a block as a child
+	 * Adds a block as a child. If you add the block while in a visit of the parent block,
+	 * the child will be scheduled to be added after the visit.
 	 * 
 	 * @param {ChesterGL.Block} block
 	 */
@@ -379,12 +404,17 @@
 		if (block.parent) {
 			throw "can't add a block twice!";
 		}
-		this.children.push(block);
-		block.parent = this;
+		if (this._inVisit) {
+			this._scheduledAdd.push(block);
+		} else {
+			this.children.push(block);
+			block.parent = this;
+		}
 	}
 
 	/**
-	 * removes a block from the children list
+	 * removes a block from the children list. If you remove the child while in a visit of the parent block,
+	 * the child will be scheduled to be removed after the visit.
 	 * 
 	 * @param {ChesterGL.Block} block
 	 */
@@ -392,9 +422,13 @@
 		if (!block.parent || block.parent != this) {
 			throw "not our child!";
 		}
-		var idx = this.children.indexOf(block);
-		if (idx >= 0) {
-			this.children.splice(idx,1);
+		if (this._inVisit) {
+			this._scheduledRemove.push(block);
+		} else {
+			var idx = this.children.indexOf(block);
+			if (idx >= 0) {
+				this.children.splice(idx,1);
+			}
 		}
 	}
 	
@@ -496,10 +530,12 @@
 	 * prepares the block for the rendering (transforms if necessary)
 	 */
 	ChesterGL.Block.prototype.visit = function () {
+		this._inVisit = true;
 		if (this.update) {
 			this.update(ChesterGL.delta);
 		}
 		if (!this.visible) {
+			this._inVisit = false;
 			return;
 		}
 		this.transform();
@@ -516,6 +552,16 @@
 		}
 		// reset our dirty markers
 		this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
+		this._inVisit = false;
+		
+		// do we have blocks scheduled to be removed/added?
+		var b;
+		while (b = this._scheduledAdd.shift()) {
+			this.addChild(b);
+		}
+		while (b = this._scheduledRemove.shift()) {
+			this.removeChild(b);
+		}
 	}
 	
 	/**
