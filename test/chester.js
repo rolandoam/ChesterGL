@@ -379,7 +379,9 @@ window.requestAnimFrame = window.requestAnimFrame;
     }
     this.mvMatrix = mat4.create();
     this.mvpMatrix = mat4.create();
-    mat4.identity(this.mvMatrix)
+    mat4.identity(this.mvMatrix);
+    this._scheduledAdd = [];
+    this._scheduledRemove = []
   };
   a.Block.PROGRAM = {DEFAULT:0, TEXTURE:1};
   a.Block.PROGRAM_NAME = ["default", "texture"];
@@ -411,6 +413,9 @@ window.requestAnimFrame = window.requestAnimFrame;
   a.Block.prototype.frame = null;
   a.Block.prototype.parent = null;
   a.Block.prototype.children = null;
+  a.Block.prototype._scheduledAdd = null;
+  a.Block.prototype._scheduledRemove = null;
+  a.Block.prototype._inVisit = false;
   a.Block.prototype.setFrame = function(a) {
     this.frame = quat4.create(a);
     this.setContentSize([a[2], a[3]]);
@@ -461,15 +466,13 @@ window.requestAnimFrame = window.requestAnimFrame;
     if(a.parent) {
       throw"can't add a block twice!";
     }
-    this.children.push(a);
-    a.parent = this
+    this._inVisit ? this._scheduledAdd.push(a) : (this.children.push(a), a.parent = this)
   };
   a.Block.prototype.removeChild = function(a) {
     if(!a.parent || a.parent != this) {
       throw"not our child!";
     }
-    a = this.children.indexOf(a);
-    a >= 0 && this.children.splice(a, 1)
+    this._inVisit ? this._scheduledRemove.push(a) : (a = this.children.indexOf(a), a >= 0 && this.children.splice(a, 1))
   };
   a.Block.prototype.transform = function() {
     var c = a.gl;
@@ -525,6 +528,7 @@ window.requestAnimFrame = window.requestAnimFrame;
     }
   };
   a.Block.prototype.visit = function() {
+    this._inVisit = true;
     this.update && this.update(a.delta);
     if(this.visible) {
       this.transform();
@@ -532,7 +536,14 @@ window.requestAnimFrame = window.requestAnimFrame;
         c[d].visit()
       }
       (!this.parent || this.parent.type != a.Block.TYPE.BLOCKGROUP) && this.render();
-      this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false
+      for(this._inVisit = this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;c = this._scheduledAdd.shift();) {
+        this.addChild(c)
+      }
+      for(;c = this._scheduledRemove.shift();) {
+        this.removeChild(c)
+      }
+    }else {
+      this._inVisit = false
     }
   };
   a.Block.prototype.render = function() {
