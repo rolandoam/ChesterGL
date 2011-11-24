@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<link rel="stylesheet" media="screen" type="text/css" href="externals/colorpicker.css" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/base64.js"></script>
+	<script type="text/javascript" src="externals/colorpicker.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	var particle_properties = {
+		'texture': 'images/fire.png',
+		'maxParticles': 1500,
+		'duration': -1.0,
+		'lifetime': 1.15,
+		'lifetimeVariance': 2.82,
+		'startColor': [1, 0.18, 0, 0.62],
+		'startColorVariance': [0, 0, 0, 0],
+		'endColor': [1, 0.46, 0, 0],
+		'endColorVariance': [0, 0, 0, 0],
+		'positionVariance': [160, 0, 0],
+		'speed': vec3.create([0, 0.05, 0]),
+		'speedVariance': vec3.create([0, 0.01, 0]),
+		'blendOptions': ['SRC_ALPHA', 'ONE'],
+		// more paramenters (not working right now)
+		'gravity': vec3.create([0, 0, 0]),
+	};
+	
+	var ps = null;
+	
+	setupGame();
+	
+	function setupGame() {
+		ChesterGL.useGoogleAnalytics = true;
+		ChesterGL.setup("demo-canvas");
+		var width = ChesterGL.gl.viewportWidth;
+		var height = ChesterGL.gl.viewportHeight;
+		
+		ChesterGL.ParticleSystem.loadShaders();
+		ChesterGL.loadAsset("texture", particle_properties['texture']);
+		ChesterGL.assetsLoaded('texture', function () {
+			// finish with the setup and run the game
+			ChesterGL.setupPerspective();
+			
+			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::Particles";
+			ChesterGL.setRunningScene(sceneBlock);
+
+			ps = new ChesterGL.ParticleSystem(particle_properties);
+			ps.moveTo([width / 2, 10, 0]);
+			
+			sceneBlock.addChild(ps);
+			
+			ChesterGL.addMouseHandler(function (pt, type) {
+				if (type == ChesterGL.mouseEvents.UP) {
+					ps.moveTo(pt)
+				}
+			});
+			
+			showData();
+			
+			ChesterGL.run();
+			// draw a single frame (for debug purposes)
+			// ChesterGL.drawScene();
+		});
+	} // setupGame()
+	
+	function floatToHex(f) {
+		var str = Math.floor(f * 255).toString(16);
+		return str;
+	}
+	
+	function hexToFloat(hex) {
+		var f = parseInt(hex, 16) / 255.0;
+		return f;
+	}
+	
+	function showData() {
+		$("#max_particles").val(particle_properties['maxParticles']);
+		$("#duration").val(particle_properties['duration']);
+		$("#lifetime").val(particle_properties['lifetime']);
+		$("#lifetime_var").val(particle_properties['lifetimeVariance']);
+		var ic = particle_properties['startColor'];
+		var ed = particle_properties['endColor'];
+		$("#initial_color").val("#" + floatToHex(ic[0]) + floatToHex(ic[1]) + floatToHex(ic[2]));
+		$("#initial_color_a").val(ic[3]);
+		$("#end_color").val("#" + floatToHex(ed[0]) + floatToHex(ed[1]) + floatToHex(ed[2]));
+		$("#end_color_a").val(ed[3]);
+		$("#speed-x").val(particle_properties['speed'][0]);
+		$("#speed-y").val(particle_properties['speed'][1]);
+		$("#speed-z").val(particle_properties['speed'][2]);
+		$("#vspeed-x").val(particle_properties['speedVariance'][0]);
+		$("#vspeed-y").val(particle_properties['speedVariance'][1]);
+		$("#vspeed-z").val(particle_properties['speedVariance'][2]);
+	}
+	
+	function reloadData() {
+		particle_properties['maxParticles'] = parseInt($("#max_particles").val());
+		particle_properties['duration'] = parseFloat($("#duration").val());
+		particle_properties['lifetime'] = parseFloat($("#lifetime").val());
+		particle_properties['lifetimeVariance'] = parseFloat($("#lifetime_var").val());
+		var str_ic = $("#initial_color").val();
+		var str_ed = $("#end_color").val();
+		var ic_a = $("#initial_color_a").val();
+		var ec_a = $("#end_color_a").val();
+		particle_properties['startColor'] = [hexToFloat(str_ic.substr(1, 2)), hexToFloat(str_ic.substr(3, 2)), hexToFloat(str_ic.substr(5, 2)), parseFloat(ic_a)];
+		particle_properties['endColor']   = [hexToFloat(str_ed.substr(1, 2)), hexToFloat(str_ed.substr(3, 2)), hexToFloat(str_ed.substr(5, 2)), parseFloat(ec_a)];
+		particle_properties['speed'][0] = parseFloat($("#speed-x").val());
+		particle_properties['speed'][1] = parseFloat($("#speed-y").val());
+		particle_properties['speed'][2] = parseFloat($("#speed-z").val());
+		particle_properties['speedVariance'][0] = parseFloat($("#vspeed-x").val()) * 10;
+		particle_properties['speedVariance'][1] = parseFloat($("#vspeed-y").val()) * 10;
+		particle_properties['speedVariance'][2] = parseFloat($("#vspeed-z").val()) * 10;
+		
+		ps.loadProperties(particle_properties);
+	}
+	
+	var fullScreen = false;
+	$("#fullScreen").click(function () {
+		var canvas = document.getElementById("game-container");
+		canvas.onwebkitfullscreenchange = function () {
+			fullScreen = !fullScreen;
+			console.log("we went full screen: " + fullScreen);
+			canvas.webkitCancelFullScreen();
+		}
+		if (!fullScreen) {
+			canvas.webkitRequestFullScreen();
+		}
+	});
+	
+	$("#initial_color").ColorPicker({
+		onSubmit: function(hsb, hex, rgb, el) {
+			$(el).val("#" + hex);
+			$(el).ColorPickerHide();
+		},
+		onBeforeShow: function () {
+			$(this).ColorPickerSetColor(this.value);
+		}
+	});
+	$("#end_color").ColorPicker({
+		onSubmit: function(hsb, hex, rgb, el) {
+			$(el).val("#" + hex);
+			$(el).ColorPickerHide();
+		},
+		onBeforeShow: function () {
+			$(this).ColorPickerSetColor(this.value);
+		}
+	});
+	$("#reload-button").click(function () {
+		reloadData();
+	});
+	
+	$("#pause").click(function () {
+		ChesterGL.togglePause();
+	});
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_setDomainName', 'github.com']);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div style="width: 80%">
+	<div style="float: right; width: 350px; margin-left: 0px;">
+		<em>Particle Properties</em>
+		<div>Max Particles: <input type="text" value="" id="max_particles"/></div>
+		<div>Duration: <input type="text" value="" id="duration"/></div>
+		<div>Lifetime: <input type="text" value="" id="lifetime"/></div>
+		<div>Lifetime Var: <input type="text" value="" id="lifetime_var"/></div>
+		<div>Initial Color: <input type="text" id="initial_color"/><input type="text" id="initial_color_a" size="2"/></div>
+		<div>End Color: <input type="text" id="end_color"/><input type="text" id="end_color_a" size="2"/></div>
+		<div>Speed: <input type="text" id="speed-x" size="2"/><input type="text" id="speed-y" size="2"/><input type="text" id="speed-z" size="2"/></div>
+		<div>Speed Var: <input type="text" id="vspeed-x" size="2"/><input type="text" id="vspeed-y" size="2"/><input type="text" id="vspeed-z" size="2"/></div>
+		<div><input type="button" value="Reload" id="reload-button"/></div>
+	</div>
+	<div id="game-container" style="margin-left: 30px">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Pause" id="pause"/>
+			<span id="debug-info">00</span> ms per frame
+		</div>
+	</div>
+	</div>
+</body>
+</html>
