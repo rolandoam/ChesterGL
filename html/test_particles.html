@@ -14,7 +14,7 @@
 $(document).ready(function () {
 	var particle_properties = {
 		'texture': 'images/fire.png',
-		'maxParticles': 2,
+		'maxParticles': 1500,
 		'duration': -1.0,
 		'lifetime': 1.15,
 		'lifetimeVariance': 2.82,
@@ -57,6 +57,7 @@ $(document).ready(function () {
 			
 			ChesterGL.addMouseHandler(function (pt, type) {
 				if (type == ChesterGL.mouseEvents.UP) {
+					ps.moveTo(pt)
 				}
 			});
 			
