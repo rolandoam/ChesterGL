@@ -28,6 +28,7 @@
 	
 	/**
 	 * @namespace
+	 * @name BlockFrames
 	 */
 	var BlockFrames = {};
 		
