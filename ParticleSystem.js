@@ -113,6 +113,12 @@
 	 * @ignore
 	 */
 	ChesterGL.ParticleSystem.prototype = Object.create(ChesterGL.Block.prototype);
+
+	/**
+	 * Is the system running? (set to false to stop it)
+	 * @type {boolean}
+	 */
+	ChesterGL.ParticleSystem.prototype.running = true;
 		
 	/**
 	 * particle texture
@@ -187,15 +193,39 @@
 	ChesterGL.ParticleSystem.prototype.particleSpeed = null;
 	
 	/**
-	 * @type {boolean}
-	 */
-	ChesterGL.ParticleSystem.prototype.particleAdded = false;
-
-	/**
 	 * The particle speed variance
 	 * @type {?vec3}
 	 */
 	ChesterGL.ParticleSystem.prototype.particleSpeedVariance = null;
+	
+	/**
+	 * The starting size
+	 * @type {number}
+	 */
+	ChesterGL.ParticleSystem.prototype.startSize = 0.0;
+
+	/**
+	 * The starting size variance
+	 * @type {number}
+	 */
+	ChesterGL.ParticleSystem.prototype.startSizeVariance = 0.0;
+
+	/**
+	 * The end size
+	 * @type {number}
+	 */
+	ChesterGL.ParticleSystem.prototype.endSize = 0.0;
+	
+	/**
+	 * The end size variance
+	 * @type {number}
+	 */
+	ChesterGL.ParticleSystem.prototype.endSizeVariance = 0.0;
+
+	/**
+	 * @type {boolean}
+	 */
+	ChesterGL.ParticleSystem.prototype.particleAdded = false;
 
 	/**
 	 * The current time of the system
@@ -227,8 +257,13 @@
 		this.endColor = quat4.create(properties['endColor']);
 		this.particleSpeed = vec3.create(properties['speed']);
 		this.particleSpeedVariance = vec3.create(properties['speedVariance']);
+		this.startSize = parseFloat(properties['startSize']);
+		this.startSizeVariance = parseFloat(properties['startSizeVariance']);
+		this.endSize = parseFloat(properties['endSize']);
+		this.endSizeVariance = parseFloat(properties['endSizeVariance']);
 		this.elapsedTime = 0;
 		this.blendOptions = properties['blendOptions'].slice(0); // copy the array
+		this.running = true;
 		
 		this.glBuffer = ChesterGL.gl.createBuffer();
 		this.glBufferData = new Float32Array(this.maxParticles * BUFFER_ELEMENTS);
@@ -258,8 +293,8 @@
 		// lifetime, start time, start size, end size
 		d[idx * BUFFER_ELEMENTS + 0] = lifetime;
 		d[idx * BUFFER_ELEMENTS + 1] = startTime;
-		d[idx * BUFFER_ELEMENTS + 2] = 40.0;
-		d[idx * BUFFER_ELEMENTS + 3] = 1.0;
+		d[idx * BUFFER_ELEMENTS + 2] = this.startSize + this.startSizeVariance * (Math.random() * 2 - 1);
+		d[idx * BUFFER_ELEMENTS + 3] = this.endSize + this.endSizeVariance * (Math.random() * 2 - 1);
 		
 		// speed
 		d[idx * BUFFER_ELEMENTS + 4] = this.particleSpeed[0] + this.particleSpeedVariance[0] * (Math.random() * 2 - 1);
@@ -314,7 +349,7 @@
 		// how many seconds until the next particle
 		var rate = 1.0 / this.emissionRate;
 		this.emissionCounter += delta;
-		while (this.particleCount < this.maxParticles && this.emissionCounter > rate) {
+		while (this.particleCount < this.maxParticles && this.emissionCounter > rate && this.running) {
 			this.addParticle();
 			this.emissionCounter -= rate;
 		}
@@ -339,7 +374,7 @@
 		}
 
 		if (this.duration > 0 && this.elapsedTime > this.duration) {
-			this.elapsedTime = 0;
+			this.running = false;
 		}
 	}
 

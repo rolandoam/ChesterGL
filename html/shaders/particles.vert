@@ -21,7 +21,7 @@ void main(void) {
 	if (u_time <= a_lifetime + a_startTime)
 	{
 		float vel = (u_time / 100.0);
-		gl_Position.xyz = a_startPosition + a_speed * ptime;
+		gl_Position.xyz = a_startPosition + (a_speed/1000.0) * ptime;
 		gl_Position.w = 1.0;
 		gl_Position = uMVPMatrix * gl_Position;
 		v_lifetime = clamp(v_lifetime, 0.0, 1.0);
