@@ -615,6 +615,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		try {
 			var error = 0;
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 			error = gl.getError();
@@ -840,7 +841,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 				this.debugSpan.textContent = avg.toFixed(2);
 			}
 			// track how well we're performing - every 5 seconds
-			if (this.useGoogleAnalytics && this.sampledAvg > 5) {
+			if (ChesterGL.runningScene && this.useGoogleAnalytics && this.sampledAvg > 5) {
 				_gaq.push([
 					'_trackEvent',
 					'ChesterGL',
@@ -941,7 +942,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		}
 	}
 	
-	window['ChesterGL'] = ChesterGL;
+	ChesterGL.exportProperty(window, 'ChesterGL', ChesterGL);
 	// is there any way to automate this? :S
 	// properties
 	ChesterGL.exportProperty(ChesterGL, 'useGoogleAnalytics', ChesterGL.useGoogleAnalytics);
@@ -967,4 +968,6 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	ChesterGL.exportProperty(ChesterGL, 'drawScene', ChesterGL.drawScene);
 	ChesterGL.exportProperty(ChesterGL, 'run', ChesterGL.run);
 	ChesterGL.exportProperty(ChesterGL, 'togglePause', ChesterGL.togglePause);
+	ChesterGL.exportProperty(ChesterGL, 'addMouseHandler', ChesterGL.addMouseHandler);
+	ChesterGL.exportProperty(ChesterGL, 'removeMouseHandler', ChesterGL.removeMouseHandler);
 })(window);

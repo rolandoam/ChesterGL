@@ -329,7 +329,7 @@
 	
 	/**
 	 * will send the particle data to the gpu
-	 * @program {WebGLProgram} program
+	 * @param {WebGLProgram} program
 	 */
 	ChesterGL.ParticleSystem.prototype.sendParticleData = function (program) {
 		var gl = ChesterGL.gl;
@@ -337,6 +337,10 @@
 		gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
 	}
 	
+	/**
+	 * @type {Float32Array}
+	 * @ignore
+	 */
 	var _ps_tmp = new Float32Array(BUFFER_ELEMENTS);
 	
 	ChesterGL.ParticleSystem.prototype.update = function (delta) {
@@ -418,4 +422,37 @@
 		gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 		gl.drawArrays(gl.POINTS, 0, this.maxParticles);
 	}
+	
+	// properties
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'visible', ChesterGL.ParticleSystem.prototype.visible);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'position', ChesterGL.ParticleSystem.prototype.position);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'contentSize', ChesterGL.ParticleSystem.prototype.contentSize);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'color', ChesterGL.ParticleSystem.prototype.color);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'texture', ChesterGL.ParticleSystem.prototype.texture);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'opacity', ChesterGL.ParticleSystem.prototype.opacity);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'rotation', ChesterGL.ParticleSystem.prototype.rotation);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'scale', ChesterGL.ParticleSystem.prototype.scale);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'update', ChesterGL.ParticleSystem.prototype.update);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'frame', ChesterGL.ParticleSystem.prototype.frame);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'parent', ChesterGL.ParticleSystem.prototype.parent);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'children', ChesterGL.ParticleSystem.prototype.children);
+	// class methods
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem, 'loadShaders', ChesterGL.ParticleSystem.loadShaders);
+	// instance methods
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'setFrame', ChesterGL.ParticleSystem.prototype.setFrame);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'setContentSize', ChesterGL.ParticleSystem.prototype.setContentSize);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'setScale', ChesterGL.ParticleSystem.prototype.setScale);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'setColor', ChesterGL.ParticleSystem.prototype.setColor);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'setTexture', ChesterGL.ParticleSystem.prototype.setTexture);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'moveTo', ChesterGL.ParticleSystem.prototype.moveTo);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'moveBy', ChesterGL.ParticleSystem.prototype.moveBy);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'rotateTo', ChesterGL.ParticleSystem.prototype.rotateTo);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'rotateBy', ChesterGL.ParticleSystem.prototype.rotateBy);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'addChild', ChesterGL.ParticleSystem.prototype.addChild);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'removeChild', ChesterGL.ParticleSystem.prototype.removeChild);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'loadProperties', ChesterGL.ParticleSystem.prototype.loadProperties);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'addParticle', ChesterGL.ParticleSystem.prototype.addParticle);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'initParticle', ChesterGL.ParticleSystem.prototype.initParticle);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'resetParticles', ChesterGL.ParticleSystem.prototype.resetParticles);
+	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'sendParticleData', ChesterGL.ParticleSystem.prototype.sendParticleData);
 })(window);

@@ -571,7 +571,7 @@
 		if (this.type == ChesterGL.Block.TYPE['BLOCKGROUP']) {
 			throw "Cannot call render on a BlockGroup block!";
 		}
-		// empty render for scene blocks
+		// dummy render for scene blocks
 		if (this.type == ChesterGL.Block.TYPE['SCENE']) {
 			return;
 		}
@@ -599,7 +599,8 @@
 
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, texture.tex);
-				gl.uniform1i(program.samplerUniform, 0);				
+				gl.uniform1i(program.samplerUniform, 0);
+				gl.activatedTexture = true;
 			}
 
 			// set the matrix uniform (the multiplied model view projection matrix)
@@ -632,8 +633,6 @@
 	ChesterGL.exportProperty(ChesterGL.Block, 'TYPE', ChesterGL.Block.TYPE);		
 	ChesterGL.exportProperty(ChesterGL.Block, 'PROGRAM', ChesterGL.Block.PROGRAM);
 	ChesterGL.exportProperty(ChesterGL.Block, 'PROGRAM_NAME', ChesterGL.Block.PROGRAM_NAME);
-	// class methods
-	ChesterGL.exportProperty(ChesterGL.Block, 'create', ChesterGL.Block.create);
 	// properties
 	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'visible', ChesterGL.Block.prototype.visible);
 	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'position', ChesterGL.Block.prototype.position);

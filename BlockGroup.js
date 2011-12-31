@@ -231,12 +231,33 @@
 		// gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4 * this.children.length);
 		gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
 	}
-		
-	// inherit everything from Block
-	// ChesterGL.extend(ChesterGL.BlockGroup.prototype, ChesterGL.Block.prototype);
 	
 	// export the symbol
 	ChesterGL['BlockGroup'] = ChesterGL.BlockGroup;
+	// properties
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'visible', ChesterGL.BlockGroup.prototype.visible);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'position', ChesterGL.BlockGroup.prototype.position);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'contentSize', ChesterGL.BlockGroup.prototype.contentSize);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'color', ChesterGL.BlockGroup.prototype.color);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'texture', ChesterGL.BlockGroup.prototype.texture);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'opacity', ChesterGL.BlockGroup.prototype.opacity);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'rotation', ChesterGL.BlockGroup.prototype.rotation);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'scale', ChesterGL.BlockGroup.prototype.scale);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'update', ChesterGL.BlockGroup.prototype.update);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'frame', ChesterGL.BlockGroup.prototype.frame);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'parent', ChesterGL.BlockGroup.prototype.parent);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'children', ChesterGL.BlockGroup.prototype.children);
 	// instance methods
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'setFrame', ChesterGL.BlockGroup.prototype.setFrame);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'setContentSize', ChesterGL.BlockGroup.prototype.setContentSize);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'setScale', ChesterGL.BlockGroup.prototype.setScale);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'setColor', ChesterGL.BlockGroup.prototype.setColor);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'setTexture', ChesterGL.BlockGroup.prototype.setTexture);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'moveTo', ChesterGL.BlockGroup.prototype.moveTo);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'moveBy', ChesterGL.BlockGroup.prototype.moveBy);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'rotateTo', ChesterGL.BlockGroup.prototype.rotateTo);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'rotateBy', ChesterGL.BlockGroup.prototype.rotateBy);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'addChild', ChesterGL.BlockGroup.prototype.addChild);
+	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'removeChild', ChesterGL.BlockGroup.prototype.removeChild);
 	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'createBlock', ChesterGL.BlockGroup.prototype.createBlock);
 })(window);
