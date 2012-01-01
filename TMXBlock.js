@@ -235,7 +235,7 @@
 	ChesterGL.registerAssetHandler('tmx', handleLoadTMX);
 	
 	// export symbols
-	ChesterGL['TMXBlock'] = ChesterGL.TMXBlock;
+	ChesterGL.exportProperty(ChesterGL, 'TMXBlock', ChesterGL.TMXBlock);
 	// class methods
 	ChesterGL.exportProperty(ChesterGL.TMXBlock, 'loadTMX', ChesterGL.TMXBlock.loadTMX);
 })(window);

@@ -209,7 +209,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * the time last frame was rendered
 	 * @type {number}
 	 */
-	ChesterGL.lastTime = new Date().getTime();
+	ChesterGL.lastTime = Date.now();
 	
 	/**
 	 * delta in seconds from last frame
@@ -791,7 +791,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		}
 		
 		// for actions and other stuff
-		var current = new Date().getTime(); // milliseconds
+		var current = Date.now(); // milliseconds
 		this.delta = current - this.lastTime;
 		// if (this.delta > 150) {
 		// 	this.delta = 31.337; // set a lower delta when debugging

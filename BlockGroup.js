@@ -233,7 +233,7 @@
 	}
 	
 	// export the symbol
-	ChesterGL['BlockGroup'] = ChesterGL.BlockGroup;
+	ChesterGL.exportProperty(ChesterGL, 'BlockGroup', ChesterGL.BlockGroup);
 	// properties
 	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'visible', ChesterGL.BlockGroup.prototype.visible);
 	ChesterGL.exportProperty(ChesterGL.BlockGroup.prototype, 'position', ChesterGL.BlockGroup.prototype.position);

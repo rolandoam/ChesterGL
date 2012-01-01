@@ -423,6 +423,7 @@
 		gl.drawArrays(gl.POINTS, 0, this.maxParticles);
 	}
 	
+	ChesterGL.exportProperty(ChesterGL, 'ParticleSystem', ChesterGL.ParticleSystem);
 	// properties
 	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'visible', ChesterGL.ParticleSystem.prototype.visible);
 	ChesterGL.exportProperty(ChesterGL.ParticleSystem.prototype, 'position', ChesterGL.ParticleSystem.prototype.position);

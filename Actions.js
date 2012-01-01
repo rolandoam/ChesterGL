@@ -115,6 +115,11 @@
 	ChesterGL.MoveToAction.prototype.startPosition = null;
 	
 	/**
+	 * @type {vec3}
+	 * @ignore
+	 */
+	var __tmp_pos = vec3.create();
+	/**
 	 * @param {number} delta miliseconds from last time we updated
 	 */
 	ChesterGL.MoveToAction.prototype.update = function (delta) {
@@ -125,8 +130,8 @@
 		} else {		
 			var t = Math.min(1, this.elapsed / this.totalTime);
 			// console.log("t: " + t + "\t(" + dx + ")");
-			vec3.lerp(this.startPosition, this.finalPosition, t, block.position);
-			block.isTransformDirty = true;
+			vec3.lerp(this.startPosition, this.finalPosition, t, __tmp_pos);
+			block.moveTo(__tmp_pos);
 		}
 	}
 		
@@ -166,5 +171,7 @@
 		}
 	}
 	
+	ChesterGL.exportProperty(ChesterGL, 'ActionManager', ChesterGL.ActionManager);
 	ChesterGL.exportProperty(ChesterGL.ActionManager, 'scheduleAction', ChesterGL.ActionManager.scheduleAction);
+	ChesterGL.exportProperty(ChesterGL.ActionManager, 'tick', ChesterGL.ActionManager.tick);
 })(window);

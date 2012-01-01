@@ -626,7 +626,7 @@
 	}
 		
 	// export symbols
-	ChesterGL['Block'] = ChesterGL.Block;
+	ChesterGL.exportProperty(ChesterGL, 'Block', ChesterGL.Block);
 	// constants / enums
 	ChesterGL.exportProperty(ChesterGL.Block, 'FullFrame', ChesterGL.Block.FullFrame);
 	ChesterGL.exportProperty(ChesterGL.Block, 'SizeZero', ChesterGL.Block.SizeZero);

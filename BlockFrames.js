@@ -96,7 +96,7 @@
 	};
 	
 	// export symbols
-	ChesterGL['BlockFrames'] = BlockFrames;
+	ChesterGL.exportProperty(ChesterGL, 'BlockFrames', BlockFrames);
 	// class methods
 	ChesterGL.exportProperty(BlockFrames, 'getFrame', BlockFrames.getFrame);
 	ChesterGL.exportProperty(BlockFrames, 'loadFrames', BlockFrames.loadFrames);
