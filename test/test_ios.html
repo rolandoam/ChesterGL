@@ -39,7 +39,7 @@ $(document).ready(function () {
 			// finish with the setup and run the game
 			ChesterGL.setupPerspective();
 			
-			var sceneBlock = new ChesterGL.Block();
+			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE['SCENE']);
 			sceneBlock.title = "Test::iOS"
 			ChesterGL.setRunningScene(sceneBlock);
 			
