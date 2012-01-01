@@ -7,8 +7,8 @@ OUTPUT_FILE = chester.js
 SOURCES = core.js Block.js BlockGroup.js BlockFrames.js TMXBlock.js Actions.js ParticleSystem.js
 # externs should live in the same dir as the compiler.jar
 EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js google_analytics_api.js
-COMPILE_LEVEL_DEBUG = SIMPLE_OPTIMIZATIONS
 COMPILE_LEVEL_RELEASE = ADVANCED_OPTIMIZATIONS
+COMPILE_LEVEL_DEBUG = $(COMPILE_LEVEL_RELEASE)
 # the next line just for docs
 JSDOC_HOME = /Users/rolando/Applications/jsdoc-toolkit
 DOC_OUTPUT = doc
