@@ -35,15 +35,12 @@ $(document).ready(function () {
 			b1.moveTo([width * 0.5, height * 0.5, 0]);
 
 			var b2 = new ChesterGL.Block("1945-4-1.png");
-			b2.moveTo([width *0.5 - 50, height * 0.5, 0]);
+			b2.moveTo([width, height, 0], 10);
 			
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
 			
-			// b1.update = function () {
-			// 	this.rotateBy(1);
-			// }
-
+			/*
 			ChesterGL.addMouseHandler(function (pt, type) {
 				if (type == ChesterGL.mouseEvents.DOWN) {
 					// calculate angle to destination and rotate that angle
@@ -58,6 +55,7 @@ $(document).ready(function () {
 					b1.moveTo(pt, 1.0);
 				}
 			});
+			*/
 			
 			ChesterGL.run();
 			// draw a single frame (for debug purposes)
