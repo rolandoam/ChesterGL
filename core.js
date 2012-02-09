@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,8 +57,8 @@ HTMLCanvasElement._canvas_tmp_mouse = vec3.create();
  */
 HTMLCanvasElement.prototype.relativePosition = function (event) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
-	pt[0] = 0, pt[1] = 0;
-	if (event.x != undefined && event.y != undefined) {
+	pt[0] = 0; pt[1] = 0;
+	if (event.x !== undefined && event.y !== undefined) {
 		pt[0] = event.x;
 		pt[1] = event.y;
 	} else {
@@ -90,12 +90,14 @@ window.requestAnimFrame = (function(){
 
 /** @ignore */
 function throwOnGLError(err, funcName, args) {
-  console.log(WebGLDebugUtils.glEnumToString(err) + " was caused by call to " + funcName);
-};
+	console.log(WebGLDebugUtils.glEnumToString(err) + " was caused by call to " + funcName);
+}
 
 window['requestAnimFrame'] = window.requestAnimFrame;
 
-(function (window) {	
+(function (window) {
+	"use strict";
+
 	/**
 	 * @name ChesterGL
 	 * @namespace
