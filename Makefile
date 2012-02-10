@@ -1,5 +1,5 @@
 JAVA = /usr/bin/java
-CLOSURE_HOME = /Users/rolando/Applications/closure-compiler
+CLOSURE_HOME = ${HOME}/Applications/closure-compiler
 CLOSURE_JAR = compiler.jar
 OUTPUT_DIR ?= $(PWD)/html
 # default name for library
@@ -10,7 +10,7 @@ EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js google_ana
 COMPILE_LEVEL_RELEASE = ADVANCED_OPTIMIZATIONS
 COMPILE_LEVEL_DEBUG = $(COMPILE_LEVEL_RELEASE)
 # the next line just for docs
-JSDOC_HOME = /Users/rolando/Applications/jsdoc-toolkit
+JSDOC_HOME = ${HOME}/Applications/jsdoc-toolkit
 DOC_OUTPUT = doc
 
 # do not modify after this line unless you know what you're doing
@@ -36,6 +36,9 @@ debug-plain:
 
 clean:
 	rm -f $(OUTPUT_DIR)/$(OUTPUT_FILE)
+
+fetch-externs:
+	$(foreach i,${EXTERNS},curl -o ${CLOSURE_HOME}/$i http://closure-compiler.googlecode.com/svn/trunk/contrib/externs/$i;)
 
 doc: ${SOURCES}
 	${JAVA} -jar ${JSDOC_HOME}/jsrun.jar ${JSDOC_HOME}/app/run.js -v -a -t=${JSDOC_HOME}/templates/jsdoc ${SOURCES} -d=${DOC_OUTPUT}
