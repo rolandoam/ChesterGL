@@ -19,8 +19,6 @@ $(document).ready(function () {
 		var height = ChesterGL.gl.viewportHeight;
 		
 		ChesterGL.BlockFrames.loadFrames("images/1945.json");
-		ChesterGL.loadAsset("texture", "images/test.png");
-		ChesterGL.loadAsset("texture", "images/star.png");
 		ChesterGL.assetsLoaded('texture', function () {
 			$("#loading").html("Test Sprite Sheets");  	
 			// finish with the setup and run the game
