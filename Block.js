@@ -290,6 +290,10 @@
 	 * @param {quat4} newFrame
 	 */
 	ChesterGL.Block.prototype.setFrame = function (newFrame) {
+		if (typeof newFrame === "string") {
+			// just get the cached frame
+			newFrame = ChesterGL.BlockFrames.getFrame(newFrame).frame;
+		}
 		this.frame = quat4.create(newFrame);
 		this.setContentSize([newFrame[2], newFrame[3]]);
 		this.isFrameDirty = true;
