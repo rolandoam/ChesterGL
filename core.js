@@ -87,6 +87,8 @@ window.requestAnimFrame = (function(){
 			};
 })();
 
+/** @define {boolean} */
+var ENABLE_DEBUG = false;
 
 /** @ignore */
 function throwOnGLError(err, funcName, args) {
@@ -766,7 +768,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			this.runningScene = block;
 		}
 	}
-	
+
 	/**
 	 * main draw function, will call the root block
 	 */
@@ -793,20 +795,12 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 				gl.drawImage(this.offCanvas, 0, 0);
 			}
 		}
-		
 		// for actions and other stuff
 		var current = Date.now(); // milliseconds
 		this.delta = current - this.lastTime;
-		// if (this.delta > 150) {
-		// 	this.delta = 31.337; // set a lower delta when debugging
-		// }
 		this.lastTime = current;	
 	}
-	
-	/**
-	 * updates the internal frame counter
-	 */
-	
+
 	/**
 	 * @type {number}
 	 * @ignore
@@ -832,6 +826,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @ignore
 	 */
 	ChesterGL.sumAvg = 0;
+
 	/** @ignore */
 	ChesterGL.updateDebugTime = function () {
 		var now = Date.now();
@@ -927,10 +922,12 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 */
 	ChesterGL.run = function () {
 		if (!ChesterGL._paused) {
+			// console.time("mainLoop");
 			window.requestAnimFrame(ChesterGL.run, ChesterGL.canvas);
 			ChesterGL.drawScene();
 			ChesterGL.ActionManager.tick(ChesterGL.delta);
-			ChesterGL.updateDebugTime();
+			// console.timeEnd("mainLoop");
+			if (ENABLE_DEBUG) ChesterGL.updateDebugTime();
 		}
 	}
 	

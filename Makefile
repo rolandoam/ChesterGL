@@ -28,7 +28,8 @@ debug:
 	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} \
 		${COMPILER_ARGUMENTS} --compilation_level $(COMPILE_LEVEL_DEBUG) \
 		--formatting PRETTY_PRINT ${JS_SOURCES} \
-		--js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE)
+		--js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE) \
+		-D ENABLE_DEBUG=1
 
 # just cat everything into chester.js (when debugging is getting hard)
 debug-plain:
