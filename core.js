@@ -746,9 +746,9 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			// var f_aspect = (1.7320508075688776 / (width / height));
 			var zeye   = height / 1.1566;
 			var matA   = mat4.perspective(60, width / height, 0.5, 1500.0);
-			var eye    = vec3.create([width/2, height/2, zeye]);
-			var center = vec3.create([width/2, height/2, 0]);
-			var up     = vec3.create([0, 1, 0]);
+			var eye    = [width/2, height/2, zeye];
+			var center = [width/2, height/2, 0];
+			var up     = [0, 1, 0];
 			var matB = mat4.lookAt(eye, center, up);
 			mat4.multiply(matA, matB, this.pMatrix);
 		} else {
@@ -760,7 +760,9 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @param {ChesterGL.Block} block
 	 */
 	ChesterGL.setRunningScene = function (block) {
-		this.runningScene = block;
+		if (block.type == ChesterGL.Block.TYPE['SCENE']) {
+			this.runningScene = block;
+		}
 	}
 	
 	/**
