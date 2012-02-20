@@ -93,6 +93,16 @@ ChesterGL.Action = function (block, totalTime) {};
  */
 ChesterGL.MoveToAction = function (block, totalTime, finalPosition) {};
 
+/**
+ * @constructor
+ * @extends ChesterGL.Action
+ * @param {ChesterGL.Block} block
+ * @param {number} delay in milliseconds
+ * @param {Array.<Object>} frames
+ * @param {boolean?} loop
+ * @return ChesterGL.AnimateAction
+ */
+ChesterGL.AnimateAction = function (block, delay, frames, loop) {};
 
 
 // external - request animation frame for different browsers and window.WebGLDebugUtils

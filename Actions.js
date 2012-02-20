@@ -79,7 +79,7 @@
 	 */
 	ChesterGL.Action.prototype.update = function (delta) {
 		this.elapsed += delta;
-		if (this.elapsed >= this.totalTime) {
+		if (this.totalTime > 0 && this.elapsed >= this.totalTime) {
 			this.finished = true;
 		}
 	};
@@ -119,6 +119,7 @@
 	 * @ignore
 	 */
 	var __tmp_pos = vec3.create();
+
 	/**
 	 * @param {number} delta miliseconds from last time we updated
 	 */
@@ -133,23 +134,92 @@
 			vec3.lerp(this.startPosition, this.finalPosition, t, __tmp_pos);
 			block.moveTo(__tmp_pos);
 		}
-	}
-		
+	};
+
+	/**
+	 * @constructor
+	 * @extends ChesterGL.Action
+	 * @param {ChesterGL.Block} block
+	 * @param {number} delay in seconds
+	 * @param {Array.<Object>} frames
+	 * @param {boolean?} loop
+	 * @return ChesterGL.AnimateAction
+	 */
+	ChesterGL.AnimateAction = function (block, delay, frames, loop) {
+		this.delay = delay * 1000.0;
+		var totalTime = this.delay * frames.length;
+		if (loop == true) totalTime = -1;
+		ChesterGL.Action.call(this, block, totalTime);
+		this.shouldLoop = (loop == true);
+		this.frames = frames.slice(0);
+	};
+
+	/**
+	 * extend from Action
+	 * @ignore
+	 */
+	ChesterGL.AnimateAction.prototype = Object.create(ChesterGL.Action.prototype);
+
+	/**
+	 * the current frame
+	 * @type {number}
+	 */
+	ChesterGL.AnimateAction.prototype.currentFrame = 0;
+
+	/**
+	 * The delay between frames
+	 * @type {number}
+	 */
+	ChesterGL.AnimateAction.prototype.delay = 0.0;
+
+	/**
+	 * The total frames of the animation
+	 * @type {Array.<Object>}
+	 */
+	ChesterGL.AnimateAction.prototype.frames = null;
+
+	/**
+	 * Whether or not the animation should loop
+	 * @type {boolean}
+	 */
+	ChesterGL.AnimateAction.prototype.shouldLoop = false;
+
+	/**
+	 * @param {number} delta
+	 */
+	ChesterGL.AnimateAction.prototype.update = function (delta) {
+		ChesterGL.Action.prototype.update.call(this, delta);
+		var block = this.block;
+		if (this.finished) {
+			this.currentFrame = this.frames.length - 1;
+			this.finished = true;
+			// set last frame
+			block.setFrame(this.frames[this.currentFrame]);
+		} else {
+			if (this.elapsed >= this.delay * this.currentFrame) {
+				block.setFrame(this.frames[this.currentFrame++]);
+				if (this.currentFrame == this.frames.length) {
+					if (this.shouldLoop) { this.currentFrame = 0; this.elapsed = 0; }
+					else this.finished = true;
+				}
+			}
+		}
+	};
+
 	/**
 	 * global action manager
 	 * @namespace
 	 * @type {Object.<string,Object>}
 	 */
 	ChesterGL.ActionManager = {};
-	
-	
+
 	/**
 	 * the list of scheduled actions
 	 * @ignore
 	 * @type {Array.<ChesterGL.Action>}
 	 */
 	ChesterGL.ActionManager.scheduledActions_ = [];
-	
+
 	/**
 	 * adds an action to the scheduler
 	 * 
@@ -158,7 +228,7 @@
 	ChesterGL.ActionManager.scheduleAction = function (action) {
 		this.scheduledActions_.push(action);
 	}
-	
+
 	/**
 	 * Iterate over all scheduled actions
 	 * @param {number} delta number of miliseconds to run in all actions
@@ -170,8 +240,10 @@
 			!a.finished && a.update(delta);
 		}
 	}
-	
+
 	ChesterGL.exportProperty(ChesterGL, 'ActionManager', ChesterGL.ActionManager);
 	ChesterGL.exportProperty(ChesterGL.ActionManager, 'scheduleAction', ChesterGL.ActionManager.scheduleAction);
 	ChesterGL.exportProperty(ChesterGL.ActionManager, 'tick', ChesterGL.ActionManager.tick);
+	ChesterGL.exportProperty(ChesterGL, 'MoveToAction', ChesterGL.MoveToAction);
+	ChesterGL.exportProperty(ChesterGL, 'AnimateAction', ChesterGL.AnimateAction);
 })(window);

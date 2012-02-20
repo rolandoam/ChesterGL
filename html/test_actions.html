@@ -34,6 +34,11 @@ $(document).ready(function () {
 			var b1 = new ChesterGL.Block("1945-4-0.png");
 			b1.moveTo([width * 0.5, height * 0.5, 0]);
 
+			// test animation
+			// for block b1, 0.2 seconds, [frames...], shouldLoop
+			var animation = new ChesterGL.AnimateAction(b1, 0.5, ["1945-4-0.png", "1945-4-1.png", "1945-4-2.png", "1945-4-3.png", "1945-4-4.png"], true);
+			ChesterGL.ActionManager.scheduleAction(animation);
+
 			var b2 = new ChesterGL.Block("1945-4-1.png");
 			b2.moveTo([width, height, 0], 10);
 			
