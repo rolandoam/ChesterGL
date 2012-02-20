@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - ChesterGL.Action</title>
+		<title>JsDoc Reference - ChesterGL.AnimateAction</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -222,12 +222,14 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class ChesterGL.Action
+				Class ChesterGL.AnimateAction
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>.<br />
 				
 			
 				
@@ -239,7 +241,7 @@ ul.inheritsList
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.Action.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.AnimateAction.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -252,7 +254,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#constructor">ChesterGL.Action</a></b>(block, totalTime)
+								<b><a href="../symbols/ChesterGL.AnimateAction.html#constructor">ChesterGL.AnimateAction</a></b>(block, delay, frames, loop)
 							</div>
 							<div class="description"></div>
 						</td>
@@ -265,7 +267,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.Action.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.AnimateAction.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -279,9 +281,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#block">block</a></b>
+								<b><a href="../symbols/ChesterGL.AnimateAction.html#currentFrame">currentFrame</a></b>
 								</div>
-								<div class="description">The block to which this action will be applied</div>
+								<div class="description">the current frame</div>
 							</td>
 						</tr>
 					
@@ -289,9 +291,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#currentTime">currentTime</a></b>
+								<b><a href="../symbols/ChesterGL.AnimateAction.html#delay">delay</a></b>
 								</div>
-								<div class="description">The current time of the action</div>
+								<div class="description">The delay between frames</div>
 							</td>
 						</tr>
 					
@@ -299,10 +301,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#elapsed">elapsed</a></b>
+								<b><a href="../symbols/ChesterGL.AnimateAction.html#frames">frames</a></b>
 								</div>
-								<div class="description">Current time in seconds of the action
-(might not be relevant for all actions)</div>
+								<div class="description">The total frames of the animation</div>
 							</td>
 						</tr>
 					
@@ -310,20 +311,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#finished">finished</a></b>
+								<b><a href="../symbols/ChesterGL.AnimateAction.html#shouldLoop">shouldLoop</a></b>
 								</div>
-								<div class="description">The current time of the action</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#totalTime">totalTime</a></b>
-								</div>
-								<div class="description">The total time in seconds this action should take
-(might not be relevant for all actions)</div>
+								<div class="description">Whether or not the animation should loop</div>
 							</td>
 						</tr>
 					
@@ -332,13 +322,17 @@ ul.inheritsList
 				
 				
 				
+				<dl class="inheritsList">
+				<dt>Fields borrowed from class <a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a>: </dt><dd><a href="../symbols/ChesterGL.Action.html#block">block</a>, <a href="../symbols/ChesterGL.Action.html#currentTime">currentTime</a>, <a href="../symbols/ChesterGL.Action.html#elapsed">elapsed</a>, <a href="../symbols/ChesterGL.Action.html#finished">finished</a>, <a href="../symbols/ChesterGL.Action.html#totalTime">totalTime</a></dd>
+				</dl>
+				
 			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.Action.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.AnimateAction.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -351,9 +345,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Action.html#update">update</a></b>(delta)
+								<div class="fixedFont"><b><a href="../symbols/ChesterGL.AnimateAction.html#update">update</a></b>(delta)
 								</div>
-								<div class="description">This is the default delta function (does nothing)</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -361,6 +355,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -374,7 +372,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>ChesterGL.Action</b>(block, totalTime)
+						<b>ChesterGL.AnimateAction</b>(block, delay, frames, loop)
 				</div>
 				
 				<div class="description">
@@ -396,7 +394,19 @@ ul.inheritsList
 								<dd></dd>
 						
 							<dt>
-								<span class="light fixedFont">{number=}</span>  <b>totalTime</b>
+								<span class="light fixedFont">{number}</span>  <b>delay</b>
+								
+							</dt>
+								<dd>in seconds</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Array.<Object>}</span>  <b>frames</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{boolean?}</span>  <b>loop</b>
 								
 							</dt>
 								<dd></dd>
@@ -410,7 +420,7 @@ ul.inheritsList
 						<dl class="detailList">
 						<dt class="heading">Returns:</dt>
 						
-								<dd>ChesterGL.Action</dd>
+								<dd>ChesterGL.AnimateAction</dd>
 						
 						</dl>
 					
@@ -426,15 +436,15 @@ ul.inheritsList
 					Field Detail
 				</div>
 				
-					<a name="block"> </a>
+					<a name="currentFrame"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>block</b>
+					<b>currentFrame</b>
 					
 					</div>
 					<div class="description">
-						The block to which this action will be applied
+						the current frame
 						
 						
 					</div>
@@ -448,15 +458,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="currentTime"> </a>
+					<a name="delay"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>currentTime</b>
+					<b>delay</b>
 					
 					</div>
 					<div class="description">
-						The current time of the action
+						The delay between frames
 						
 						
 					</div>
@@ -470,16 +480,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="elapsed"> </a>
+					<a name="frames"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>elapsed</b>
+					<b>frames</b>
 					
 					</div>
 					<div class="description">
-						Current time in seconds of the action
-(might not be relevant for all actions)
+						The total frames of the animation
 						
 						
 					</div>
@@ -493,38 +502,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="finished"> </a>
+					<a name="shouldLoop"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>finished</b>
+					<b>shouldLoop</b>
 					
 					</div>
 					<div class="description">
-						The current time of the action
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="totalTime"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>totalTime</b>
-					
-					</div>
-					<div class="description">
-						The total time in seconds this action should take
-(might not be relevant for all actions)
+						Whether or not the animation should loop
 						
 						
 					</div>
@@ -554,7 +540,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						This is the default delta function (does nothing)
+						
 						
 						
 					</div>
