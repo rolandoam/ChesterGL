@@ -27,18 +27,18 @@
 	"use strict";
 
 	var ChesterGL = window['ChesterGL'];
-	
+
 	/**
 	 * @namespace
 	 * @name BlockFrames
 	 */
 	var BlockFrames = {};
-		
+
 	/**
 	 * @type {Object.<string,ChesterGL.BlockFrames.frameType>}
 	 */
 	BlockFrames.frames = {};
-	
+
 	/**
 	 * loads the json data (callback for the ajax call)
 	 * 
@@ -67,8 +67,14 @@
 		} else {
 			throw "Unkown json data";
 		}
-	}
-	
+	};
+
+	BlockFrames.framesLoadHandler = function (path, data) {
+		var frameset = ChesterGL.assets['frameset'][path];
+		frameset.data = data;
+		return true;
+	};
+
 	/**
 	 * Returns a named frame.
 	 *
@@ -77,26 +83,21 @@
 	 */
 	BlockFrames.getFrame = function (frameName) {
 		return BlockFrames.frames[frameName];
-	}
-	
+	};
+
 	/**
 	 * @param {string} path The path for the json file (TexturePacker format)
 	 * @param {function()=} callback The callback to be called after everything is ready
 	 */
 	BlockFrames.loadFrames = function (path, callback) {
 		console.log("loadFrames: will fetch " + path);
-		$.ajax({
-			url: path,
-			async: false,
-			dataType: 'json',
-			success: function (data, textStatus) {
-				if (textStatus == "success") {
-					BlockFrames.loadJSON(data);
-				}
-			}
-		})
+		ChesterGL.loadAsset("frameset", {path: path, dataType: 'json'}, function (data) {
+			BlockFrames.loadJSON(data);
+		});
 	};
-	
+
+	ChesterGL.registerAssetHandler('frameset', BlockFrames.framesLoadHandler);
+
 	// export symbols
 	ChesterGL.exportProperty(ChesterGL, 'BlockFrames', BlockFrames);
 	// class methods

@@ -698,7 +698,9 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			success: function (data, textStatus) {
 				var asset = ChesterGL.assets[type][path];
 				if (textStatus == "success") {
-					if (ChesterGL.assetsHandlers[type](path, data)) {
+					var handler = ChesterGL.assetsHandlers[type];
+					if (!handler) { throw "No handler for asset of type " + type; }
+					if (handler(path, data)) {
 						asset.status = 'loaded';
 						// call all listeners
 						var l;
@@ -717,7 +719,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			}
 		});
 	};
-	
+
 	/**
 	 * setups the perspective (2d or 3d)
 	 */
