@@ -23,6 +23,8 @@
  *
  */
 
+"use strict";
+
 /**
  * @typedef {Object.<number,number>}
  */
@@ -106,7 +108,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @typedef {Object}
 	 */
 	var ChesterGL = {};
-	
+
 	/**
 	 * "inspired" on goog.exportProperty
 	 * @see http://closure-library.googlecode.com/svn/docs/closure_goog_base.js.source.html
@@ -125,13 +127,13 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @type {?WebGLRenderingContext}
 	 */
 	ChesterGL.gl = null;
-	
+
 	/**
 	 * @type {boolean}
 	 * @ignore
 	 */
 	ChesterGL._paused = false;
-	
+
 	/**
 	 * For debug/performance metrics. You can set this to false to ignore analytics (no data will be sent).
 	 * This will use whatever profile you have for analytics on the game page
@@ -139,63 +141,63 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @type {boolean}
 	 */
 	ChesterGL.useGoogleAnalytics = false;
-			
+
 	/**
 	 * @type {Object.<string,WebGLProgram>}
 	 */
 	ChesterGL.programs = {};
-	
+
 	/**
 	 * @type {?string}
 	 */
 	ChesterGL.currentProgram = null;
-	
+
 	/**
 	 * @type {?mat4}
 	 */
 	ChesterGL.pMatrix = null;
-	
+
 	/**
 	 * @type {?ChesterGL.Block}
 	 */
 	ChesterGL.runningScene = null;
-	
+
 	/**
 	 * @type {?Element}
 	 */
 	ChesterGL.canvas = null;
-	
+
 	/**
 	 * default projection: 3d
 	 * 
 	 * @type {string}
 	 */
 	ChesterGL.projection = "3d";
-		
+
 	/**
 	 * are we on webgl?
 	 * @type {boolean}
 	 */
 	ChesterGL.webglMode = true;
-	
+
 	/**
 	 * whether or not to use an offscreen buffer when in not webgl mode
 	 * 
 	 * @type {boolean}
 	 */
 	ChesterGL.usesOffscreenBuffer = false;
-	
+
 	/**
 	 * @type {Object.<string,Object>}
 	 */ 
 	ChesterGL.assets = {};
-	
+
 	/**
 	 * the asset-loaded handlers
 	 * @type {Object.<string,function((Object|string),(Object|string),function(boolean)=)>}
 	 */
 	ChesterGL.assetsHandlers = {};
-	
+
 	/**
 	 * the asset loader: it specifies how a type of asset should be loaded.
 	 * The default for textures is creating a new Image() element, the default for any other
@@ -203,42 +205,42 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @type {Object.<string,function((Object|string),(Object|string))>}
 	 */
 	ChesterGL.assetsLoaders = {};
-	
+
 	/**
 	 * @type {Object.<string,function ()>}
 	 */
 	ChesterGL.assetsLoadedListeners = {};
-	
+
 	/**
 	 * the time last frame was rendered
 	 * @type {number}
 	 */
 	ChesterGL.lastTime = Date.now();
-	
+
 	/**
 	 * delta in seconds from last frame
 	 * @type {number}
 	 */
 	ChesterGL.delta = 0;
-	
+
 	/**
 	 * the current number of frames per second
 	 * @type {number}
 	 */
 	ChesterGL.fps = 0;
-	
+
 	/**
 	 * the span that will hold the debug info
 	 * @type {?Element}
 	 */
 	ChesterGL.debugSpan = null;
-	
+
 	/**
 	 * the id of the span that will hold the debug info. Defaults to "debug-info"
 	 * @type {string}
 	 */
 	ChesterGL.debugSpanId = "debug-info";
-	
+
 	/**
 	 * the global update function, to be called every
 	 * frame - with the delta from last frame
@@ -246,7 +248,7 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 * @type {?function(number)}
 	 */
 	ChesterGL.update = null;
-	
+
 	/**
 	 * @enum {number}
 	 */
@@ -255,13 +257,13 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		MOVE: 1,
 		UP: 2
 	}
-	
+
 	/**
 	 * the global list of mouse down handlers
 	 * @type {Array.<function(vec3, number)>}
 	 */
 	ChesterGL.mouseHandlers = [];
-	
+
 	/**
 	 * sets the current program, also sets the uniforms for that shader
 	 * 
@@ -283,8 +285,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			}
 		}
 		return prog;
-	}
-	
+	};
+
 	/**
 	 * setups the webgl canvas
 	 * @param {string} canvasId
@@ -301,8 +303,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		this.registerAssetHandler('texture', this.defaultTextureHandler);
 		this.registerAssetLoader('texture', this.defaultTextureLoader);
 		this.registerAssetLoader('default', this.defaultAssetLoader);
-	}
-	
+	};
+
 	/**
 	 * tryies to init the graphics stuff:
 	 * 1st attempt: webgl
@@ -350,8 +352,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		
 		// install touch handler
 		this.installMouseHandlers();
-	}
-	
+	};
+
 	/**
 	 * called when the canvas is resized
 	 */
@@ -362,8 +364,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		this.gl.viewportHeight = canvas.height;
 		this.exportProperty(this.gl, 'viewportWidth', this.gl.viewportWidth);
 		this.exportProperty(this.gl, 'viewportHeight', this.gl.viewportHeight);
-	}
-	
+	};
+
 	/**
 	 * init the default shader
 	 */
@@ -392,8 +394,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			ChesterGL.exportProperty(program, 'samplerUniform', program.samplerUniform);
 			ChesterGL.exportProperty(program, 'attribs', program.attribs);
 		});
-	}
-	
+	};
+
 	/**
 	 * init shaders (fetches data - in a sync way)
 	 * @param {string} prefix
@@ -423,8 +425,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		
 		var program = this.createShader(prefix, fs, vs);
 		if (callback) callback(program);
-	}
-	
+	};
+
 	/**
 	 * loads the shader data
 	 * @return {(string|Object|null)}
@@ -444,8 +446,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			}
 		});
 		return shaderData;
-	}
-	
+	};
+
 	/**
 	 * actually creates the shader
 	 * @param {string} prefix
@@ -465,8 +467,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		// console.log("creating shader " + prefix);
 		this.programs[prefix] = program;
 		return program;
-	}
-	
+	};
+
 	/**
 	 * registers an asset loader (which is basically a function).
 	 * By convention, every handler must set the <code>data</code> property of the asset. It should not
@@ -498,8 +500,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 */
 	ChesterGL.registerAssetHandler = function (type, handler) {
 		this.assetsHandlers[type] = handler;
-	}
-	
+	};
+
 	/**
 	 * Register a way to load an asset
 	 * 
@@ -508,12 +510,13 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 */
 	ChesterGL.registerAssetLoader = function (type, loader) {
 		this.assetsLoaders[type] = loader;
-	}
-	
+	};
+
 	/**
-	 * loads and asset using the registered method to download it
+	 * Loads and asset using the registered method to download it. You can register different loaders
+	 * (to be called to actually do the request) and asset handlers (to be called after the asset is loaded).
 	 * 
-	 * @param {string} type the type of asset being loaded, it could be "texture", "frameset", "audio"
+	 * @param {string} type the type of asset being loaded, it could be "texture" or "default"
 	 * @param {string|Object} assetPath the path for the asset
 	 * @param {function(Object)=} cb the callback that will be executed as soon as the asset is loaded
 	 */
@@ -523,10 +526,11 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			dataType_ = assetPath.dataType;
 			assetPath = assetPath.path;
 		}
-		
+
 		if (!this.assets[type]) {
 			this.assets[type] = {};
 		}
+
 		var assets = this.assets[type];
 		if (!assets[assetPath]) {
 			// not in our records
@@ -551,8 +555,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 				this.assetsLoaders['default'](type, {url: assetPath, dataType: dataType_});
 			cb && assets[assetPath].listeners.push(cb);
 		}
-	}
-	
+	};
+
 	/**
 	 * adds a listener for when all assets are loaded
 	 * 
@@ -595,8 +599,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			var l;
 			while (l = listeners.shift()) { l(); }
 		}
-	}
-	
+	};
+
 	/**
 	 * returns the object associated with the requested asset
 	 * @param {string} type
@@ -605,8 +609,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	 */
 	ChesterGL.getAsset = function (type, path) {
 		return this.assets[type][path].data;
-	}
-	
+	};
+
 	/**
 	 * handles a loaded texture - should only be called on a webGL mode
 	 * @param {(Object|HTMLImageElement)} texture
@@ -635,8 +639,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			result = false;
 		}
 		return result;
-	}
-	
+	};
+
 	/**
 	 * The default texture handler
 	 * 
@@ -654,8 +658,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			return ChesterGL.prepareWebGLTexture(img);
 		}
 		return true;
-	}
-	
+	};
+
 	/**
 	 * @param {string} type
 	 * @param {Object.<string,string>} params
@@ -680,8 +684,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 			}
 		}, false);
 		img.src = path;
-	}
-	
+	};
+
 	/**
 	 * @param {string} type
 	 * @param {Object.<string,string>} params
@@ -711,8 +715,8 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 					console.log("Error loading asset " + path);
 				}
 			}
-		})
-	}
+		});
+	};
 	
 	/**
 	 * setups the perspective (2d or 3d)
