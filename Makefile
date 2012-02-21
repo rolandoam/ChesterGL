@@ -29,7 +29,7 @@ debug:
 		${COMPILER_ARGUMENTS} --compilation_level $(COMPILE_LEVEL_DEBUG) \
 		--formatting PRETTY_PRINT ${JS_SOURCES} \
 		--js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE) \
-		-D ENABLE_DEBUG=1
+		-D ENABLE_DEBUG=1 --create_source_map $(OUTPUT_DIR)/$(OUTPUT_FILE).map
 
 # just cat everything into chester.js (when debugging is getting hard)
 debug-plain:
