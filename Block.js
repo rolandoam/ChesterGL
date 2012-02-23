@@ -500,10 +500,10 @@
 					var tex = ChesterGL.getAsset("texture", this.texture);
 					var texW = tex.width,
 						texH = tex.height;
-					var l = this.frame[0] / texW,
-						b = this.frame[1] / texH,
-						w = this.frame[2] / texW,
-						h = this.frame[3] / texH;
+					var l = this.frame[0] / texW + 0.001,
+						b = this.frame[1] / texH + 0.001,
+						w = this.frame[2] / texW - 0.002,
+						h = this.frame[3] / texH - 0.002;
 					_idx += 3;
 					bufferData[_idx           ] = l  ; bufferData[_idx+1           ] = b;
 					bufferData[_idx +   offset] = l  ; bufferData[_idx+1 +   offset] = b+h;

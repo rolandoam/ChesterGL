@@ -1,5 +1,5 @@
 JAVA = /usr/bin/java
-CLOSURE_HOME = ${HOME}/Applications/closure-compiler
+CLOSURE_HOME = ${HOME}/bin/closure
 CLOSURE_JAR = compiler.jar
 OUTPUT_DIR ?= $(PWD)/html
 # default name for library
