@@ -23,7 +23,6 @@
  *
  */
 
-"use strict";
 goog.provide("chesterGL");
 
 /**
