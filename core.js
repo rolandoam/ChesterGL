@@ -24,57 +24,30 @@
  */
 
 "use strict";
-
-/**
- * @typedef {Object.<number,number>}
- */
-var vec2 = {};
-
-/**
- * @constructor
- * @param {(vec2|Array)=} vec
- * @return {vec2}
- */
-vec2.create = function (vec) {
-	var dest = new Float32Array(2);
-	
-	if (vec) {
-		dest[0] = vec[0];
-		dest[1] = vec[1];
-	}
-	
-	return dest;
-};
+goog.provide("chesterGL");
 
 /**
  * @ignore
- * @type {vec3}
+ * @type {goog.math.Vec2}
  */
-HTMLCanvasElement._canvas_tmp_mouse = vec3.create();
+HTMLCanvasElement._canvas_tmp_mouse = new goog.math.Vec2();
 
 /**
  * @ignore
- * @param {Event} event
- * @return {vec3}
+ * @param {Event} evt
+ * @return {goog.math.Vec2}
  */
-HTMLCanvasElement.prototype.relativePosition = function (event) {
+HTMLCanvasElement.prototype.relativePosition = function (evt) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
-	pt[0] = 0; pt[1] = 0;
-	if (event.x !== undefined && event.y !== undefined) {
-		pt[0] = event.x;
-		pt[1] = event.y;
-	} else {
-		pt[0] = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-		pt[1] = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-	}
-	pt[0] -= this.offsetLeft;
-	pt[1]  = this.height - (pt[1] - this.offsetTop);
+	pt.x = 0; pt.y = 0;
+
+	var off = $(this).offset(), height = $(this).height();
+	pt.x = (evt.pageX - off.left);
+	pt.y = (height - (evt.pageY - off.top));
 	return pt;
 };
 
 /**
- * right now we're going to stick with just setTimeout - it apparently
- * gives us better performance
  * @ignore
  * @type {function(function(), Element)}
  */
@@ -88,6 +61,7 @@ window.requestAnimFrame = (function(){
 				window.setTimeout(callback, 1000 / 60);
 			};
 })();
+window['requestAnimationFrame'] = window.requestAnimationFrame;
 
 /** @define {boolean} */
 var ENABLE_DEBUG = false;
@@ -97,29 +71,15 @@ function throwOnGLError(err, funcName, args) {
 	console.log(WebGLDebugUtils.glEnumToString(err) + " was caused by call to " + funcName);
 }
 
-window['requestAnimFrame'] = window.requestAnimFrame;
+/**
+ * @name ChesterGL
+ * @namespace
+ * @typedef {Object}
+ */
+var ChesterGL = {};
 
-(function (window) {
+(function () {
 	"use strict";
-
-	/**
-	 * @name ChesterGL
-	 * @namespace
-	 * @typedef {Object}
-	 */
-	var ChesterGL = {};
-
-	/**
-	 * "inspired" on goog.exportProperty
-	 * @see http://closure-library.googlecode.com/svn/docs/closure_goog_base.js.source.html
-	 * 
-	 * @param {Object} object
-	 * @param {string} publicName
-	 * @param {*}      symbol
-	 */
-	ChesterGL.exportProperty = function(object, publicName, symbol) {
-	  object[publicName] = symbol;
-	};
 
 	/**
 	 * This is the WebGL context
@@ -604,11 +564,14 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 	/**
 	 * returns the object associated with the requested asset
 	 * @param {string} type
-	 * @param {string} path
-	 * @return {Object}
+	 * @param {string|null} path
+	 * @return {Object|null}
 	 */
 	ChesterGL.getAsset = function (type, path) {
-		return this.assets[type][path].data;
+		if (path) {
+			return this.assets[type][path].data;
+		}
+		return null;
 	};
 
 	/**
@@ -949,32 +912,32 @@ window['requestAnimFrame'] = window.requestAnimFrame;
 		}
 	}
 	
-	ChesterGL.exportProperty(window, 'ChesterGL', ChesterGL);
+	goog.exportSymbol('chesterGL', ChesterGL);
 	// is there any way to automate this? :S
 	// properties
-	ChesterGL.exportProperty(ChesterGL, 'useGoogleAnalytics', ChesterGL.useGoogleAnalytics);
-	ChesterGL.exportProperty(ChesterGL, 'projection', ChesterGL.projection);
-	ChesterGL.exportProperty(ChesterGL, 'webglMode', ChesterGL.webglMode);
-	ChesterGL.exportProperty(ChesterGL, 'usesOffscreenBuffer', ChesterGL.usesOffscreenBuffer);
-	ChesterGL.exportProperty(ChesterGL, 'debugSpanId', ChesterGL.debugSpanId);
-	ChesterGL.exportProperty(ChesterGL, 'update', ChesterGL.update);
-	ChesterGL.exportProperty(ChesterGL, 'mouseEvents', ChesterGL.mouseEvents);
-	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'DOWN', ChesterGL.mouseEvents.DOWN);
-	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'MOVE', ChesterGL.mouseEvents.MOVE);
-	ChesterGL.exportProperty(ChesterGL.mouseEvents, 'UP', ChesterGL.mouseEvents.UP);
+	goog.exportSymbol('chesterGL.useGoogleAnalytics', ChesterGL.useGoogleAnalytics);
+	goog.exportSymbol('chesteGL.projection', ChesterGL.projection);
+	goog.exportSymbol('chesteGL.webglMode', ChesterGL.webglMode);
+	goog.exportSymbol('chesteGL.usesOffscreenBuffer', ChesterGL.usesOffscreenBuffer);
+	goog.exportSymbol('chesteGL.debugSpanId', ChesterGL.debugSpanId);
+	goog.exportSymbol('chesteGL.update', ChesterGL.update);
+	goog.exportSymbol('chesteGL.mouseEvents', ChesterGL.mouseEvents);
+	goog.exportSymbol('chesteGL.mouseEvents.DOWN', ChesterGL.mouseEvents.DOWN);
+	goog.exportSymbol('chesteGL.mouseEvents.MOVE', ChesterGL.mouseEvents.MOVE);
+	goog.exportSymbol('chesteGL.mouseEvents.UP', ChesterGL.mouseEvents.UP);
 	// methods
-	ChesterGL.exportProperty(ChesterGL, 'setup', ChesterGL.setup);
-	ChesterGL.exportProperty(ChesterGL, 'canvasResized', ChesterGL.canvasResized);
-	ChesterGL.exportProperty(ChesterGL, 'initShader', ChesterGL.initShader);
-	ChesterGL.exportProperty(ChesterGL, 'registerAssetHandler', ChesterGL.registerAssetHandler);
-	ChesterGL.exportProperty(ChesterGL, 'loadAsset', ChesterGL.loadAsset);
-	ChesterGL.exportProperty(ChesterGL, 'assetsLoaded', ChesterGL.assetsLoaded);
-	ChesterGL.exportProperty(ChesterGL, 'getAsset', ChesterGL.getAsset);
-	ChesterGL.exportProperty(ChesterGL, 'setupPerspective', ChesterGL.setupPerspective);
-	ChesterGL.exportProperty(ChesterGL, 'setRunningScene', ChesterGL.setRunningScene);
-	ChesterGL.exportProperty(ChesterGL, 'drawScene', ChesterGL.drawScene);
-	ChesterGL.exportProperty(ChesterGL, 'run', ChesterGL.run);
-	ChesterGL.exportProperty(ChesterGL, 'togglePause', ChesterGL.togglePause);
-	ChesterGL.exportProperty(ChesterGL, 'addMouseHandler', ChesterGL.addMouseHandler);
-	ChesterGL.exportProperty(ChesterGL, 'removeMouseHandler', ChesterGL.removeMouseHandler);
-})(window);
+	goog.exportSymbol('chesteGL.setup', ChesterGL.setup);
+	goog.exportSymbol('chesteGL.canvasResized', ChesterGL.canvasResized);
+	goog.exportSymbol('chesteGL.initShader', ChesterGL.initShader);
+	goog.exportSymbol('chesteGL.registerAssetHandler', ChesterGL.registerAssetHandler);
+	goog.exportSymbol('chesteGL.loadAsset', ChesterGL.loadAsset);
+	goog.exportSymbol('chesteGL.assetsLoaded', ChesterGL.assetsLoaded);
+	goog.exportSymbol('chesteGL.getAsset', ChesterGL.getAsset);
+	goog.exportSymbol('chesteGL.setupPerspective', ChesterGL.setupPerspective);
+	goog.exportSymbol('chesteGL.setRunningScene', ChesterGL.setRunningScene);
+	goog.exportSymbol('chesteGL.drawScene', ChesterGL.drawScene);
+	goog.exportSymbol('chesteGL.run', ChesterGL.run);
+	goog.exportSymbol('chesteGL.togglePause', ChesterGL.togglePause);
+	goog.exportSymbol('chesteGL.addMouseHandler', ChesterGL.addMouseHandler);
+	goog.exportSymbol('chesteGL.removeMouseHandler', ChesterGL.removeMouseHandler);
+})();

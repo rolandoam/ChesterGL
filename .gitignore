@@ -6,3 +6,5 @@ doc/
 
 # remove this after the iOS project is working properly
 iOS/
+.svn
+closure-library/

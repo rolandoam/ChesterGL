@@ -23,11 +23,17 @@
  *
  */
 
-(function (window) {
+goog.provide("chesterGL.Block");
+goog.require("chesterGL");
+
+/**
+ * @typedef {Object.<string,Object>}
+ */
+ChesterGL.BlockFrames.frameType;
+
+(function () {
 	"use strict";
 
-	var ChesterGL = window['ChesterGL'];
-	
 	/**
 	 * creates a new block. Pass the rect if you want to set the frame at
 	 * creation time.
@@ -632,36 +638,14 @@
 	}
 		
 	// export symbols
-	ChesterGL.exportProperty(ChesterGL, 'Block', ChesterGL.Block);
+	goog.exportSymbol('chesterGL.Block', ChesterGL.Block);
 	// constants / enums
-	ChesterGL.exportProperty(ChesterGL.Block, 'FullFrame', ChesterGL.Block.FullFrame);
-	ChesterGL.exportProperty(ChesterGL.Block, 'SizeZero', ChesterGL.Block.SizeZero);
-	ChesterGL.exportProperty(ChesterGL.Block, 'TYPE', ChesterGL.Block.TYPE);		
-	ChesterGL.exportProperty(ChesterGL.Block, 'PROGRAM', ChesterGL.Block.PROGRAM);
-	ChesterGL.exportProperty(ChesterGL.Block, 'PROGRAM_NAME', ChesterGL.Block.PROGRAM_NAME);
-	// properties
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'visible', ChesterGL.Block.prototype.visible);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'position', ChesterGL.Block.prototype.position);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'contentSize', ChesterGL.Block.prototype.contentSize);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'color', ChesterGL.Block.prototype.color);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'texture', ChesterGL.Block.prototype.texture);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'opacity', ChesterGL.Block.prototype.opacity);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotation', ChesterGL.Block.prototype.rotation);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'scale', ChesterGL.Block.prototype.scale);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'update', ChesterGL.Block.prototype.update);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'frame', ChesterGL.Block.prototype.frame);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'parent', ChesterGL.Block.prototype.parent);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'children', ChesterGL.Block.prototype.children);
+	goog.exportSymbol('chesterGL.Block.FullFrame', ChesterGL.Block.FullFrame);
+	goog.exportSymbol('chesterGL.Block.SizeZero', ChesterGL.Block.SizeZero);
+	goog.exportSymbol('chesterGL.Block.TYPE', ChesterGL.Block.TYPE);
+	goog.exportSymbol('chesterGL.Block.PROGRAM', ChesterGL.Block.PROGRAM);
+	goog.exportSymbol('chesterGL.Block.PROGRAM_NAME', ChesterGL.Block.PROGRAM_NAME);
 	// instance methods
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setFrame', ChesterGL.Block.prototype.setFrame);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setContentSize', ChesterGL.Block.prototype.setContentSize);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setScale', ChesterGL.Block.prototype.setScale);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setColor', ChesterGL.Block.prototype.setColor);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'setTexture', ChesterGL.Block.prototype.setTexture);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'moveTo', ChesterGL.Block.prototype.moveTo);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'moveBy', ChesterGL.Block.prototype.moveBy);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotateTo', ChesterGL.Block.prototype.rotateTo);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'rotateBy', ChesterGL.Block.prototype.rotateBy);
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'addChild', ChesterGL.Block.prototype.addChild);	
-	ChesterGL.exportProperty(ChesterGL.Block.prototype, 'removeChild', ChesterGL.Block.prototype.removeChild);
-})(window);
+	goog.exportProperty(ChesterGL.Block.prototype, 'addChild', ChesterGL.Block.prototype.addChild);	
+	goog.exportProperty(ChesterGL.Block.prototype, 'removeChild', ChesterGL.Block.prototype.removeChild);
+})();
