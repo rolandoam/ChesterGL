@@ -5,7 +5,7 @@ CLOSURE_JAR = compiler.jar
 OUTPUT_DIR ?= $(PWD)/html
 # default name for library
 OUTPUT_FILE = chester.js
-SOURCES = core.js Block.js
+SOURCES = chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js
 #BlockGroup.js BlockFrames.js TMXBlock.js Actions.js ParticleSystem.js
 # externs should live in the same dir as the compiler.jar
 EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js google_analytics_api.js
@@ -17,28 +17,36 @@ DOC_OUTPUT = doc
 
 # do not modify after this line unless you know what you're doing
 
-JS_SOURCES = $(foreach i,${SOURCES},--js $i)
+JS_SOURCES = $(foreach i,${SOURCES},-i $i)
 EXTERNS_TMP = $(foreach i,${EXTERNS},--externs $(CLOSURE_HOME)/$i)
-COMPILER_ARGUMENTS = $(EXTERNS_TMP) --externs deps.js --language_in ECMASCRIPT5 --warning_level VERBOSE --jscomp_warning=checkTypes --summary_detail_level 3
+COMPILER_ARGUMENTS = $(EXTERNS_TMP) --language_in=ECMASCRIPT5 --warning_level=VERBOSE --jscomp_warning=checkTypes --summary_detail_level=3
 
 compile:
 	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} ${COMPILER_ARGUMENTS} --compilation_level $(COMPILE_LEVEL_RELEASE) \
 	${JS_SOURCES} --js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE)
 
-# use other compile level and make it pretty print as well
-debug:
-	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} \
-		${COMPILER_ARGUMENTS} --compilation_level $(COMPILE_LEVEL_DEBUG) \
-		--formatting PRETTY_PRINT ${JS_SOURCES} \
-		--js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE) \
-		-D ENABLE_DEBUG=1 --create_source_map $(OUTPUT_DIR)/$(OUTPUT_FILE).map
+deps:
+	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY}  \
+		--output_mode=list \
+		--output_file=deps.list \
+		--root=chesterGL/ \
+		${JS_SOURCES}
 
-clibrary:
-	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY} --namespace="chesterGL"  \
+debug_flags:
+	echo $(COMPILER_ARGUMENTS) > debug.flags
+	echo "--externs deps.js" >> debug.flags
+	echo "--formatting=PRETTY_PRINT" >> debug.flags
+	echo "-D ENABLE_DEBUG=1" >> debug.flags
+	echo "--create_source_map=$(OUTPUT_DIR)/$(OUTPUT_FILE).map" >> debug.flags
+
+debug: debug_flags
+	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY}  \
 		--output_mode=compiled \
-		--compiler_jar=${CLOSURE_HOME}/${CLOSURE_JAR} \
-		-i ${SOURCES}
-		> ${OUTPUT_DIR}/${OUTPUT_FILE}
+		--output_file=$(OUTPUT_DIR)/$(OUTPUT_FILE) \
+		--compiler_jar=$(CLOSURE_HOME)/$(CLOSURE_JAR) \
+		--root=chesterGL/ \
+		--compiler_flags="--flagfile=debug.flags" \
+		${JS_SOURCES}
 
 # just cat everything into chester.js (when debugging is getting hard)
 debug-plain:
