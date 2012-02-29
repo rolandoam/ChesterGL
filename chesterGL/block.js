@@ -30,11 +30,6 @@ goog.require("goog.math.Size");
 goog.require("chesterGL.core");
 
 /**
- * @typedef {Object.<string,Object>}
- */
-chesterGL.Block.frameType;
-
-/**
  * creates a new block. Pass the rect if you want to set the frame at
  * creation time.
  * 
@@ -42,7 +37,6 @@ chesterGL.Block.frameType;
  * @param {Object.<string,number>|string=} rect
  * @param {number=} type
  * @param {chesterGL.Block=} parent
- * @return chesterGL.Block
  */
 chesterGL.Block = function (rect, type, parent) {
 	this.type = type || chesterGL.Block.TYPE['STANDALONE'];
@@ -82,7 +76,12 @@ chesterGL.Block = function (rect, type, parent) {
 	// create the remove/add lists
 	this._scheduledAdd = [];
 	this._scheduledRemove = [];
-}
+};
+
+/**
+ * @typedef {Object.<string,Object>}
+ */
+chesterGL.Block.frameType;
 
 /**
  * what gl program to use
@@ -300,7 +299,7 @@ chesterGL.Block.prototype._inVisit = false;
 chesterGL.Block.prototype.setFrame = function (newFrame) {
 	if (typeof newFrame === "string") {
 		// just get the cached frame
-		newFrame = chesterGL.BlockFrames.getFrame(newFrame).frame;
+		newFrame = chesterGL.BlockFrames.getFrame(/** @type {string} */(newFrame)).frame;
 	}
 	this.frame = quat4.create(newFrame);
 	this.setContentSize(newFrame[2], newFrame[3]);
