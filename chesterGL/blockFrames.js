@@ -1,5 +1,5 @@
 /**
- * ChesterGL - Simple 2D WebGL demo/library
+ * chesterGL - Simple 2D WebGL demo/library
  *
  * Copyright (c) 2010-2011 Rolando Abarca
  *
@@ -23,84 +23,89 @@
  *
  */
 
-(function (window) {
-	"use strict";
+goog.provide("chesterGL.BlockFrames");
 
-	var ChesterGL = window['ChesterGL'];
+goog.require("chesterGL.Block");
 
-	/**
-	 * @namespace
-	 * @name BlockFrames
-	 */
-	var BlockFrames = {};
+/**
+ * The namespace for BlockFrame related functions
+ * 
+ * @namespace
+ */
+chesterGL.BlockFrames = {};
 
-	/**
-	 * @type {Object.<string,ChesterGL.BlockFrames.frameType>}
-	 */
-	BlockFrames.frames = {};
+/**
+ * @type {Object.<string,chesterGL.Block.frameType>}
+ */
+chesterGL.BlockFrames.frames = {};
 
-	/**
-	 * loads the json data (callback for the ajax call)
-	 * 
-	 * @param {Object} data
-	 */
-	BlockFrames.loadJSON = function (data) {
-		// first, get the meta data
-		if (data['meta'] && data['meta']['version'] == '1.0') {
-			var texName = data['meta']['image'];
-			ChesterGL.loadAsset('texture', texName, function (img) {
-				var imgHeight = img.height;
-				var frames = data['frames'];
-				for (var frameName in frames) {
-					var f = frames[frameName];
-					/** @type {ChesterGL.BlockFrames.frameType} */ var realFrame = {frame: {}, texture: ""};
-					realFrame.frame = quat4.create([
-						f['frame']['x'],
-						imgHeight - (f['frame']['y'] + f['frame']['h']),
-						f['frame']['w'],
-						f['frame']['h']
-					]);
-					realFrame.texture = texName;
-					BlockFrames.frames[frameName] = realFrame;
-				}
-			});
-		} else {
-			throw "Unkown json data";
-		}
-	};
-
-	BlockFrames.framesLoadHandler = function (path, data) {
-		var frameset = ChesterGL.assets['frameset'][path];
-		frameset.data = data;
-		return true;
-	};
-
-	/**
-	 * Returns a named frame.
-	 *
-	 * @param {string} frameName
-	 * @return {ChesterGL.BlockFrames.frameType}
-	 */
-	BlockFrames.getFrame = function (frameName) {
-		return BlockFrames.frames[frameName];
-	};
-
-	/**
-	 * @param {string} path The path for the json file (TexturePacker format)
-	 * @param {function()=} callback The callback to be called after everything is ready
-	 */
-	BlockFrames.loadFrames = function (path, callback) {
-		console.log("loadFrames: will fetch " + path);
-		ChesterGL.loadAsset("frameset", {path: path, dataType: 'json'}, function (data) {
-			BlockFrames.loadJSON(data);
+/**
+ * loads the json data (callback for the ajax call)
+ * 
+ * @param {Object} data
+ */
+chesterGL.BlockFrames.loadJSON = function (data) {
+	// first, get the meta data
+	if (data['meta'] && data['meta']['version'] == '1.0') {
+		var texName = data['meta']['image'];
+		chesterGL.loadAsset('texture', texName, function (img) {
+			var imgHeight = img.height;
+			var frames = data['frames'];
+			for (var frameName in frames) {
+				var f = frames[frameName];
+				/** @type {chesterGL.Block.frameType} */ var realFrame = {frame: {}, texture: ""};
+				realFrame.frame = quat4.create([
+					f['frame']['x'],
+					imgHeight - (f['frame']['y'] + f['frame']['h']),
+					f['frame']['w'],
+					f['frame']['h']
+				]);
+				realFrame.texture = texName;
+				chesterGL.BlockFrames.frames[frameName] = realFrame;
+			}
 		});
-	};
+	} else {
+		throw "Unkown json data";
+	}
+};
 
-	ChesterGL.registerAssetHandler('frameset', BlockFrames.framesLoadHandler);
+/**
+ * @param {string} path
+ * @param {string|Object} data
+ * @return {boolean}
+ * @ignore
+ */
+chesterGL.BlockFrames.framesLoadHandler = function (path, data) {
+	var frameset = chesterGL.assets['frameset'][path];
+	frameset.data = data;
+	return true;
+};
 
-	// export symbols
-	ChesterGL.exportProperty(ChesterGL, 'BlockFrames', BlockFrames);
-	// class methods
-	ChesterGL.exportProperty(BlockFrames, 'getFrame', BlockFrames.getFrame);
-	ChesterGL.exportProperty(BlockFrames, 'loadFrames', BlockFrames.loadFrames);
-})(window);
+/**
+ * Returns a named frame.
+ *
+ * @param {string} frameName
+ * @return {chesterGL.Block.frameType}
+ */
+chesterGL.BlockFrames.getFrame = function (frameName) {
+	return chesterGL.BlockFrames.frames[frameName];
+};
+
+/**
+ * @param {string} path The path for the json file (TexturePacker format)
+ * @param {function()=} callback The callback to be called after everything is ready
+ */
+chesterGL.BlockFrames.loadFrames = function (path, callback) {
+	console.log("loadFrames: will fetch " + path);
+	chesterGL.loadAsset("frameset", {path: path, dataType: 'json'}, function (data) {
+		chesterGL.BlockFrames.loadJSON(data);
+	});
+};
+
+chesterGL.registerAssetHandler('frameset', chesterGL.BlockFrames.framesLoadHandler);
+
+// export symbols
+goog.exportSymbol('goog.BlockFrames', chesterGL.BlockFrames);
+// static methods
+goog.exportProperty(chesterGL.BlockFrames, 'getFrame', chesterGL.BlockFrames.getFrame);
+goog.exportProperty(chesterGL.BlockFrames, 'loadFrames', chesterGL.BlockFrames.loadFrames);

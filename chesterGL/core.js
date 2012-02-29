@@ -884,7 +884,7 @@ chesterGL.run = function () {
 		// console.time("mainLoop");
 		window.requestAnimFrame(chesterGL.run, chesterGL.canvas);
 		chesterGL.drawScene();
-		// chesterGL.ActionManager.tick(chesterGL.delta);
+		chesterGL.ActionManager.tick(chesterGL.delta);
 		// console.timeEnd("mainLoop");
 		if (ENABLE_DEBUG) chesterGL.updateDebugTime();
 	}

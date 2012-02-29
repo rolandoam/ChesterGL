@@ -370,8 +370,8 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
  */
 chesterGL.Block.prototype.moveTo = function (vec, time) {
 	if (time) {
-		// var a = new chesterGL.MoveToAction(this, time, vec);
-		// chesterGL.ActionManager.scheduleAction(a);
+		var a = new chesterGL.MoveToAction(this, time, vec);
+		chesterGL.ActionManager.scheduleAction(a);
 	} else {
 		this.position = vec3.create(vec);
 		this.isTransformDirty = true;
