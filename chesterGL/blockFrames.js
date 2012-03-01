@@ -30,7 +30,7 @@ goog.require("chesterGL.Block");
 /**
  * The namespace for BlockFrame related functions
  * 
- * @namespace
+ * @const
  */
 chesterGL.BlockFrames = {};
 
@@ -105,7 +105,7 @@ chesterGL.BlockFrames.loadFrames = function (path, callback) {
 chesterGL.registerAssetHandler('frameset', chesterGL.BlockFrames.framesLoadHandler);
 
 // export symbols
-goog.exportSymbol('goog.BlockFrames', chesterGL.BlockFrames);
+goog.exportSymbol('chesterGL.BlockFrames', chesterGL.BlockFrames);
 // static methods
 goog.exportProperty(chesterGL.BlockFrames, 'getFrame', chesterGL.BlockFrames.getFrame);
 goog.exportProperty(chesterGL.BlockFrames, 'loadFrames', chesterGL.BlockFrames.loadFrames);

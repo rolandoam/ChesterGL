@@ -318,7 +318,7 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 chesterGL.Block.prototype.setContentSize = function (width, height) {
 	this.contentSize = new goog.math.Size(width, height);
 	this.isFrameDirty = true;
-}
+};
 
 /**
  * sets the scale of the block
@@ -328,7 +328,7 @@ chesterGL.Block.prototype.setContentSize = function (width, height) {
 chesterGL.Block.prototype.setScale = function (newScale) {
 	this.scale = newScale;
 	this.isTransformDirty = true;			
-}
+};
 
 /**
  * sets the color of the block
@@ -339,7 +339,12 @@ chesterGL.Block.prototype.setScale = function (newScale) {
 chesterGL.Block.prototype.setColor = function (color) {
 	this.color = quat4.create(color);
 	this.isColorDirty = true;
-}
+};
+
+chesterGL.Block.prototype.setPosition = function (position) {
+	this.position = vec3.create(position);
+	this.isTransformDirty = true;
+};
 
 /**
  * sets the texture of the block - the texture will be loaded if needed
@@ -359,7 +364,7 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 			block.setFrame([0, 0, t.width, t.height]);
 		}
 	});
-}
+};
 
 /**
  * move the block to a specific location.
@@ -645,6 +650,20 @@ goog.exportSymbol('chesterGL.Block.SizeZero', chesterGL.Block.SizeZero);
 goog.exportSymbol('chesterGL.Block.TYPE', chesterGL.Block.TYPE);
 goog.exportSymbol('chesterGL.Block.PROGRAM', chesterGL.Block.PROGRAM);
 goog.exportSymbol('chesterGL.Block.PROGRAM_NAME', chesterGL.Block.PROGRAM_NAME);
+// properties
+goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototype.title);
 // instance methods
 goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);	
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
+goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
+goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
+goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
+goog.exportProperty(chesterGL.Block.prototype, 'setTexture', chesterGL.Block.prototype.setTexture);
+goog.exportProperty(chesterGL.Block.prototype, 'setScale', chesterGL.Block.prototype.setScale);
+
+// to be deprecated
+goog.exportProperty(chesterGL.Block.prototype, 'moveTo', chesterGL.Block.prototype.moveTo);
+goog.exportProperty(chesterGL.Block.prototype, 'moveBy', chesterGL.Block.prototype.moveBy);
+goog.exportProperty(chesterGL.Block.prototype, 'rotateTo', chesterGL.Block.prototype.rotateTo);
+goog.exportProperty(chesterGL.Block.prototype, 'rotateBy', chesterGL.Block.prototype.rotateBy);

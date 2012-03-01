@@ -23,8 +23,9 @@
  *
  */
 
-goog.require("goog.math.Vec2");
 goog.provide("chesterGL.core");
+
+goog.require("goog.math.Vec2");
 
 /**
  * @ignore
@@ -144,7 +145,7 @@ chesterGL.assets = {};
 
 /**
  * the asset-loaded handlers
- * @type {Object.<string,function(string,Object): boolean>}
+ * @type {Object.<string,Function>}
  */
 chesterGL.assetsHandlers = {};
 
@@ -152,7 +153,7 @@ chesterGL.assetsHandlers = {};
  * the asset loader: it specifies how a type of asset should be loaded.
  * The default for textures is creating a new Image() element, the default for any other
  * type is jquery's $.ajax asynchronously.
- * @type {Object.<string,function(string,(Object|string))>}
+ * @type {Object.<string,Function>}
  */
 chesterGL.assetsLoaders = {};
 
@@ -210,7 +211,7 @@ chesterGL.mouseEvents = {
 
 /**
  * the global list of mouse down handlers
- * @type {Array.<function(vec3, number)>}
+ * @type {Array.<function(vec3, chesterGL.mouseEvents)>}
  */
 chesterGL.mouseHandlers = [];
 
@@ -285,9 +286,6 @@ chesterGL.initGraphics = function (canvas) {
 			chesterGL.offContext = chesterGL.offCanvas.getContext("2d");
 			chesterGL.offContext.viewportWidth = canvas.width;
 			chesterGL.offContext.viewportHeight = canvas.height;
-			goog.exportProperty(chesterGL, 'offContext', chesterGL.offContext);
-			goog.exportProperty(chesterGL.offContext, 'viewportWidth', chesterGL.offContext.viewportWidth);
-			goog.exportProperty(chesterGL.offContext, 'viewportHeight', chesterGL.offContext.viewportHeight);
 		} else {
 			chesterGL.offContext = chesterGL.gl;
 		}
@@ -296,7 +294,6 @@ chesterGL.initGraphics = function (canvas) {
 		}
 		chesterGL.webglMode = false;
 	}
-	goog.exportProperty(chesterGL, 'gl', chesterGL.gl);
 	// first resize of the canvas
 	chesterGL.canvasResized();
 	
@@ -312,8 +309,14 @@ chesterGL.canvasResized = function () {
 	// get real width and height
 	chesterGL.gl.viewportWidth = canvas.width;
 	chesterGL.gl.viewportHeight = canvas.height;
-	goog.exportProperty(chesterGL.gl, 'viewportWidth', chesterGL.gl.viewportWidth);
-	goog.exportProperty(chesterGL.gl, 'viewportHeight', chesterGL.gl.viewportHeight);
+};
+
+/**
+ * returns the size of the current viewport
+ * @return {goog.math.Size}
+ */
+chesterGL.viewportSize = function () {
+	return new goog.math.Size(chesterGL.gl.viewportWidth, chesterGL.gl.viewportHeight);
 };
 
 /**
@@ -425,7 +428,7 @@ chesterGL.createShader = function (prefix, fragmentData, vertexData) {
  * modify the status property.
  * 
  * @param {string} type the type of the asset
- * @param {function(string,Object): boolean} handler the handler that will be called every time an asset is loaded
+ * @param {Function} handler the handler that will be called every time an asset is loaded
  * 
  * @example
  * chesterGL.defaultTextureHandler = function (path, data, callback) {
@@ -456,7 +459,7 @@ chesterGL.registerAssetHandler = function (type, handler) {
  * Register a way to load an asset
  * 
  * @param {string} type
- * @param {function(string,(Object|string))} loader
+ * @param {Function} loader
  */
 chesterGL.registerAssetLoader = function (type, loader) {
 	chesterGL.assetsLoaders[type] = loader;
@@ -813,7 +816,7 @@ chesterGL.updateDebugTime = function () {
 		chesterGL.elapsed_ = chesterGL.frames_ = 0;
 		chesterGL.lastDebugSecond_ = now;
 	}
-}
+};
 
 /**
  * install all handlers on the canvas element
@@ -822,18 +825,27 @@ chesterGL.installMouseHandlers = function () {
 	$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
 	$(chesterGL.canvas).mousemove(chesterGL.mouseMoveHandler);
 	$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
-}
+};
+
+
+/**
+ * @type {vec3}
+ * @ignore
+ */
+var __tmp_mouse_vec = vec3.create();
 
 /**
  * @param {Event} event
  */
 chesterGL.mouseDownHandler = function (event) {
+	/** @type {goog.math.Vec2} */
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i = 0, len = chesterGL.mouseHandlers.length;
+	__tmp_mouse_vec.set([pt.x, pt.y]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](pt, chesterGL.mouseEvents.DOWN);
+		chesterGL.mouseHandlers[i](__tmp_mouse_vec, chesterGL.mouseEvents.DOWN);
 	}
-}
+};
 
 /**
  * @param {Event} event
@@ -841,10 +853,11 @@ chesterGL.mouseDownHandler = function (event) {
 chesterGL.mouseMoveHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i = 0, len = chesterGL.mouseHandlers.length;
+	__tmp_mouse_vec.set([pt.x, pt.y]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](pt, chesterGL.mouseEvents.MOVE);
+		chesterGL.mouseHandlers[i](__tmp_mouse_vec, chesterGL.mouseEvents.MOVE);
 	}
-}
+};
 
 /**
  * @param {Event} event
@@ -852,19 +865,20 @@ chesterGL.mouseMoveHandler = function (event) {
 chesterGL.mouseUpHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i = 0, len = chesterGL.mouseHandlers.length;
+	__tmp_mouse_vec.set([pt.x, pt.y]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](pt, chesterGL.mouseEvents.UP);
+		chesterGL.mouseHandlers[i](__tmp_mouse_vec, chesterGL.mouseEvents.UP);
 	}
-}
+};
 
 /**
- * @param {function(vec3, number)} callback
+ * @param {function(goog.math.Vec2, number)} callback
  */
 chesterGL.addMouseHandler = function (callback) {
 	if (chesterGL.mouseHandlers.indexOf(callback) == -1) {
 		chesterGL.mouseHandlers.push(callback);
 	}
-}
+};
 
 /**
  * @param {function(vec3, number)} callback
@@ -874,7 +888,7 @@ chesterGL.removeMouseHandler = function (callback) {
 	if (idx > 0) {
 		chesterGL.mouseHandlers.splice(idx, 1);
 	}
-}
+};
 
 /**
  * run at browser's native animation speed
@@ -888,7 +902,7 @@ chesterGL.run = function () {
 		// console.timeEnd("mainLoop");
 		if (ENABLE_DEBUG) chesterGL.updateDebugTime();
 	}
-}
+};
 
 /**
  * toggle pause - events will still execute
@@ -900,33 +914,32 @@ chesterGL.togglePause = function () {
 		chesterGL._paused = false;
 		chesterGL.run();
 	}
-}
+};
 
-goog.exportSymbol('chesterGL', chesterGL);
-// is there any way to automate this? :S
 // properties
 goog.exportSymbol('chesterGL.useGoogleAnalytics', chesterGL.useGoogleAnalytics);
-goog.exportSymbol('chesteGL.projection', chesterGL.projection);
-goog.exportSymbol('chesteGL.webglMode', chesterGL.webglMode);
-goog.exportSymbol('chesteGL.usesOffscreenBuffer', chesterGL.usesOffscreenBuffer);
-goog.exportSymbol('chesteGL.debugSpanId', chesterGL.debugSpanId);
-goog.exportSymbol('chesteGL.update', chesterGL.update);
-goog.exportSymbol('chesteGL.mouseEvents', chesterGL.mouseEvents);
-goog.exportSymbol('chesteGL.mouseEvents.DOWN', chesterGL.mouseEvents.DOWN);
-goog.exportSymbol('chesteGL.mouseEvents.MOVE', chesterGL.mouseEvents.MOVE);
-goog.exportSymbol('chesteGL.mouseEvents.UP', chesterGL.mouseEvents.UP);
+goog.exportSymbol('chesterGL.projection', chesterGL.projection);
+goog.exportSymbol('chesterGL.webglMode', chesterGL.webglMode);
+goog.exportSymbol('chesterGL.usesOffscreenBuffer', chesterGL.usesOffscreenBuffer);
+goog.exportSymbol('chesterGL.debugSpanId', chesterGL.debugSpanId);
+goog.exportSymbol('chesterGL.update', chesterGL.update);
+goog.exportSymbol('chesterGL.mouseEvents', chesterGL.mouseEvents);
+goog.exportSymbol('chesterGL.mouseEvents.DOWN', chesterGL.mouseEvents.DOWN);
+goog.exportSymbol('chesterGL.mouseEvents.MOVE', chesterGL.mouseEvents.MOVE);
+goog.exportSymbol('chesterGL.mouseEvents.UP', chesterGL.mouseEvents.UP);
 // methods
-goog.exportSymbol('chesteGL.setup', chesterGL.setup);
-goog.exportSymbol('chesteGL.canvasResized', chesterGL.canvasResized);
-goog.exportSymbol('chesteGL.initShader', chesterGL.initShader);
-goog.exportSymbol('chesteGL.registerAssetHandler', chesterGL.registerAssetHandler);
-goog.exportSymbol('chesteGL.loadAsset', chesterGL.loadAsset);
-goog.exportSymbol('chesteGL.assetsLoaded', chesterGL.assetsLoaded);
-goog.exportSymbol('chesteGL.getAsset', chesterGL.getAsset);
-goog.exportSymbol('chesteGL.setupPerspective', chesterGL.setupPerspective);
-goog.exportSymbol('chesteGL.setRunningScene', chesterGL.setRunningScene);
-goog.exportSymbol('chesteGL.drawScene', chesterGL.drawScene);
-goog.exportSymbol('chesteGL.run', chesterGL.run);
-goog.exportSymbol('chesteGL.togglePause', chesterGL.togglePause);
-goog.exportSymbol('chesteGL.addMouseHandler', chesterGL.addMouseHandler);
-goog.exportSymbol('chesteGL.removeMouseHandler', chesterGL.removeMouseHandler);
+goog.exportSymbol('chesterGL.viewportSize', chesterGL.viewportSize);
+goog.exportSymbol('chesterGL.setup', chesterGL.setup);
+goog.exportSymbol('chesterGL.canvasResized', chesterGL.canvasResized);
+goog.exportSymbol('chesterGL.initShader', chesterGL.initShader);
+goog.exportSymbol('chesterGL.registerAssetHandler', chesterGL.registerAssetHandler);
+goog.exportSymbol('chesterGL.loadAsset', chesterGL.loadAsset);
+goog.exportSymbol('chesterGL.assetsLoaded', chesterGL.assetsLoaded);
+goog.exportSymbol('chesterGL.getAsset', chesterGL.getAsset);
+goog.exportSymbol('chesterGL.setupPerspective', chesterGL.setupPerspective);
+goog.exportSymbol('chesterGL.setRunningScene', chesterGL.setRunningScene);
+goog.exportSymbol('chesterGL.drawScene', chesterGL.drawScene);
+goog.exportSymbol('chesterGL.run', chesterGL.run);
+goog.exportSymbol('chesterGL.togglePause', chesterGL.togglePause);
+goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
+goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);

@@ -229,31 +229,7 @@ chesterGL.BlockGroup.prototype.render = function () {
 
 // export the symbol
 goog.exportSymbol('chesterGL.BlockGroup', chesterGL.BlockGroup);
-// properties
-/*
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'visible', chesterGL.BlockGroup.prototype.visible);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'position', chesterGL.BlockGroup.prototype.position);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'contentSize', chesterGL.BlockGroup.prototype.contentSize);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'color', chesterGL.BlockGroup.prototype.color);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'texture', chesterGL.BlockGroup.prototype.texture);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'opacity', chesterGL.BlockGroup.prototype.opacity);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'rotation', chesterGL.BlockGroup.prototype.rotation);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'scale', chesterGL.BlockGroup.prototype.scale);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'update', chesterGL.BlockGroup.prototype.update);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'frame', chesterGL.BlockGroup.prototype.frame);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'parent', chesterGL.BlockGroup.prototype.parent);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'children', chesterGL.BlockGroup.prototype.children);
 // instance methods
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'setFrame', chesterGL.BlockGroup.prototype.setFrame);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'setContentSize', chesterGL.BlockGroup.prototype.setContentSize);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'setScale', chesterGL.BlockGroup.prototype.setScale);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'setColor', chesterGL.BlockGroup.prototype.setColor);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'setTexture', chesterGL.BlockGroup.prototype.setTexture);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'moveTo', chesterGL.BlockGroup.prototype.moveTo);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'moveBy', chesterGL.BlockGroup.prototype.moveBy);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'rotateTo', chesterGL.BlockGroup.prototype.rotateTo);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'rotateBy', chesterGL.BlockGroup.prototype.rotateBy);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'addChild', chesterGL.BlockGroup.prototype.addChild);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeChild', chesterGL.BlockGroup.prototype.removeChild);
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'createBlock', chesterGL.BlockGroup.prototype.createBlock);
-*/
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'addChild', chesterGL.BlockGroup.prototype.addChild);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeBlock', chesterGL.BlockGroup.prototype.removeBlock);

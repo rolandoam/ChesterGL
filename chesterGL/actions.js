@@ -122,12 +122,12 @@ chesterGL.MoveToAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
 	var block = this.block;
 	if (this.finished) {
-		block.position = this.finalPosition;
+		block.setPosition(this.finalPosition);
 	} else {
 		var t = Math.min(1, this.elapsed / this.totalTime);
 		// console.log("t: " + t + "\t(" + dx + ")");
 		vec3.lerp(this.startPosition, this.finalPosition, t, __tmp_pos);
-		block.position = __tmp_pos;
+		block.setPosition(__tmp_pos);
 	}
 };
 
