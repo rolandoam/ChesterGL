@@ -16,33 +16,32 @@ $(document).ready(function () {
 	$("#totalBlocks").val(totalBlocks);
 
 	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
+		chesterGL.useGoogleAnalytics = true;
+		chesterGL.setup("demo-canvas");
 
-		ChesterGL.loadAsset("texture", "images/sprite-default-000.png");
-		ChesterGL.assetsLoaded("texture", function () {
+		chesterGL.loadAsset("texture", "images/sprite-default-000.png");
+		chesterGL.assetsLoaded("texture", function () {
 			$("#loading").html("Test BlockGroup");
 			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
+			chesterGL.setupPerspective();
 
-			sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::PerfFillRate";
-			ChesterGL.setRunningScene(sceneBlock);
+			chesterGL.setRunningScene(sceneBlock);
 
 			createGroup();
 
 			sceneBlock.addChild(group);
-			ChesterGL.run();
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
 	} // setupGame()
-	
+
 	function createGroup() {
-		var useWebgl = ChesterGL.webglMode;
-		group = (useWebgl && useBlockGroup) ? (new ChesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new ChesterGL.Block());
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
+		var useWebgl = chesterGL.webglMode;
+		group = (useWebgl && useBlockGroup) ? (new chesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new chesterGL.Block());
+		var size = chesterGL.viewportSize();
 		
 		// add lots of blocks
 		for (var i=0; i < totalBlocks; i++) {
@@ -50,38 +49,25 @@ $(document).ready(function () {
 			if (useBlockGroup) {
 				b = group.createBlock();
 			} else {
-				b = new ChesterGL.Block();
+				b = new chesterGL.Block();
 				b.setTexture("images/sprite-default-000.png");
 			}
 			b.setColor([1, 1, 1, 0.1]);
-			b.moveTo([Math.random() * width, Math.random() * height, 0]);
+			b.moveTo([Math.random() * size.width, Math.random() * size.height, 0]);
 			group.addChild(b);
 		}
 	}
 
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
-	
 	$("#reset").click(function () {
 		totalBlocks = parseInt($("#totalBlocks").val());
 		useBlockGroup = $("#useBlockGroup").is(':checked');
-		ChesterGL.togglePause();
+		chesterGL.togglePause();
 		
 		sceneBlock.removeChild(group);
 		createGroup();
 		sceneBlock.addChild(group);
 		
-		ChesterGL.togglePause();
+		chesterGL.togglePause();
 	});
 });
     </script>
@@ -103,7 +89,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 			<a href="index.html">Test Index</a>
 			<div>

@@ -12,7 +12,7 @@
 
 $(document).ready(function () {
 	function createBlock(parent, updateFunc) {
-		var someBlock2 = new ChesterGL.Block();
+		var someBlock2 = new chesterGL.Block();
 		someBlock2.setTexture("images/star.png");
 		someBlock2.opacity = 0.5;
 		someBlock2.moveTo([Math.random() * 100, Math.random() * 100, 0]);
@@ -23,43 +23,25 @@ $(document).ready(function () {
 	
 	setupGame();
 	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
+		chesterGL.useGoogleAnalytics = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
 		
-		ChesterGL.loadAsset("texture", "images/test.png");
-		ChesterGL.loadAsset("texture", "images/star.png");
-		ChesterGL.assetsLoaded("texture", function () {
+		chesterGL.loadAsset("texture", "images/test.png");
+		chesterGL.loadAsset("texture", "images/star.png");
+		chesterGL.assetsLoaded("texture", function () {
 			// $("#loading").html("Test Single Block");        	
 			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
-			
-			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE['SCENE']);
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
 			sceneBlock.title = "Test::Add Remove";
-			ChesterGL.setRunningScene(sceneBlock);
-			
-			// add lots of blocks - this is here for comparison with BlockGroup
-			/*
-			for (var i=0; i < 500; i++) {
-				var b = new ChesterGL.Block();
-				b.setTexture("images/star.png");
-				b.moveTo([Math.random() * width, Math.random() * height, 0]);
-				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
-				b.update = function () {
-					this.moveBy(this.speed);
-					if (this.position[0] >= width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
-					if (this.position[1] >= width || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
-				}
-				sceneBlock.addChild(b);
-			}
-			*/
-			
+			chesterGL.setRunningScene(sceneBlock);
 			// create a block
-			var someBlock = new ChesterGL.Block();
+			var someBlock = new chesterGL.Block();
 			someBlock.setTexture("images/test.png")
 			// someBlock.rotateBy(-45);
-			someBlock.moveTo([width/2, height/2, 0]);
+			someBlock.moveTo([size.width/2, size.height/2, 0]);
 			
 			var lastAdded = createBlock(someBlock, function () {
 				this.rotateBy(-1);
@@ -84,25 +66,11 @@ $(document).ready(function () {
 					}
 				}
 			};
-			
-			ChesterGL.run();
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
 	} // setupGame()
-
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
 });
     </script>
 	<script type="text/javascript">
@@ -124,7 +92,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 		</div>
 	</div>
