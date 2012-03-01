@@ -219,7 +219,7 @@ chesterGL.mouseHandlers = [];
  * sets the current program, also sets the uniforms for that shader
  * 
  * @param {string} program
- * @return {Object}
+ * @return {WebGLProgram}
  */
 chesterGL.selectProgram = function (program) {
 	var prog = chesterGL.programs[program];
