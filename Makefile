@@ -5,7 +5,7 @@ CLOSURE_JAR = compiler.jar
 OUTPUT_DIR ?= $(PWD)/html
 # default name for library
 OUTPUT_FILE = chester.js
-SOURCES = chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js
+SOURCES = chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js chesterGL/tmxBlock.js
 #BlockGroup.js BlockFrames.js TMXBlock.js Actions.js ParticleSystem.js
 # externs should live in the same dir as the compiler.jar
 EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js google_analytics_api.js
@@ -21,9 +21,14 @@ JS_SOURCES = $(foreach i,${SOURCES},-i $i)
 EXTERNS_TMP = $(foreach i,${EXTERNS},--externs $(CLOSURE_HOME)/$i)
 COMPILER_ARGUMENTS = $(EXTERNS_TMP) --language_in=ECMASCRIPT5 --warning_level=VERBOSE --jscomp_warning=checkTypes --summary_detail_level=3
 
-compile:
-	${JAVA} -jar ${CLOSURE_HOME}/${CLOSURE_JAR} ${COMPILER_ARGUMENTS} --compilation_level $(COMPILE_LEVEL_RELEASE) \
-	${JS_SOURCES} --js_output_file $(OUTPUT_DIR)/$(OUTPUT_FILE)
+compile: flags
+	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY}  \
+		--output_mode=compiled \
+		--output_file=$(OUTPUT_DIR)/$(OUTPUT_FILE) \
+		--compiler_jar=$(CLOSURE_HOME)/$(CLOSURE_JAR) \
+		--root=chesterGL/ \
+		--compiler_flags="--flagfile=release.flags" \
+		${JS_SOURCES}
 
 deps:
 	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY}  \
@@ -32,9 +37,17 @@ deps:
 		--root=chesterGL/ \
 		${JS_SOURCES}
 
+flags:
+	echo $(COMPILER_ARGUMENTS) > release.flags
+	echo "--externs deps.js" >> release.flags
+	echo "--compilation_level $(COMPILE_LEVEL_DEBUG)" >> release.flags
+	echo "-D ENABLE_DEBUG=1" >> release.flags
+	echo "--create_source_map=$(OUTPUT_DIR)/$(OUTPUT_FILE).map" >> release.flags
+
 debug_flags:
 	echo $(COMPILER_ARGUMENTS) > debug.flags
 	echo "--externs deps.js" >> debug.flags
+	echo "--compilation_level $(COMPILE_LEVEL_DEBUG)" >> debug.flags
 	echo "--formatting=PRETTY_PRINT" >> debug.flags
 	echo "-D ENABLE_DEBUG=1" >> debug.flags
 	echo "--create_source_map=$(OUTPUT_DIR)/$(OUTPUT_FILE).map" >> debug.flags
