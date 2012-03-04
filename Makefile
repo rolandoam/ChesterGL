@@ -33,7 +33,6 @@ compile: flags
 deps:
 	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY}  \
 		--output_mode=list \
-		--output_file=deps.list \
 		--root=chesterGL/ \
 		${JS_SOURCES}
 
