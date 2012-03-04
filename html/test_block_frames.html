@@ -13,37 +13,36 @@ $(document).ready(function () {
 	setupGame();
 
 	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
+		chesterGL.useGoogleAnalytics = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
 		
-		ChesterGL.BlockFrames.loadFrames("images/1945.json");
-		ChesterGL.assetsLoaded('all', function () {
+		chesterGL.BlockFrames.loadFrames("images/1945.json");
+		chesterGL.assetsLoaded('all', function () {
 			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
+			chesterGL.setupPerspective();
 			
-			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::Block Frames";
-			ChesterGL.setRunningScene(sceneBlock);
+			chesterGL.setRunningScene(sceneBlock);
 			
 			// create a block with a block frame
-			var b1 = new ChesterGL.Block("1945-4-0.png");
-			b1.moveTo([width * 0.5, height * 0.5, 0]);
+			var b1 = new chesterGL.Block("1945-4-0.png");
+			b1.setPosition([size.width * 0.5, size.height * 0.5]);
 
-			var b2 = new ChesterGL.Block("1945-4-1.png");
-			b2.moveTo([width *0.5 - 50, height * 0.5, 0]);
+			var b2 = new chesterGL.Block("1945-4-1.png");
+			b2.setPosition([size.width *0.5 - 50, size.height * 0.5, 0]);
 			
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
 			
 			b1.update = function () {
 				this.rotateBy(1);
-			}
+			};
 			
-			ChesterGL.run();
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
 	} // setupGame()
 	
