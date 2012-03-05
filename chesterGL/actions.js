@@ -30,19 +30,19 @@ goog.require("chesterGL.Block");
 
 /**
  * @constructor
- * @param {chesterGL.Block} block
- * @param {number=} totalTime
+ * @param {number} totalTime
+ * @param {chesterGL.Block=} block
  */
-chesterGL.Action = function (block, totalTime) {
-	this.block = block;
+chesterGL.Action = function (totalTime, block) {
 	this.totalTime = totalTime * 1000;
+	this.block = block;
 	this.elapsed = 0;
 };
 
 /**
  * The block to which this action will be applied
  * 
- * @type {?chesterGL.Block}
+ * @type {chesterGL.Block|null|undefined}
  */
 chesterGL.Action.prototype.block = null;
 
@@ -75,10 +75,20 @@ chesterGL.Action.prototype.currentTime = 0;
 chesterGL.Action.prototype.finished = false;
 
 /**
+ * is the action running?
+ * @type {boolean}
+ */
+chesterGL.Action.prototype.running = false;
+
+/**
  * This is the default delta function (does nothing)
  * @param {number} delta
  */
 chesterGL.Action.prototype.update = function (delta) {
+	if (!this.running) {
+		this.begin();
+		this.running = true;
+	}
 	this.elapsed += delta;
 	if (this.totalTime > 0 && this.elapsed >= this.totalTime) {
 		this.finished = true;
@@ -86,16 +96,21 @@ chesterGL.Action.prototype.update = function (delta) {
 };
 
 /**
+ * will be called the first time - usually overriden by subclasses
+ */
+chesterGL.Action.prototype.begin = function () {
+};
+
+/**
  * @constructor
- * @param {chesterGL.Block} block
- * @param {number} totalTime
  * @param {vec3} finalPosition
+ * @param {number} totalTime
+ * @param {chesterGL.Block=} block
  * @extends {chesterGL.Action}
  */
-chesterGL.MoveToAction = function (block, totalTime, finalPosition) {
-	chesterGL.Action.call(this, block, totalTime);
+chesterGL.MoveToAction = function (finalPosition, totalTime, block) {
+	chesterGL.Action.call(this, totalTime, block);
 	this.finalPosition = vec3.create(finalPosition);
-	this.startPosition = vec3.create(block.position);
 };
 goog.inherits(chesterGL.MoveToAction, chesterGL.Action);
 
@@ -132,18 +147,28 @@ chesterGL.MoveToAction.prototype.update = function (delta) {
 };
 
 /**
+ * just set the initial position
+ */
+chesterGL.MoveToAction.prototype.begin = function () {
+	if (!this.block) {
+		throw "invalid move action! - now block";
+	}
+	this.startPosition = this.block.position;
+};
+
+/**
  * @constructor
- * @param {chesterGL.Block} block
  * @param {number} delay in seconds
  * @param {Array.<Object>} frames
  * @param {boolean?} loop
+ * @param {chesterGL.Block=} block
  * @extends {chesterGL.Action}
  */
-chesterGL.AnimateAction = function (block, delay, frames, loop) {
+chesterGL.AnimateAction = function (delay, frames, loop, block) {
 	this.delay = delay * 1000.0;
 	var totalTime = this.delay * frames.length;
 	if (loop == true) totalTime = -1;
-	chesterGL.Action.call(this, block, totalTime);
+	chesterGL.Action.call(this, totalTime, block);
 	this.shouldLoop = (loop == true);
 	this.frames = frames.slice(0);
 };
@@ -216,7 +241,7 @@ chesterGL.ActionManager.scheduledActions_ = [];
  */
 chesterGL.ActionManager.scheduleAction = function (action) {
 	chesterGL.ActionManager.scheduledActions_.push(action);
-}
+};
 
 /**
  * Iterate over all scheduled actions
@@ -228,9 +253,19 @@ chesterGL.ActionManager.tick = function (delta) {
 		var a = chesterGL.ActionManager.scheduledActions_[i];
 		!a.finished && a.update(delta);
 	}
-}
+};
+
+/**
+ * schedules an action to be run over this block
+ * @param {chesterGL.Action} action
+ */
+chesterGL.Block.prototype.runAction = function (action) {
+	action.block = this;
+	chesterGL.ActionManager.scheduleAction(action);
+};
 
 goog.exportSymbol('chesterGL.ActionManager', chesterGL.ActionManager);
 goog.exportSymbol('chesterGL.MoveToAction', chesterGL.MoveToAction);
 goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
 goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
+goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);

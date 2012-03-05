@@ -43,10 +43,10 @@ chesterGL.Block = function (rect, type, parent) {
 	if (parent) {
 		this.parent = parent;
 	}
-	
+
 	this.children = [];
 	this.program = chesterGL.Block.PROGRAM['DEFAULT'];
-	
+
 	if (rect) {
 		if (typeof(rect) === 'string') {
 			/** @type {chesterGL.Block.frameType} */ var f = chesterGL.BlockFrames.getFrame(rect);
@@ -60,19 +60,19 @@ chesterGL.Block = function (rect, type, parent) {
 	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
 		this.setColor([1, 1, 1, 1]);
 	}
-	
+
 	if (chesterGL.webglMode && this.type == chesterGL.Block.TYPE['STANDALONE'] && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
 		// just a single buffer for all data (a 4x"quad")
 		this.glBuffer = gl.createBuffer();
 		this.glBufferData = new Float32Array(chesterGL.Block.BUFFER_SIZE);
 	}
-	
+
 	// always create the mvMatrix
 	this.mvMatrix = mat4.create();
 	this.mvpMatrix = mat4.create();
 	mat4.identity(this.mvMatrix);
-	
+
 	// create the remove/add lists
 	this._scheduledAdd = [];
 	this._scheduledRemove = [];
@@ -209,7 +209,7 @@ chesterGL.Block.prototype.glBuffer = null;
  * @type {Float32Array}
  */
 chesterGL.Block.prototype.glBufferData = null;
-		
+
 /**
  * @type {vec3}
  */
@@ -234,7 +234,7 @@ chesterGL.Block.prototype.texture = null;
  * @type {number}
  */
 chesterGL.Block.prototype.opacity = 1.0;
-		
+
 /**
  * rotation of the box - in radians
  * @type {number}
@@ -246,7 +246,7 @@ chesterGL.Block.prototype.rotation = 0;
  * @type {number}
  */
 chesterGL.Block.prototype.scale = 1.0;
-		
+
 /**
  * update function
  * @type {?function(number)}
@@ -264,7 +264,7 @@ chesterGL.Block.prototype.frame = null;
  * @type {?chesterGL.Block}
  */
 chesterGL.Block.prototype.parent = null;
-		
+
 /**
  * the array to hold children blocks
  * @type {?Array.<chesterGL.Block>}
@@ -341,8 +341,8 @@ chesterGL.Block.prototype.setColor = function (color) {
 	this.isColorDirty = true;
 };
 
-chesterGL.Block.prototype.setPosition = function (position) {
-	this.position = vec3.create(position);
+chesterGL.Block.prototype.setPosition = function (p) {
+	this.position = vec3.create(p);
 	this.isTransformDirty = true;
 };
 
@@ -367,49 +367,21 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 };
 
 /**
- * move the block to a specific location.
- * You can pass a time in seconds to make this an action
- * 
- * @param {vec3|Array} vec
- * @param {number=} time The time it should take to move to that position. Don't pass time to make it instantly
+ * sets the rotation of the block to a specific angle
+ * @param {number} angle specified in radians, CW
  */
-chesterGL.Block.prototype.moveTo = function (vec, time) {
-	if (time) {
-		var a = new chesterGL.MoveToAction(this, time, vec);
-		chesterGL.ActionManager.scheduleAction(a);
-	} else {
-		this.position = vec3.create(vec);
-		this.isTransformDirty = true;
-	}
-}
+chesterGL.Block.prototype.setRotation = function (angle) {
+	this.rotation = angle;
+	this.isTransformDirty = true;
+};
 
 /**
- * move the block relatively
- * @param {vec3|Array} vec
- * @param {number=} time The time it should take to move to that position. Don't pass time to make it instantly
+ * sets the update function - to be called every frame for this block
+ * @param {function (?number)} callback
  */
-chesterGL.Block.prototype.moveBy = function (vec, time) {
-	vec3.add(this.position, vec);
-	this.isTransformDirty = true;
-}
-
-/**
- * rotates the box to a specific angle (degrees, CW)
- * @param {number} angle
- */
-chesterGL.Block.prototype.rotateTo = function (angle) {
-	this.rotation = (chesterGL.webglMode ? -1 : 1) * (angle * chesterGL.Block.DEG_TO_RAD);
-	this.isTransformDirty = true;
-}
-
-/**
- * rotates the box by a specific angle (degrees, CW)
- * @param {number} angle
- */
-chesterGL.Block.prototype.rotateBy = function (angle) {
-	this.rotation += (chesterGL.webglMode ? -1 : 1) * (angle * chesterGL.Block.DEG_TO_RAD);
-	this.isTransformDirty = true;
-}
+chesterGL.Block.prototype.setUpdate = function (callback) {
+	this.update = callback;
+};
 
 /**
  * Adds a block as a child. If you add the block while in a visit of the parent block,
@@ -427,7 +399,7 @@ chesterGL.Block.prototype.addChild = function (block) {
 		this.children.push(block);
 		block.parent = this;
 	}
-}
+};
 
 /**
  * removes a block from the children list. If you remove the child while in a visit of the parent block,
@@ -458,7 +430,7 @@ chesterGL.Block.prototype.transform = function () {
 	if (transformDirty) {
 		mat4.identity(this.mvMatrix);
 		mat4.translate(this.mvMatrix, this.position);
-		mat4.rotate(this.mvMatrix, this.rotation, [0, 0, 1]);
+		mat4.rotate(this.mvMatrix, this.rotation * (chesterGL.webglMode ? -1 : 1), [0, 0, 1]);
 		mat4.scale(this.mvMatrix, [this.scale, this.scale, 1]);
 		// concat with parent's transform
 		var ptransform = (this.parent ? this.parent.mvMatrix : null);
@@ -466,15 +438,15 @@ chesterGL.Block.prototype.transform = function () {
 			mat4.multiply(ptransform, this.mvMatrix, this.mvMatrix);
 		}
 	}
-	
+
 	// bail out if we're a block group
 	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP']) {
 		return;
 	}
-	
+
 	var bufferData = this.glBufferData;
 	var inBlockGroup = this.parent && this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP'];
-	
+
 	if (chesterGL.webglMode) {
 		if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
@@ -556,13 +528,13 @@ chesterGL.Block.prototype.visit = function () {
 		return;
 	}
 	this.transform();
-	
+
 	var children = this.children;
 	var len = children.length;
 	for (var i=0; i < len; i++) {
 		children[i].visit();
 	}
-	
+
 	// render this block if not in a block group
 	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
 		this.render();
@@ -570,7 +542,7 @@ chesterGL.Block.prototype.visit = function () {
 	// reset our dirty markers
 	this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
 	this._inVisit = false;
-	
+
 	// do we have blocks scheduled to be removed/added?
 	var b;
 	while (b = this._scheduledAdd.shift()) {
@@ -592,7 +564,7 @@ chesterGL.Block.prototype.render = function () {
 	if (this.type == chesterGL.Block.TYPE['SCENE']) {
 		return;
 	}
-	
+
 	if (chesterGL.webglMode) {
 		var gl = chesterGL.gl;
 		// select current shader
@@ -602,7 +574,7 @@ chesterGL.Block.prototype.render = function () {
 		var texOff = 3 * 4,
 			colorOff = texOff + 2 * 4,
 			stride = chesterGL.Block.QUAD_SIZE;
-		
+
 		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
 
@@ -641,7 +613,7 @@ chesterGL.Block.prototype.render = function () {
 		}
 	}
 }
-	
+
 // export symbols
 goog.exportSymbol('chesterGL.Block', chesterGL.Block);
 // constants / enums
@@ -656,14 +628,10 @@ goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototyp
 goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);	
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
 goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
 goog.exportProperty(chesterGL.Block.prototype, 'setTexture', chesterGL.Block.prototype.setTexture);
 goog.exportProperty(chesterGL.Block.prototype, 'setScale', chesterGL.Block.prototype.setScale);
-
-// to be deprecated
-goog.exportProperty(chesterGL.Block.prototype, 'moveTo', chesterGL.Block.prototype.moveTo);
-goog.exportProperty(chesterGL.Block.prototype, 'moveBy', chesterGL.Block.prototype.moveBy);
-goog.exportProperty(chesterGL.Block.prototype, 'rotateTo', chesterGL.Block.prototype.rotateTo);
-goog.exportProperty(chesterGL.Block.prototype, 'rotateBy', chesterGL.Block.prototype.rotateBy);
+goog.exportProperty(chesterGL.Block.prototype, 'setUpdate', chesterGL.Block.prototype.setUpdate);

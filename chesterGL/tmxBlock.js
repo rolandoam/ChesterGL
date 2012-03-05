@@ -83,7 +83,7 @@ chesterGL.TMXBlock = function (tmxFile) {
 				b = new chesterGL.Block(block['frame']);
 				b.setTexture(map['texture']);
 			}
-			b.moveTo(block['position']);
+			b.setPosition(block['position']);
 			l.addChild(b);
 		}
 		this.addChild(l);
