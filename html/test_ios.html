@@ -7,7 +7,7 @@
 	<title>chesterGL Demo</title>
 	
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<script type="text/javascript" src="chester.js"></script>
 	<!-- audio!! -->
@@ -23,13 +23,14 @@ $(document).ready(function () {
 	// 	$("#errors").css('display', 'block');
 	// 	$("#demo-canvas").css('display', 'none');
 	// }
-	
+
 	function setupGame() {
 		// set to false to force canvas mode
 		// chesterGL.webglMode = false;
 		chesterGL.useGoogleAnalytics = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
 
 		chesterGL.loadAsset("texture", "images/test.png");
 		chesterGL.loadAsset("texture", "images/star.png");
@@ -37,53 +38,46 @@ $(document).ready(function () {
 			// $("#loading").html("Test Single Block");        	
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
-			
+
 			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
 			sceneBlock.title = "Test::iOS"
 			chesterGL.setRunningScene(sceneBlock);
-			
+
 			// add some extra blocks
 			for (var i=0; i < 20; i++) {
 				var b = new chesterGL.Block();
 				b.setTexture("images/star.png");
-				b.moveTo([Math.random() * size.width, Math.random() * size.height, 0]);
-				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5];
-				b.update = function () {
-					this.moveBy([this.speed[0], this.speed[1], 0]);
+				b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
+				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
+				b.setUpdate(function () {
+					this.setPosition(vec3.add(this.position, this.speed));
 					if (this.position[0] >= size.width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
 					if (this.position[1] >= size.height || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
-				}
+				});
 				sceneBlock.addChild(b);
 			}
-			
+
 			// create a block
 			var someBlock = new chesterGL.Block();
 			someBlock.setTexture("images/test.png")
-			someBlock.moveTo([size.width/2, size.height/2, 0]);
-			
+			someBlock.setPosition([size.width/2, size.height/2, 0]);
+
 			var someBlock2 = new chesterGL.Block();
 			someBlock2.setTexture("images/star.png");
 			someBlock2.opacity = 0.5;
-			someBlock2.moveTo([60, 0, 0]);
+			someBlock2.setPosition([60, 0, 0]);
 			someBlock.addChild(someBlock2);
-			
+
 			sceneBlock.addChild(someBlock);
-			
+
 			// add some action
-			someBlock.update = function () {
-				this.rotateBy(1);
-			};
-			someBlock2.update = function () {
-				this.rotateBy(-1);
-			};
-			
-			$("#next-frame").click(function () {
-				chesterGL.drawScene();
+			someBlock.setUpdate(function () {
+				this.setRotation(this.rotation + oneDeg);
 			});
-			$("#clear-frame").click(function () {
-				chesterGL.gl.fillRect(0, 0, size.width, size.height);
+			someBlock2.setUpdate(function () {
+				this.setRotation(this.rotation - oneDeg);
 			});
-			
+
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();

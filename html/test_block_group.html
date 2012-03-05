@@ -2,7 +2,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -22,23 +22,23 @@ $(document).ready(function () {
 			$("#loading").html("Test BlockGroup");
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
-			
+
 			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::BlockGroup";
 			chesterGL.setRunningScene(sceneBlock);
-			
+
 			var group = new chesterGL.BlockGroup("images/star.png", totalBlocks);
-			
+
 			// add lots of blocks
 			for (var i=0; i < totalBlocks; i++) {
 				var b = group.createBlock();
-				b.moveTo([Math.random() * size.width, Math.random() * size.height, 0]);
+				b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
 				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
-				b.update = function () {
-					this.moveBy(this.speed);
+				b.setUpdate(function () {
+					this.setPosition(vec3.add(this.position, this.speed));
 					if (this.position[0] >= size.width  || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
 					if (this.position[1] >= size.height || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
-				}
+				});
 				group.addChild(b);
 			}
 
@@ -48,19 +48,6 @@ $(document).ready(function () {
 			// chesterGL.drawScene();
 		});
 	} // setupGame()
-
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
 });
     </script>
 	<script type="text/javascript">
@@ -82,7 +69,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 			<a href="index.html">Test Index</a>
 		</div>

@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -40,7 +40,7 @@ $(document).ready(function () {
 				} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
 					var tmp = vec3.create();
 					vec3.subtract(pt, stPoint, tmp);
-					tmx.moveBy(tmp);
+					tmx.setPosition(vec3.add(tmx.position, tmp));
 					vec3.set(pt, stPoint);
 				} else {
 					stPoint = null;

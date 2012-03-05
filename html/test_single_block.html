@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -16,6 +16,7 @@ $(document).ready(function () {
 		chesterGL.useGoogleAnalytics = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
 
 		chesterGL.loadAsset("texture", "images/test.png");
 		chesterGL.loadAsset("texture", "images/star.png");
@@ -32,46 +33,33 @@ $(document).ready(function () {
 			var someBlock = new chesterGL.Block();
 			someBlock.setTexture("images/test.png")
 			// someBlock.rotateBy(-45);
-			someBlock.moveTo([size.width/2, size.height/2, 0]);
+			someBlock.setPosition([size.width/2, size.height/2, 0]);
 			
 			var someBlock2 = new chesterGL.Block();
 			someBlock2.setTexture("images/star.png");
 			someBlock2.opacity = 0.5;
-			someBlock2.moveTo([60, 0, 0]);
+			someBlock2.setPosition([60, 0, 0]);
 			someBlock.addChild(someBlock2);
 			
 			sceneBlock.addChild(someBlock);
 			
 			// add some action
 			var dz = 10;
-			someBlock.update = function () {
-				this.rotateBy(1);
-				this.moveBy([0, 0, dz]);
+			someBlock.setUpdate(function () {
+				this.setRotation(this.rotation + oneDeg);
+				this.setPosition(vec3.add(this.position, [0, 0, dz]));
 				if (this.position[2] >=  200) { dz = -dz; }
 				if (this.position[2] <= -200) { dz = -dz; }
-			};
-			someBlock2.update = function () {
-				this.rotateBy(-1);
-			};
+			});
+			someBlock2.setUpdate(function () {
+				this.setRotation(this.rotation - oneDeg);
+			});
 
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();
 		});
 	} // setupGame()
-
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
 });
     </script>
 	<script type="text/javascript">
@@ -93,7 +81,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 		</div>
 	</div>

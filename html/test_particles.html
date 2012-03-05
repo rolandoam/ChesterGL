@@ -44,13 +44,13 @@ $(document).ready(function () {
 			chesterGL.setRunningScene(sceneBlock);
 
 			emitter = new chesterGL.ParticleSystem(particle_properties[currentExample]);
-			emitter.moveTo([size.width / 2, 10, 0]);
+			emitter.setPosition([size.width / 2, 10, 0]);
 
 			sceneBlock.addChild(emitter);
 
 			chesterGL.addMouseHandler(function (pt, type) {
 				if (type == chesterGL.mouseEvents.UP) {
-					emitter.moveTo(pt);
+					emitter.setPosition(pt);
 					emitter.loadProperties(particle_properties[currentExample]);
 				}
 			});

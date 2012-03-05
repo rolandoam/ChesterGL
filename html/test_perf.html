@@ -2,7 +2,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -42,7 +42,7 @@ $(document).ready(function () {
 		var useWebgl = chesterGL.webglMode;
 		group = (useWebgl && useBlockGroup) ? (new chesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new chesterGL.Block());
 		var size = chesterGL.viewportSize();
-		
+
 		// add lots of blocks
 		for (var i=0; i < totalBlocks; i++) {
 			var b;
@@ -53,7 +53,7 @@ $(document).ready(function () {
 				b.setTexture("images/sprite-default-000.png");
 			}
 			b.setColor([1, 1, 1, 0.1]);
-			b.moveTo([Math.random() * size.width, Math.random() * size.height, 0]);
+			b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
 			group.addChild(b);
 		}
 	}
@@ -62,11 +62,11 @@ $(document).ready(function () {
 		totalBlocks = parseInt($("#totalBlocks").val());
 		useBlockGroup = $("#useBlockGroup").is(':checked');
 		chesterGL.togglePause();
-		
+
 		sceneBlock.removeChild(group);
 		createGroup();
 		sceneBlock.addChild(group);
-		
+
 		chesterGL.togglePause();
 	});
 });
