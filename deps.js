@@ -1,5 +1,5 @@
 /**
- * @preserve ChesterGL - Simple 2D WebGL demo/library
+ * ChesterGL - Simple 2D WebGL demo/library
  *
  * Copyright (c) 2010-2011 Rolando Abarca
  *
