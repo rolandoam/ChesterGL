@@ -2,25 +2,32 @@
 
 ## What is this?
 
-It's a simple WebGL 2d library/demo (mostly a proof of concept) that I've been writing since early 2011 just to teach myself OpenGL-ES 2.0 and other stuff. Nothing more than that. If you can build a game with this, awesome :) (and let me know)
+It's a simple WebGL 2d library that I've been writing since early 2011 mainly to teach myself OpenGL-ES 2.0. Nothing more than that. If you can build a game with this, awesome :) (and let me know)
 
 The API is somewhat inspired in [cocos2d-iphone](https://github.com/cocos2d/cocos2d-iphone), but just inspired. It's not intended to be a port of cocos2d for WebGL.
 
 ## How to have fun
 
-     make debug
-     make server
+Get the latest "stable" release from here:
 
-And point your browser to [http://localhost:3000](http://localhost:3000), pick one of the test entries. Alternatively, you can point your browser to the [online tests](http://funkaster.github.com/ChesterGL/test/)
+[http://funkaster.github.com/ChesterGL/chesterGL-latest.zip](http://funkaster.github.com/ChesterGL/chester-latest.zip)
 
-## How to create fun
-
-     make doc
+Unzip, create your html webpage, add chester.min.js to the scripts, have fun :)
+If you need help on how to do everything, the best idea would be to check the [online tests](http://funkaster.github.com/ChesterGL/test/)
 
 Or look at the (not always updated) [online documentation](http://funkaster.github.com/ChesterGL/)
 
-Sorry, the doc is not yet complete, but it will at some point :)
+Sorry, the docs are not yet complete, but they will at some point :)
 Just look at the examples and figure your way out from there. It shouldn't be too hard
+
+Or wait until I write my "how to make an HTML5 game using chesterGL" (should be soon)
+
+## How to join the fun
+
+	 # clone the repo
+	 git clone git://github.com/funkaster/ChesterGL.git
+	 cd ChesterGL
+     make debug
 
 ## How to just check this working
 
@@ -32,20 +39,24 @@ You will need to modify the Makefile and change the location of closure compiler
 
 * jquery-1.5.js
 * base64.js
-* glMatrix-0.9.5.js
+* glMatrix-1.2.4.js
 * webkit_console.js
 
-All of them are in the svn repo of google closure, except the glMatrix one, you can find that in the following gist: [https://gist.github.com/1248396](https://gist.github.com/1248396) (it's not complete, it just fills the functions I'm using in ChesterGL)
+All of them are in the svn repo of google closure, except the glMatrix one, you can find that in the following gist: [https://gist.github.com/1248396](https://gist.github.com/1248396) (it's not complete, it just fills the functions I'm using in ChesterGL). You also will need closure-compiler and the closure builder (+ the closure library, of course). You can read about that here:
+
+https://developers.google.com/closure/library/docs/calcdeps
+
+Check the Makefile for where to store or modify that to suit your needs.
 
 ## Known problems
 
-<strike>There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page</strike>
+<strike>There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page</strike>. This was fixed by the asset loader.
 
 ## Known problems in canvas mode
 
 * You will not get a z-position, for really obvious reasons.
 * Color tinting will not work (I haven't found a way to replace that part)
-* Block groups (batched sprites) will not add any improvement, for obvious reasons - I have [an idea](https://github.com/funkaster/ChesterGL/issues/8) about this though.
+* Block groups (batched sprites) will not add any improvement, for obvious reasons
 
 ## Roadmap
 
@@ -60,7 +71,7 @@ You can always look at the issues on the [github project](https://github.com/fun
  * ~26fps with 12 moving sprites on an iPhone 4, iOS 4.3.5
  * ~35fps with 42 moving sprites on iTouch 4gen, iOS 5.0
 * Improve support for Texture Packer sprite sheets
-* Add time-based animations (shouldn't be too hard)
+* <strike>Add time-based animations (shouldn't be too hard)</strike>
 
 ### 2.0
 
