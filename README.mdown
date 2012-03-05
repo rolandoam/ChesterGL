@@ -76,4 +76,7 @@ You can always look at the issues on the [github project](https://github.com/fun
 ### 2.0
 
 * Finish the webgl binding for iOS (what!?)
+* Make it a real game library:
+ * Add new interesting effects (light?)
+ * Add more actions
 * Add your ideas here
