@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - ChesterGL.Action</title>
+		<title>JsDoc Reference - chesterGL.Action</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -191,27 +191,23 @@ ul.inheritsList
 	
 	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
 	
-	<li><a href="../symbols/BlockFrames.html">BlockFrames</a></li>
+	<li><a href="../symbols/chesterGL.html">chesterGL</a></li>
 	
-	<li><a href="../symbols/ChesterGL.html">ChesterGL</a></li>
+	<li><a href="../symbols/chesterGL.Action.html">chesterGL.Action</a></li>
 	
-	<li><a href="../symbols/ChesterGL.Action.html">ChesterGL.Action</a></li>
+	<li><a href="../symbols/chesterGL.ActionManager.html">chesterGL.ActionManager</a></li>
 	
-	<li><a href="../symbols/ChesterGL.ActionManager.html">ChesterGL.ActionManager</a></li>
+	<li><a href="../symbols/chesterGL.AnimateAction.html">chesterGL.AnimateAction</a></li>
 	
-	<li><a href="../symbols/ChesterGL.AnimateAction.html">ChesterGL.AnimateAction</a></li>
+	<li><a href="../symbols/chesterGL.Block.html">chesterGL.Block</a></li>
 	
-	<li><a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a></li>
+	<li><a href="../symbols/chesterGL.BlockGroup.html">chesterGL.BlockGroup</a></li>
 	
-	<li><a href="../symbols/ChesterGL.BlockGroup.html">ChesterGL.BlockGroup</a></li>
+	<li><a href="../symbols/chesterGL.MoveToAction.html">chesterGL.MoveToAction</a></li>
 	
-	<li><a href="../symbols/ChesterGL.MoveToAction.html">ChesterGL.MoveToAction</a></li>
+	<li><a href="../symbols/chesterGL.ParticleSystem.html">chesterGL.ParticleSystem</a></li>
 	
-	<li><a href="../symbols/ChesterGL.ParticleSystem.html">ChesterGL.ParticleSystem</a></li>
-	
-	<li><a href="../symbols/ChesterGL.TMXBlock.html">ChesterGL.TMXBlock</a></li>
-	
-	<li><a href="../symbols/vec2.create.html">vec2.create</a></li>
+	<li><a href="../symbols/chesterGL.TMXBlock.html">chesterGL.TMXBlock</a></li>
 	
 </ul>
 <hr />
@@ -222,7 +218,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class ChesterGL.Action
+				Class chesterGL.Action
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -233,13 +229,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/Actions.js.html">Actions.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/chesterGL_actions.js.html">actions.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ChesterGL.Action.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.Action.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -252,7 +248,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#constructor">ChesterGL.Action</a></b>(block, totalTime)
+								<b><a href="../symbols/chesterGL.Action.html#constructor">chesterGL.Action</a></b>(totalTime, block)
 							</div>
 							<div class="description"></div>
 						</td>
@@ -265,7 +261,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class ChesterGL.Action.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class chesterGL.Action.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -279,7 +275,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#block">block</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#block">block</a></b>
 								</div>
 								<div class="description">The block to which this action will be applied</div>
 							</td>
@@ -289,7 +285,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#currentTime">currentTime</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#currentTime">currentTime</a></b>
 								</div>
 								<div class="description">The current time of the action</div>
 							</td>
@@ -299,7 +295,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#elapsed">elapsed</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#elapsed">elapsed</a></b>
 								</div>
 								<div class="description">Current time in seconds of the action
 (might not be relevant for all actions)</div>
@@ -310,7 +306,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#finished">finished</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#finished">finished</a></b>
 								</div>
 								<div class="description">The current time of the action</div>
 							</td>
@@ -320,7 +316,17 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/ChesterGL.Action.html#totalTime">totalTime</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#running">running</a></b>
+								</div>
+								<div class="description">is the action running?</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/chesterGL.Action.html#totalTime">totalTime</a></b>
 								</div>
 								<div class="description">The total time in seconds this action should take
 (might not be relevant for all actions)</div>
@@ -338,7 +344,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class ChesterGL.Action.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class chesterGL.Action.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -351,7 +357,16 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/ChesterGL.Action.html#update">update</a></b>(delta)
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Action.html#begin">begin</a></b>()
+								</div>
+								<div class="description">will be called the first time - usually overriden by subclasses</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Action.html#update">update</a></b>(delta)
 								</div>
 								<div class="description">This is the default delta function (does nothing)</div>
 							</td>
@@ -374,7 +389,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>ChesterGL.Action</b>(block, totalTime)
+						<b>chesterGL.Action</b>(totalTime, block)
 				</div>
 				
 				<div class="description">
@@ -390,13 +405,13 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{<a href="../symbols/ChesterGL.Block.html">ChesterGL.Block</a>}</span>  <b>block</b>
+								<span class="light fixedFont">{number}</span>  <b>totalTime</b>
 								
 							</dt>
 								<dd></dd>
 						
 							<dt>
-								<span class="light fixedFont">{number=}</span>  <b>totalTime</b>
+								<span class="light fixedFont">{<a href="../symbols/chesterGL.Block.html">chesterGL.Block</a>=}</span>  <b>block</b>
 								
 							</dt>
 								<dd></dd>
@@ -406,13 +421,6 @@ ul.inheritsList
 					
 					
 					
-					
-						<dl class="detailList">
-						<dt class="heading">Returns:</dt>
-						
-								<dd>ChesterGL.Action</dd>
-						
-						</dl>
 					
 					
 					
@@ -515,6 +523,28 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="running"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>running</b>
+					
+					</div>
+					<div class="description">
+						is the action running?
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="totalTime"> </a>
 					<div class="fixedFont">
 					
@@ -545,6 +575,31 @@ ul.inheritsList
 				<div class="sectionTitle">
 					Method Detail
 				</div>
+				
+					<a name="begin"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>begin</b>()
+					
+					</div>
+					<div class="description">
+						will be called the first time - usually overriden by subclasses
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
 				
 					<a name="update"> </a>
 					<div class="fixedFont">
@@ -594,7 +649,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Feb 19 2012 17:29:43 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Mar 04 2012 16:29:54 GMT-0800 (PST)
 		</div>
 	</body>
 </html>

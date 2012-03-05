@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -13,62 +13,45 @@
 $(document).ready(function () {
 	setupGame();
 	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
-		
-		ChesterGL.loadAsset('texture', 'images/tileset2.png');
-		ChesterGL.TMXBlock.loadTMX("images/test-plain.tmx");
-		ChesterGL.assetsLoaded("all", function () {
+		chesterGL.useGoogleAnalytics = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+
+		chesterGL.loadAsset('texture', 'images/tileset2.png');
+		chesterGL.TMXBlock.loadTMX("images/test-plain.tmx");
+		chesterGL.assetsLoaded("all", function () {
 			// $("#loading").html("Test Single Block");        	
 			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
-			
-			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::TMX";
-			ChesterGL.setRunningScene(sceneBlock);
-			
-			var tmx = new ChesterGL.TMXBlock('images/test-plain.tmx');
+			chesterGL.setRunningScene(sceneBlock);
+
+			/** @type {chesterGL.TMXBlock} */
+			var tmx = new chesterGL.TMXBlock('images/test-plain.tmx');
 			sceneBlock.addChild(tmx);
-			
+
+			/** @type {vec3} */
 			var stPoint = null;
-			ChesterGL.addMouseHandler(function (pt, type) {
-				if (type == ChesterGL.mouseEvents.DOWN) {
+			chesterGL.addMouseHandler(function (pt, type) {
+				if (type == chesterGL.mouseEvents.DOWN) {
 					stPoint = vec3.create(pt);
-				} else if (type == ChesterGL.mouseEvents.MOVE && stPoint) {
+				} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
 					var tmp = vec3.create();
 					vec3.subtract(pt, stPoint, tmp);
-					tmx.moveBy(tmp);
+					tmx.setPosition(vec3.add(tmx.position, tmp));
 					vec3.set(pt, stPoint);
 				} else {
 					stPoint = null;
 				}
 			});
-			
-			ChesterGL.run();
+
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
 	} // setupGame()
-
-	var fullScreen = false;
-	$("#scaling").click(function () {
-		var canvas = document.getElementById("demo-canvas");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			if (!fullScreen) {
-				$("#demo-canvas").css('width', '500px');
-				$("#demo-canvas").css('height', '280px');
-			}
-		}
-		if (!fullScreen) {
-			$("#demo-canvas").css('width', '800px');
-			$("#demo-canvas").css('height', '450px');
-			canvas.webkitRequestFullScreen();
-		}
-	});
 });
     </script>
 	<script type="text/javascript">
@@ -90,7 +73,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 		</div>
 	</div>

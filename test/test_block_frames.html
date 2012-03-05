@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
+	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
 	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -13,54 +13,39 @@ $(document).ready(function () {
 	setupGame();
 
 	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
-		
-		ChesterGL.BlockFrames.loadFrames("images/1945.json");
-		ChesterGL.loadAsset("texture", "images/test.png");
-		ChesterGL.loadAsset("texture", "images/star.png");
-		ChesterGL.assetsLoaded('texture', function () {
-			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
-			
-			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
-			sceneBlock.title = "Test::Block Frames";
-			ChesterGL.setRunningScene(sceneBlock);
-			
-			// create a block with a block frame
-			var b1 = new ChesterGL.Block("1945-4-0.png");
-			b1.moveTo([width * 0.5, height * 0.5, 0]);
+		chesterGL.useGoogleAnalytics = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
 
-			var b2 = new ChesterGL.Block("1945-4-1.png");
-			b2.moveTo([width *0.5 - 50, height * 0.5, 0]);
-			
+		chesterGL.BlockFrames.loadFrames("images/1945.json");
+		chesterGL.assetsLoaded('all', function () {
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::Block Frames";
+			chesterGL.setRunningScene(sceneBlock);
+
+			// create a block with a block frame
+			var b1 = new chesterGL.Block("1945-4-0.png");
+			b1.setPosition([size.width * 0.5, size.height * 0.5, 0]);
+
+			var b2 = new chesterGL.Block("1945-4-1.png");
+			b2.setPosition([size.width *0.5 - 50, size.height * 0.5, 0]);
+
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
-			
-			b1.update = function () {
-				this.rotateBy(1);
-			}
-			
-			ChesterGL.run();
+
+			b1.setUpdate(function () {
+				this.setRotation(this.rotation + oneDeg);
+			});
+
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
-	} // setupGame()
-	
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
+	} // setupGame()	
 });
     </script>
     <style type="text/css">
@@ -98,7 +83,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 			<a href="index.html">Test Index</a>
 		</div>

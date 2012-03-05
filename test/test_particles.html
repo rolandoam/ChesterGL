@@ -24,43 +24,41 @@ $(document).ready(function () {
 	];
 	var currentExample = 0;
 	
-	var ps = null;
+	var emitter = null;
 	
 	setupGame();
 	
 	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
+		chesterGL.useGoogleAnalytics = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
 		
-		ChesterGL.ParticleSystem.loadShaders();
-		ChesterGL.loadAsset("texture", particle_properties[currentExample]['texture']);
-		ChesterGL.assetsLoaded('texture', function () {
+		chesterGL.ParticleSystem.loadShaders();
+		chesterGL.loadAsset("texture", particle_properties[currentExample]['texture']);
+		chesterGL.assetsLoaded('texture', function () {
 			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
-			
-			var sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
-			sceneBlock.title = "Test::Particles";
-			ChesterGL.setRunningScene(sceneBlock);
+			chesterGL.setupPerspective();
 
-			ps = new ChesterGL.ParticleSystem(particle_properties[currentExample]);
-			ps.moveTo([width / 2, 10, 0]);
-			
-			sceneBlock.addChild(ps);
-			
-			ChesterGL.addMouseHandler(function (pt, type) {
-				if (type == ChesterGL.mouseEvents.UP) {
-					ps.moveTo(pt);
-					ps.loadProperties(particle_properties[currentExample]);
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::Particles";
+			chesterGL.setRunningScene(sceneBlock);
+
+			emitter = new chesterGL.ParticleSystem(particle_properties[currentExample]);
+			emitter.setPosition([size.width / 2, 10, 0]);
+
+			sceneBlock.addChild(emitter);
+
+			chesterGL.addMouseHandler(function (pt, type) {
+				if (type == chesterGL.mouseEvents.UP) {
+					emitter.setPosition(pt);
+					emitter.loadProperties(particle_properties[currentExample]);
 				}
 			});
-			
 			showData();
-			
-			ChesterGL.run();
+
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
 	} // setupGame()
 	
@@ -133,7 +131,7 @@ $(document).ready(function () {
 		pp['blendOptions'][0] = $("#src_blend").val();
 		pp['blendOptions'][1] = $("#dst_blend").val();
 		
-		ps.loadProperties(pp);
+		emitter.loadProperties(pp);
 		showData();
 	}
 	
@@ -176,11 +174,11 @@ $(document).ready(function () {
 	$("#next").click(function () {
 		currentExample = (currentExample + 1) % particle_properties.length;
 		showData();
-		ps.loadProperties(particle_properties[currentExample]);
+		emitter.loadProperties(particle_properties[currentExample]);
 	});
 	
 	$("#pause").click(function () {
-		ChesterGL.togglePause();
+		chesterGL.togglePause();
 	});
 });
     </script>
