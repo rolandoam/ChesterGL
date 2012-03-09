@@ -111,7 +111,8 @@ chesterGL.Block.TYPE = {
 	'BLOCKGROUP': 1,
 	'SCENE':      2,
 	'TMXBLOCK':   3,
-	'PARTICLE':   4
+	'PARTICLE':   4,
+	'PRIMITIVE':  5
 };
 
 /**
@@ -162,6 +163,12 @@ chesterGL.Block.SizeZero = new goog.math.Vec2(0.0, 0.0);
  * @type {string}
  */
 chesterGL.Block.prototype.title = "";
+
+/**
+ * @type {boolean}
+ * @ignore
+ */
+chesterGL.Block.prototype.debugNodeAdded = false;
 
 /**
  * @type {?mat4}
@@ -292,6 +299,23 @@ chesterGL.Block.prototype._scheduledRemove = null;
 chesterGL.Block.prototype._inVisit = false;
 
 /**
+ * @ignore
+ */
+chesterGL.Block.prototype.addDebugNode = function () {
+	if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
+		var dbg = new chesterGL.PrimitiveBlock(1, 1);
+		this.addChild(dbg);
+		dbg.setUpdate(function () {
+			var sz = this.parent.contentSize;
+			var w = sz.width / 2, h = sz.height / 2;
+			var poly = [[-w, -h, 0], [-w, h, 0], [w, h, 0], [w, -h, 0]];
+			this.drawPolygon(poly, [1, 1, 1, 1], true);
+		});
+	}
+	this.debugNodeAdded = true;
+};
+
+/**
  * sets the frame for this block
  * 
  * @param {quat4} newFrame
@@ -354,6 +378,7 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 	this.texture = texturePath;
 	// force program to texture program
 	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
+	if (chesterGL.debugSprite) { this.addDebugNode(); }
 	var block = this;
 	chesterGL.loadAsset("texture", texturePath, function (t) {
 		// set the default frame for all our blocks (if it's not set)
@@ -439,8 +464,8 @@ chesterGL.Block.prototype.transform = function () {
 		}
 	}
 
-	// bail out if we're a block group
-	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP']) {
+	// bail out if we're a block group or a primitive block
+	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP'] || this.type == chesterGL.Block.TYPE['PRIMITIVE']) {
 		return;
 	}
 
