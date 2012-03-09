@@ -51,7 +51,7 @@ chesterGL.BlockGroup = function (texture, noChildren) {
 	
 	// create the buffers for the children
 	this.createBuffers();
-}
+};
 goog.inherits(chesterGL.BlockGroup, chesterGL.Block);
 
 /**
