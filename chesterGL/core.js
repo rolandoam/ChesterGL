@@ -132,6 +132,13 @@ chesterGL.projection = "3d";
 chesterGL.webglMode = true;
 
 /**
+ * whether or not to debug sprites (show bounding box)
+ * set this by adding a ?_cdbg=1 to the url of the document
+ * @type {boolean}
+ */
+chesterGL.debugSprite = false;
+
+/**
  * whether or not to use an offscreen buffer when in not webgl mode
  * 
  * @type {boolean}
@@ -248,7 +255,16 @@ chesterGL.setup = function (canvasId) {
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
 	}
-	
+	var queryStr = window.location.search.substring(1);
+	var keyValues = queryStr.split('&');
+	for (var i in keyValues) {
+		var key = keyValues[i].split('=');
+		if (key[0] == '_cdbg' && key[1] == '1') {
+			chesterGL.debugSprite = true;
+			console.log("debug mode on");
+		}
+	}
+
 	chesterGL.debugSpan = document.getElementById("debug-info");
 	// register the default handler for textures
 	chesterGL.registerAssetHandler('texture', chesterGL.defaultTextureHandler);
