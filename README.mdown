@@ -38,15 +38,13 @@ Point your browser (even your mobile browser!) to: [http://funkaster.github.com/
 You will need to modify the Makefile and change the location of closure compiler, as well as add the following externs:
 
 * jquery-1.5.js
-* base64.js
-* glMatrix-1.2.4.js
 * webkit_console.js
 
-All of them are in the svn repo of google closure, except the glMatrix one, you can find that in the following gist: [https://gist.github.com/1248396](https://gist.github.com/1248396) (it's not complete, it just fills the functions I'm using in ChesterGL). You also will need closure-compiler and the closure builder (+ the closure library, of course). You can read about that here:
+All of them are in the svn repo of google closure. You also will need closure-compiler and the closure builder (+ the closure library, of course). You can read about that here:
 
 https://developers.google.com/closure/library/docs/calcdeps
 
-Check the Makefile for where to store or modify that to suit your needs.
+Check the Makefile for where to place them or modify that to suit your needs.
 
 ## Known problems
 
