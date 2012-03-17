@@ -46,6 +46,15 @@ https://developers.google.com/closure/library/docs/calcdeps
 
 Check the Makefile for where to place them or modify that to suit your needs.
 
+## How fast
+
+The WebGL implementation might depend a lot on your graphic card, but I tried to make it very efficient, so it should go *very* fast with lots of sprites on the screen. Try to use BlockGroups (batched sprites) as much as you can.
+
+For the canvas version, the is a bit more slow, but pretty decent even on iOS devices:
+
+* iPhone 4, iOS 5.1 (test_ios.html, with 45 sprites on screen): 19.62ms per frame ~> 51 FPS
+* Chrome 19 (Mac build) running test_perf.html: 17ms per frame, 10000 sprites ~> 58 FPS (YMMV)
+
 ## Known problems
 
 <strike>There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page</strike>. This was fixed by the asset loader.
