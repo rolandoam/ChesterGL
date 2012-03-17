@@ -66,7 +66,7 @@ release: compile
 	mkdir -p release
 	cat LICENSE > release/chester.min.js
 	cat html/chester.js >> release/chester.min.js
-	cp README.mdown release/README.md
+	cp README.md release/README.md
 	zip -r chesterGL-latest.zip release
 	mv chesterGL-latest.zip html/
 
