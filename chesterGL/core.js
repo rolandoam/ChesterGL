@@ -79,6 +79,46 @@ function throwOnGLError(err, funcName, args) {
 // var chesterGL = {};
 
 /**
+ * chesterGL version
+ * @type {string}
+ */
+chesterGL.version = '0.2';
+
+/**
+ * Basic settings for chesterGL
+ * Settings:
+ * * useGoogleAnalytics: whether or not to track fps and send analytics. Will send every 5 seconds
+ * * projection: "3d" or "2d" (ortho)
+ * * webglMode: true to try for webGL, false to force canvas mode
+ * @type {Object.<string,string|boolean>}
+ */
+chesterGL.settings = {
+	'useGoogleAnalytics': false,
+	'projection': "3d",
+	'webglMode': true,
+	'usesOffscreenBuffer': false,
+	'debugSpanId': 'debug-info'
+};
+
+/**
+ * @type {boolean}
+ * @ignore
+ */
+chesterGL.webglMode = true;
+
+/**
+ * @type {boolean}
+ * @ignore
+ */
+chesterGL.usesOffscreenBuffer = false;
+
+/**
+ * @type {boolean}
+ * @ignore
+ */
+chesterGL.useGoogleAnalytics = false;
+
+/**
  * This is the WebGL context
  * 
  * @type {?WebGLRenderingContext}
@@ -87,24 +127,10 @@ function throwOnGLError(err, funcName, args) {
 chesterGL.gl = null;
 
 /**
- * chesterGL version
- * @type {string}
- */
-chesterGL.version = '0.2';
-
-/**
  * @type {boolean}
  * @ignore
  */
 chesterGL._paused = false;
-
-/**
- * For debug/performance metrics. You can set this to false to ignore analytics (no data will be sent).
- * This will use whatever profile you have for analytics on the game page
- * 
- * @type {boolean}
- */
-chesterGL.useGoogleAnalytics = false;
 
 /**
  * @type {Object.<string,WebGLProgram>}
@@ -136,32 +162,11 @@ chesterGL.runningScene = null;
 chesterGL.canvas = null;
 
 /**
- * default projection: 3d
- * 
- * @type {string}
- */
-chesterGL.projection = "3d";
-
-/**
- * are we on webgl?
- * You can force canvas mode by setting this to false before calling setupPerspective()
- * @type {boolean}
- */
-chesterGL.webglMode = true;
-
-/**
  * whether or not to debug sprites (show bounding box)
  * set this by adding a ?_cdbg=1 to the url of the document
  * @type {boolean}
  */
 chesterGL.debugSprite = false;
-
-/**
- * whether or not to use an offscreen buffer when in not webgl mode
- * 
- * @type {boolean}
- */
-chesterGL.usesOffscreenBuffer = false;
 
 /**
  * @type {Object.<string,Object>}
@@ -220,20 +225,6 @@ chesterGL.fps = 0;
 chesterGL.debugSpan = null;
 
 /**
- * the id of the span that will hold the debug info. Defaults to "debug-info"
- * @type {string}
- */
-chesterGL.debugSpanId = "debug-info";
-
-/**
- * the global update function, to be called every
- * frame - with the delta from last frame
- *
- * @type {?function(number)}
- */
-chesterGL.update = null;
-
-/**
  * @enum {number}
  */
 chesterGL.mouseEvents = {
@@ -279,6 +270,13 @@ chesterGL.selectProgram = function (program) {
  */
 chesterGL.setup = function (canvasId) {
 	var canvas = document.getElementById(canvasId); // get the DOM element
+	var settings = chesterGL.settings;
+
+	// copy values for future reference
+	chesterGL.webglMode = /** @type {boolean} */(settings['webglMode']);
+	chesterGL.useGoogleAnalytics = /** @type {boolean} */(settings['useGoogleAnalytics']);
+	chesterGL.usesOffscreenBuffer = /** @type {boolean} */(settings['usesOffscreenBuffer']);
+
 	chesterGL.initGraphics(canvas);
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
@@ -990,12 +988,7 @@ chesterGL.togglePause = function () {
 
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
-goog.exportSymbol('chesterGL.useGoogleAnalytics', chesterGL.useGoogleAnalytics);
-goog.exportSymbol('chesterGL.projection', chesterGL.projection);
-goog.exportSymbol('chesterGL.webglMode', chesterGL.webglMode);
-goog.exportSymbol('chesterGL.usesOffscreenBuffer', chesterGL.usesOffscreenBuffer);
-goog.exportSymbol('chesterGL.debugSpanId', chesterGL.debugSpanId);
-goog.exportSymbol('chesterGL.update', chesterGL.update);
+goog.exportSymbol('chesterGL.settings', chesterGL.settings);
 goog.exportSymbol('chesterGL.mouseEvents', chesterGL.mouseEvents);
 goog.exportSymbol('chesterGL.mouseEvents.DOWN', chesterGL.mouseEvents.DOWN);
 goog.exportSymbol('chesterGL.mouseEvents.MOVE', chesterGL.mouseEvents.MOVE);
