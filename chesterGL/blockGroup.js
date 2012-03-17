@@ -1,7 +1,7 @@
 /*
  * chesterGL - Simple 2D WebGL demo/library
  *
- * Copyright (c) 2010-2011 Rolando Abarca
+ * Copyright (c) 2010-2012 Rolando Abarca
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
