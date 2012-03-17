@@ -25,7 +25,7 @@ $(document).ready(function () {
 	function setupGame() {
 		// set to false to force canvas mode
 		// chesterGL.webglMode = false;
-		chesterGL.useGoogleAnalytics = true;
+		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
 		var oneDeg = Math.PI / 180.0;

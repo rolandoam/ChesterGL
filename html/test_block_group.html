@@ -10,7 +10,7 @@ $(document).ready(function () {
 	setupGame();
 
 	function setupGame() {
-		chesterGL.useGoogleAnalytics = true;
+		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
 		var totalBlocks = 500;
