@@ -58,7 +58,11 @@ Check the Makefile for where to place them or modify that to suit your needs.
 
 ## Roadmap
 
-### 1.0
+### 0.1
+
+* Initial version
+
+### 0.2
 
 You can always look at the issues on the [github project](https://github.com/funkaster/ChesterGL/issues) and look for the right milestone.
 
@@ -71,7 +75,7 @@ You can always look at the issues on the [github project](https://github.com/fun
 * Improve support for Texture Packer sprite sheets
 * <strike>Add time-based animations (shouldn't be too hard)</strike>
 
-### 2.0
+### 1.0
 
 * Finish the webgl binding for iOS (what!?)
 * Make it a real game library:
