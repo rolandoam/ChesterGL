@@ -101,6 +101,12 @@ chesterGL.settings = {
 };
 
 /**
+ * @type {string}
+ * @ignore
+ */
+chesterGL.projection = "3d";
+
+/**
  * @type {boolean}
  * @ignore
  */
@@ -273,6 +279,7 @@ chesterGL.setup = function (canvasId) {
 	var settings = chesterGL.settings;
 
 	// copy values for future reference
+	chesterGL.projection = /** @type {string} */(settings['projection']);
 	chesterGL.webglMode = /** @type {boolean} */(settings['webglMode']);
 	chesterGL.useGoogleAnalytics = /** @type {boolean} */(settings['useGoogleAnalytics']);
 	chesterGL.usesOffscreenBuffer = /** @type {boolean} */(settings['usesOffscreenBuffer']);
@@ -859,8 +866,8 @@ chesterGL.updateDebugTime = function () {
 			_gaq.push([
 				'_trackEvent',
 				'chesterGL',
-				// Let us know if this is WebGL or canvas mode
-				'renderTime-' + (chesterGL.webglMode) + chesterGL.version,
+				// Let us know if this is WebGL or canvas mode, and what version of chester
+				'renderTime-' + (chesterGL.webglMode) + '-' + chesterGL.version,
 				chesterGL.runningScene.title,
 				Math.floor(chesterGL.sumAvg/chesterGL.sampledAvg)
 			]);
