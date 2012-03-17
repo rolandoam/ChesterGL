@@ -14,7 +14,8 @@ $(document).ready(function () {
 	$("#totalBlocks").val(totalBlocks);
 
 	function setupGame() {
-		chesterGL.useGoogleAnalytics = true;
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.settings['webglMode'] = false;
 		chesterGL.setup("demo-canvas");
 
 		chesterGL.loadAsset("texture", "images/sprite-default-000.png");
@@ -37,18 +38,19 @@ $(document).ready(function () {
 	} // setupGame()
 
 	function createGroup() {
-		var useWebgl = chesterGL.webglMode;
+		var useWebgl = chesterGL.settings['webglMode'];
 		group = (useWebgl && useBlockGroup) ? (new chesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new chesterGL.Block());
 		var size = chesterGL.viewportSize();
 
 		// add lots of blocks
 		for (var i=0; i < totalBlocks; i++) {
 			var b;
-			if (useBlockGroup) {
+			if (useBlockGroup && useWebgl) {
 				b = group.createBlock();
 			} else {
 				b = new chesterGL.Block();
 				b.setTexture("images/sprite-default-000.png");
+				b.opacity = 0.1;
 			}
 			b.setColor([1, 1, 1, 0.1]);
 			b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
