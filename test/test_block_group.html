@@ -2,8 +2,6 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
-	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
     <script type="text/javascript">
@@ -35,7 +33,7 @@ $(document).ready(function () {
 				b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
 				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
 				b.setUpdate(function () {
-					this.setPosition(vec3.add(this.position, this.speed));
+					this.setPosition([this.position[0] + this.speed[0], this.position[1] + this.speed[1], this.position[2] + this.speed[2]]);
 					if (this.position[0] >= size.width  || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
 					if (this.position[1] >= size.height || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
 				});

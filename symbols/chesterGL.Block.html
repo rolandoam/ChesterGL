@@ -207,6 +207,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/chesterGL.ParticleSystem.html">chesterGL.ParticleSystem</a></li>
 	
+	<li><a href="../symbols/chesterGL.PrimitiveBlock.html">chesterGL.PrimitiveBlock</a></li>
+	
 	<li><a href="../symbols/chesterGL.TMXBlock.html">chesterGL.TMXBlock</a></li>
 	
 </ul>
@@ -275,29 +277,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#baseBufferIndex">baseBufferIndex</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								chesterGL.Block.<b><a href="../symbols/chesterGL.Block.html#.BUFFER_SIZE">BUFFER_SIZE</a></b>
-								</div>
-								<div class="description">This is how many items the buffer data must have.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#children">children</a></b>
 								</div>
-								<div class="description">the array to hold children blocks</div>
+								<div class="description">the array to hold children blocks.</div>
 							</td>
 						</tr>
 					
@@ -307,7 +289,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#color">color</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">the color of the block.</div>
 							</td>
 						</tr>
 					
@@ -317,7 +299,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#contentSize">contentSize</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">the content size of the block.</div>
 							</td>
 						</tr>
 					
@@ -332,22 +314,12 @@ ul.inheritsList
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;inner&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#-f">f</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#frame">frame</a></b>
 								</div>
-								<div class="description">the texture frame</div>
+								<div class="description">the texture frame.</div>
 							</td>
 						</tr>
 					
@@ -362,72 +334,12 @@ ul.inheritsList
 						</tr>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#glBuffer">glBuffer</a></b>
+								chesterGL.Block.<b><a href="../symbols/chesterGL.Block.html#.ONE_DEG">ONE_DEG</a></b>
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#glBufferData">glBufferData</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#isColorDirty">isColorDirty</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#isFrameDirty">isFrameDirty</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#isTransformDirty">isTransformDirty</a></b>
-								</div>
-								<div class="description">did the position, scale or rotation change?</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#mvMatrix">mvMatrix</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Block.html#mvpMatrix">mvpMatrix</a></b>
-								</div>
-								<div class="description"></div>
+								<div class="description">One degree in radians</div>
 							</td>
 						</tr>
 					
@@ -447,7 +359,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#parent">parent</a></b>
 								</div>
-								<div class="description">the block group this block belongs to</div>
+								<div class="description">the block group this block belongs to.</div>
 							</td>
 						</tr>
 					
@@ -457,7 +369,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#position">position</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">the position of the center of the block.</div>
 							</td>
 						</tr>
 					
@@ -485,17 +397,6 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								chesterGL.Block.<b><a href="../symbols/chesterGL.Block.html#.QUAD_SIZE">QUAD_SIZE</a></b>
-								</div>
-								<div class="description">This is the size of one quad, the buffer data length (in bytes) will be 4 * QUAD_SIZE
-12 (verts, 3 floats) + 8 (tex coords, 2 floats) + 16 (color, 4 floats)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
 								chesterGL.Block.<b><a href="../symbols/chesterGL.Block.html#.RAD_TO_DEG">RAD_TO_DEG</a></b>
 								</div>
 								<div class="description"></div>
@@ -508,7 +409,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#rotation">rotation</a></b>
 								</div>
-								<div class="description">rotation of the box - in radians</div>
+								<div class="description">rotation of the box - in radians.</div>
 							</td>
 						</tr>
 					
@@ -518,7 +419,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#scale">scale</a></b>
 								</div>
-								<div class="description">the scale of the box</div>
+								<div class="description">the scale of the box.</div>
 							</td>
 						</tr>
 					
@@ -538,7 +439,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#texture">texture</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">The name of the texture associated with this block.</div>
 							</td>
 						</tr>
 					
@@ -548,7 +449,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#title">title</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">Sets the title of this block, only used in the scenes right now (for analytics)</div>
 							</td>
 						</tr>
 					
@@ -568,7 +469,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#update">update</a></b>
 								</div>
-								<div class="description">update function</div>
+								<div class="description">update function - called every frame with the delta in milliseconds since last frame</div>
 							</td>
 						</tr>
 					
@@ -578,7 +479,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.Block.html#visible">visible</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">Sets whether or not the block is visible</div>
 							</td>
 						</tr>
 					
@@ -624,15 +525,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#render">render</a></b>()
-								</div>
-								<div class="description">render (only will work for non-blockgroup blocks)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#runAction">runAction</a></b>(action)
 								</div>
 								<div class="description">schedules an action to be run over this block</div>
@@ -645,7 +537,7 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#setColor">setColor</a></b>(color)
 								</div>
 								<div class="description">sets the color of the block
-the quat4 should be created in the order RGBA</div>
+the array should be created in the order RGBA</div>
 							</td>
 						</tr>
 					
@@ -672,7 +564,7 @@ the quat4 should be created in the order RGBA</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#setPosition">setPosition</a></b>(p)
 								</div>
-								<div class="description"></div>
+								<div class="description">sets the position of the block (x, y, z)</div>
 							</td>
 						</tr>
 					
@@ -712,24 +604,6 @@ the quat4 should be created in the order RGBA</div>
 							</td>
 						</tr>
 					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#transform">transform</a></b>()
-								</div>
-								<div class="description">actually performs the transformation</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#visit">visit</a></b>()
-								</div>
-								<div class="description">prepares the block for the rendering (transforms if necessary)</div>
-							</td>
-						</tr>
-					
 					</tbody>
 				</table>
 				
@@ -764,7 +638,7 @@ creation time.
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{Object.<string|number>|string=}</span>  <b>rect</b>
+								<span class="light fixedFont">{goog.vec.Vec4.Vec4Like|string=}</span>  <b>rect</b>
 								
 							</dt>
 								<dd></dd>
@@ -799,51 +673,6 @@ creation time.
 					Field Detail
 				</div>
 				
-					<a name="baseBufferIndex"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>baseBufferIndex</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".BUFFER_SIZE"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.Block.</span><b>BUFFER_SIZE</b>
-					
-					</div>
-					<div class="description">
-						This is how many items the buffer data must have.
-3 (vert) + 2 (tex) + 4 (color) = 9; 9 * 4 (verts) = 36
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="children"> </a>
 					<div class="fixedFont">
 					
@@ -852,7 +681,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						the array to hold children blocks
+						the array to hold children blocks. Read only, to modify use addChild or removeChild
 						
 						
 					</div>
@@ -874,7 +703,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						the color of the block. Use the setter to modify this property
 						
 						
 					</div>
@@ -896,7 +725,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						the content size of the block. Use the setter to modify this property
 						
 						
 					</div>
@@ -932,28 +761,6 @@ creation time.
 
 					<hr />
 				
-					<a name="-f"> </a>
-					<div class="fixedFont">&lt;inner&gt; 
-					
-					
-					<b>f</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="frame"> </a>
 					<div class="fixedFont">
 					
@@ -962,7 +769,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						the texture frame
+						the texture frame. Use the setter to modify this property
 						
 						
 					</div>
@@ -998,147 +805,15 @@ creation time.
 
 					<hr />
 				
-					<a name="glBuffer"> </a>
-					<div class="fixedFont">
+					<a name=".ONE_DEG"> </a>
+					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<b>glBuffer</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="glBufferData"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>glBufferData</b>
+					<span class="light">chesterGL.Block.</span><b>ONE_DEG</b>
 					
 					</div>
 					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="isColorDirty"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>isColorDirty</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="isFrameDirty"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>isFrameDirty</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="isTransformDirty"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>isTransformDirty</b>
-					
-					</div>
-					<div class="description">
-						did the position, scale or rotation change?
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="mvMatrix"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>mvMatrix</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="mvpMatrix"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>mvpMatrix</b>
-					
-					</div>
-					<div class="description">
-						
+						One degree in radians
 						
 						
 					</div>
@@ -1182,7 +857,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						the block group this block belongs to
+						the block group this block belongs to. Read only
 						
 						
 					</div>
@@ -1204,7 +879,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						the position of the center of the block. Use the setter to modify this property
 						
 						
 					</div>
@@ -1262,29 +937,6 @@ creation time.
 
 					<hr />
 				
-					<a name=".QUAD_SIZE"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.Block.</span><b>QUAD_SIZE</b>
-					
-					</div>
-					<div class="description">
-						This is the size of one quad, the buffer data length (in bytes) will be 4 * QUAD_SIZE
-12 (verts, 3 floats) + 8 (tex coords, 2 floats) + 16 (color, 4 floats)
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".RAD_TO_DEG"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1315,7 +967,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						rotation of the box - in radians
+						rotation of the box - in radians. Use the setter to modify this property
 						
 						
 					</div>
@@ -1337,7 +989,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						the scale of the box
+						the scale of the box. Use the setter to modify this property
 						
 						
 					</div>
@@ -1381,7 +1033,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						The name of the texture associated with this block. Use the setter to modify this property
 						
 						
 					</div>
@@ -1403,7 +1055,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						Sets the title of this block, only used in the scenes right now (for analytics)
 						
 						
 					</div>
@@ -1447,7 +1099,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						update function
+						update function - called every frame with the delta in milliseconds since last frame
 						
 						
 					</div>
@@ -1469,7 +1121,7 @@ creation time.
 					
 					</div>
 					<div class="description">
-						
+						Sets whether or not the block is visible
 						
 						
 					</div>
@@ -1565,31 +1217,6 @@ the child will be scheduled to be removed after the visit.
 
 					<hr />
 				
-					<a name="render"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>render</b>()
-					
-					</div>
-					<div class="description">
-						render (only will work for non-blockgroup blocks)
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="runAction"> </a>
 					<div class="fixedFont">
 					
@@ -1638,7 +1265,7 @@ the child will be scheduled to be removed after the visit.
 					</div>
 					<div class="description">
 						sets the color of the block
-the quat4 should be created in the order RGBA
+the array should be created in the order RGBA
 						
 						
 					</div>
@@ -1650,7 +1277,7 @@ the quat4 should be created in the order RGBA
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{quat4}</span> <b>color</b>
+									<span class="light fixedFont">{Array|Float32Array}</span> <b>color</b>
 									
 								</dt>
 								<dd></dd>
@@ -1733,7 +1360,7 @@ block.setContentSize(128, 128);</pre>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{quat4}</span> <b>newFrame</b>
+									<span class="light fixedFont">{Array|Float32Array|string}</span> <b>newFrame</b>
 									
 								</dt>
 								<dd></dd>
@@ -1757,7 +1384,7 @@ block.setContentSize(128, 128);</pre>
 					
 					</div>
 					<div class="description">
-						
+						sets the position of the block (x, y, z)
 						
 						
 					</div>
@@ -1769,7 +1396,7 @@ block.setContentSize(128, 128);</pre>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>p</b>
+									<span class="light fixedFont">{Array|Float32Array}</span> <b>p</b>
 									
 								</dt>
 								<dd></dd>
@@ -1927,56 +1554,6 @@ block.setContentSize(128, 128);</pre>
 						
 						
 
-					<hr />
-				
-					<a name="transform"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>transform</b>()
-					
-					</div>
-					<div class="description">
-						actually performs the transformation
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="visit"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>visit</b>()
-					
-					</div>
-					<div class="description">
-						prepares the block for the rendering (transforms if necessary)
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
 					
 				
 			
@@ -1991,7 +1568,7 @@ block.setContentSize(128, 128);</pre>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Mar 05 2012 08:49:12 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Mar 17 2012 14:36:14 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

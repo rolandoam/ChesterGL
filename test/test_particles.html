@@ -4,8 +4,6 @@
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<link rel="stylesheet" media="screen" type="text/css" href="externals/colorpicker.css" />
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
-	<script type="text/javascript" src="externals/base64.js"></script>
 	<script type="text/javascript" src="externals/colorpicker.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
@@ -135,19 +133,6 @@ $(document).ready(function () {
 		showData();
 	}
 	
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
-	
 	$("#initial_color").ColorPicker({
 		onSubmit: function(hsb, hex, rgb, el) {
 			$(el).val("#" + hex);
@@ -200,7 +185,6 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Pause" id="pause"/>
 			<span id="debug-info">00</span> ms per frame
 		</div>

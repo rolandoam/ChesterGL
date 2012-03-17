@@ -3,8 +3,6 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
-	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
 	<!-- audio!! -->
@@ -53,7 +51,7 @@ $(document).ready(function () {
 			var dz = [0, 0, 10];
 			someBlock.setUpdate(function () {
 				this.setRotation(this.rotation + oneDeg);
-				this.setPosition(vec3.add(this.position, dz));
+				this.setPosition([this.position[0] + dz[0], this.position[1] + dz[1], this.position[2] + dz[2]]);
 				if (this.position[2] >=  200) { dz[2] = -dz[2]; }
 				if (this.position[2] <= -200) { dz[2] = -dz[2]; }
 				if (Math.random() > 0.8) {

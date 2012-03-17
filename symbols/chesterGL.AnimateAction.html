@@ -207,6 +207,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/chesterGL.ParticleSystem.html">chesterGL.ParticleSystem</a></li>
 	
+	<li><a href="../symbols/chesterGL.PrimitiveBlock.html">chesterGL.PrimitiveBlock</a></li>
+	
 	<li><a href="../symbols/chesterGL.TMXBlock.html">chesterGL.TMXBlock</a></li>
 	
 </ul>
@@ -277,36 +279,6 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.AnimateAction.html#currentFrame">currentFrame</a></b>
-								</div>
-								<div class="description">the current frame</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.AnimateAction.html#delay">delay</a></b>
-								</div>
-								<div class="description">The delay between frames</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.AnimateAction.html#frames">frames</a></b>
-								</div>
-								<div class="description">The total frames of the animation</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
 								<b><a href="../symbols/chesterGL.AnimateAction.html#shouldLoop">shouldLoop</a></b>
 								</div>
 								<div class="description">Whether or not the animation should loop</div>
@@ -321,33 +293,6 @@ ul.inheritsList
 			
 
 <!-- ============================== methods summary ======================== -->
-			
-				
-				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class chesterGL.AnimateAction.">
-					<caption>Method Summary</caption>
-					<thead>
-						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
-						</tr>
-					</thead>
-					<tbody>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/chesterGL.AnimateAction.html#update">update</a></b>(delta)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-					</tbody>
-				</table>
-				
-				
-				
 			
 <!-- ============================== events summary ======================== -->
 			
@@ -379,25 +324,25 @@ ul.inheritsList
 								<span class="light fixedFont">{number}</span>  <b>delay</b>
 								
 							</dt>
-								<dd>in seconds</dd>
+								<dd>in seconds between frames</dd>
 						
 							<dt>
 								<span class="light fixedFont">{Array.<Object>}</span>  <b>frames</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>The frames of the animation</dd>
 						
 							<dt>
-								<span class="light fixedFont">{boolean?}</span>  <b>loop</b>
+								<span class="light fixedFont">{boolean=}</span>  <b>loop</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>Whether or not this animation should loop</dd>
 						
 							<dt>
 								<span class="light fixedFont">{<a href="../symbols/chesterGL.Block.html">chesterGL.Block</a>=}</span>  <b>block</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>The block that will receive this action</dd>
 						
 						</dl>
 					
@@ -416,72 +361,6 @@ ul.inheritsList
 				<div class="sectionTitle">
 					Field Detail
 				</div>
-				
-					<a name="currentFrame"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>currentFrame</b>
-					
-					</div>
-					<div class="description">
-						the current frame
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="delay"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>delay</b>
-					
-					</div>
-					<div class="description">
-						The delay between frames
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="frames"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>frames</b>
-					
-					</div>
-					<div class="description">
-						The total frames of the animation
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
 				
 					<a name="shouldLoop"> </a>
 					<div class="fixedFont">
@@ -509,47 +388,6 @@ ul.inheritsList
 
 <!-- ============================== method details ========================= -->		
 			
-				<div class="sectionTitle">
-					Method Detail
-				</div>
-				
-					<a name="update"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>update</b>(delta)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{number}</span> <b>delta</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					
-				
-			
 			
 <!-- ============================== event details ========================= -->		
 			
@@ -561,7 +399,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Mar 05 2012 08:49:12 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Mar 17 2012 14:36:14 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>
