@@ -62,6 +62,14 @@ debug: debug_flags
 	# adds source map support!
 	echo "//@ sourceMappingURL=chester.js.map" >> $(OUTPUT_DIR)/$(OUTPUT_FILE)
 
+release: compile
+	mkdir -p release
+	cat LICENSE > release/chester.min.js
+	cat html/chester.js >> release/chester.min.js
+	cp README.mdown release/README.md
+	zip -r chesterGL-latest.zip release
+	mv chesterGL-latest.zip html/
+
 # just cat everything into chester.js (when debugging is getting hard)
 debug-plain:
 	cat ${SOURCES} > $(OUTPUT_DIR)/$(OUTPUT_FILE)
