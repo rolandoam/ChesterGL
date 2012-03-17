@@ -3,8 +3,6 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.2.4.min.js"></script>
-	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
 	<!-- audio!! -->
@@ -36,12 +34,11 @@ $(document).ready(function () {
 			var stPoint = null;
 			chesterGL.addMouseHandler(function (pt, type) {
 				if (type == chesterGL.mouseEvents.DOWN) {
-					stPoint = vec3.create(pt);
+					stPoint = [pt[0], pt[1], pt[2]];
 				} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
-					var tmp = vec3.create();
-					vec3.subtract(pt, stPoint, tmp);
-					tmx.setPosition(vec3.add(tmx.position, tmp));
-					vec3.set(pt, stPoint);
+					var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
+					tmx.setPosition([tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]]);
+					stPoint = [pt[0], pt[1], pt[2]];
 				} else {
 					stPoint = null;
 				}
