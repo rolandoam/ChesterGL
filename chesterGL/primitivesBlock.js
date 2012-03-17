@@ -30,11 +30,18 @@ goog.require("goog.math.Size");
 goog.require("chesterGL.Block");
 
 /**
- * creates a new PrimitiveBlock
+ * creates a new PrimitiveBlock. All draw functions should be placed in the update
+ * method of the primitive block. Every frame, all draw calls are reset.
  * @constructor
  * @param {number=} maxPoints the max number of points, by default it's set to 500
  * @param {number=} maxLines the max number of lines, by default it's set to 500
  * @extends {chesterGL.Block}
+ * @example
+ * var block = new PrimitiveBlock();
+ * block.setUpdate(function () {
+ * 	var sz = this.contentSize;
+ * 	this.drawPoint(sz.width * 0.5, sz.height * 0.5);
+ * });
  */
 chesterGL.PrimitiveBlock = function (maxPoints, maxLines) {
 	if (!chesterGL.webglMode) {
@@ -221,6 +228,9 @@ chesterGL.PrimitiveBlock.prototype.recreateLineBuffer = function () {
 	gl.bufferData(gl.ARRAY_BUFFER, this.glBufferLinesData.subarray(0, endIndex), gl.STATIC_DRAW);
 }
 
+/**
+ * @ignore
+ */
 chesterGL.PrimitiveBlock.prototype.visit = function () {
 	this.currentIndexPoint = 0;
 	this.currentIndexLine = 0;
@@ -232,6 +242,7 @@ chesterGL.PrimitiveBlock.prototype.visit = function () {
 
 /**
  * the actual render function
+ * @ignore
  */
 chesterGL.PrimitiveBlock.prototype.render = function () {
 	var gl = chesterGL.gl;
@@ -239,7 +250,7 @@ chesterGL.PrimitiveBlock.prototype.render = function () {
 	
 	if (this.currentIndexPoint > 0 || this.currentIndexLine > 0 || this.polygons.length > 0) {
 		// set the matrix uniform (the multiplied model view projection matrix)
-		mat4.multiply(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+		goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
 		gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 	}
 	var pointSize = 3 + 4;

@@ -25,6 +25,8 @@
 
 goog.provide("chesterGL.TMXBlock");
 
+goog.require("goog.crypt.base64");
+goog.require("goog.vec.Vec4");
 goog.require("goog.math.Size");
 goog.require("chesterGL.Block");
 
@@ -184,7 +186,7 @@ chesterGL.TMXBlock.loadTMX = function(path) {
 						throw "Invalid TMX Data";
 					}
 					var str = data.text().trim();
-					var decodedData = base64.decode(str);
+					var decodedData = goog.crypt.base64.decodeString(str);
 					// fun begins here
 					var offset = 0;
 					for (var row = 0; row < layerSize.height; row++) {
@@ -197,13 +199,13 @@ chesterGL.TMXBlock.loadTMX = function(path) {
 							var mapTileSize = tmx['mapTileSize'];
 
 							var max_x = parseInt((imageSize.width - margin * 2 + spacing) / (tileSize.width + spacing), 10);
-							var frame = quat4.create([
+							var frame = goog.vec.Vec4.createFloat32FromValues(
 								// assume gid == 1
 								(gid % max_x) * (tileSize.width + spacing) + margin,
 								(imageSize.height - tileSize.height - margin - spacing) - parseInt(gid / max_x, 10) * (tileSize.height + spacing) + margin,
 								tileSize.width,
 								tileSize.height
-							]);
+							);
 							// console.log("gid " + col + "," + row + ": " + gid + "; frame: " + frame.l + "," + frame.t);
 							b['frame'] = frame;
 							var bx, by;

@@ -103,32 +103,32 @@ chesterGL.Action.prototype.begin = function () {
 
 /**
  * @constructor
- * @param {vec3} finalPosition
+ * @param {Array|Float32Array} finalPosition
  * @param {number} totalTime
  * @param {chesterGL.Block=} block
  * @extends {chesterGL.Action}
  */
 chesterGL.MoveToAction = function (finalPosition, totalTime, block) {
 	chesterGL.Action.call(this, totalTime, block);
-	this.finalPosition = vec3.create(finalPosition);
+	this.finalPosition = goog.vec.Vec3.createFloat32FromArray(finalPosition);
 };
 goog.inherits(chesterGL.MoveToAction, chesterGL.Action);
 
 /**
- * @type {?vec3}
+ * @type {?goog.vec.Vec3.Type}
  */
 chesterGL.MoveToAction.prototype.finalPosition = null;
 
 /**
- * @type {?vec3}
+ * @type {?goog.vec.Vec3.Type}
  */
 chesterGL.MoveToAction.prototype.startPosition = null;
 
 /**
- * @type {vec3}
+ * @type {goog.vec.Vec3.Type}
  * @ignore
  */
-var __tmp_pos = vec3.create();
+var __tmp_pos = goog.vec.Vec3.createFloat32();
 
 /**
  * @param {number} delta miliseconds from last time we updated
@@ -141,7 +141,7 @@ chesterGL.MoveToAction.prototype.update = function (delta) {
 	} else {
 		var t = Math.min(1, this.elapsed / this.totalTime);
 		// console.log("t: " + t + "\t(" + dx + ")");
-		vec3.lerp(this.startPosition, this.finalPosition, t, __tmp_pos);
+		goog.vec.Vec3.lerp(this.startPosition, this.finalPosition, t, __tmp_pos);
 		block.setPosition(__tmp_pos);
 	}
 };
@@ -188,7 +188,7 @@ chesterGL.AnimateAction.prototype.delay = 0.0;
 
 /**
  * The total frames of the animation
- * @type {Array.<Object>}
+ * @type {Array.<goog.vec.Vec4.Type>}
  */
 chesterGL.AnimateAction.prototype.frames = null;
 

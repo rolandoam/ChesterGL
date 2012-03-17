@@ -25,6 +25,7 @@
 
 goog.provide("chesterGL.BlockGroup");
 
+goog.require("goog.vec.Mat4");
 goog.require("chesterGL.Block");
 
 /**
@@ -85,11 +86,11 @@ chesterGL.BlockGroup.prototype.createBuffers = function () {
 	this.glBufferData    = new Float32Array(chesterGL.Block.QUAD_SIZE * this.maxChildren);
 	this.indexBuffer     = gl.createBuffer();
 	this.indexBufferData = new Uint16Array(6 * this.maxChildren);
-}
+};
 
 /**
  * creates a block that can be added to this block group
- * @param {quat4} rect
+ * @param {goog.vec.Vec4.Type} rect
  */
 chesterGL.BlockGroup.prototype.createBlock = function (rect) {
 	var b = new chesterGL.Block(rect, chesterGL.Block.TYPE['STANDALONE'], this);
@@ -97,7 +98,7 @@ chesterGL.BlockGroup.prototype.createBlock = function (rect) {
 		b.setTexture(this.texture);
 	}
 	return b;
-}
+};
 
 /**
  * adds a child
@@ -125,7 +126,7 @@ chesterGL.BlockGroup.prototype.addChild = function (block) {
 	block.baseBufferIndex = length-1;
 	block.glBufferData    = this.glBufferData;
 	this.isChildDirty = true;
-}
+};
 
 /**
  * when the block list changes, the indices array must be recreated
@@ -143,7 +144,7 @@ chesterGL.BlockGroup.prototype.recreateIndices = function (startIdx) {
 	var gl = chesterGL.gl;
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indexBufferData, gl.STATIC_DRAW);
-}
+};
 
 /**
  * removes a block from the group
@@ -151,7 +152,7 @@ chesterGL.BlockGroup.prototype.recreateIndices = function (startIdx) {
  */
 chesterGL.BlockGroup.prototype.removeBlock = function (b) {
 	throw "not implemented";
-}
+};
 
 /**
  * where the fun begins
@@ -186,7 +187,7 @@ chesterGL.BlockGroup.prototype.visit = function () {
 	
 	// reset our dirty markers
 	this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
-}
+};
 
 /**
  * actually render the block group
@@ -221,11 +222,11 @@ chesterGL.BlockGroup.prototype.render = function () {
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 	
 	// set the matrix uniform (the multiplied model view projection matrix)
-	mat4.multiply(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+	goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
 	gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 	// gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4 * this.children.length);
 	gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
-}
+};
 
 // export the symbol
 goog.exportSymbol('chesterGL.BlockGroup', chesterGL.BlockGroup);

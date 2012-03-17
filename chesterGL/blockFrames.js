@@ -25,6 +25,7 @@
 
 goog.provide("chesterGL.BlockFrames");
 
+goog.require("goog.vec.Vec4");
 goog.require("chesterGL.Block");
 
 /**
@@ -54,12 +55,12 @@ chesterGL.BlockFrames.loadJSON = function (data) {
 			for (var frameName in frames) {
 				var f = frames[frameName];
 				/** @type {chesterGL.Block.frameType} */ var realFrame = {frame: {}, texture: ""};
-				realFrame.frame = quat4.create([
+				realFrame.frame = goog.vec.Vec4.createFloat32FromValues(
 					f['frame']['x'],
 					imgHeight - (f['frame']['y'] + f['frame']['h']),
 					f['frame']['w'],
 					f['frame']['h']
-				]);
+				);
 				realFrame.texture = texName;
 				chesterGL.BlockFrames.frames[frameName] = realFrame;
 			}

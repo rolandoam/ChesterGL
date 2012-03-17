@@ -25,6 +25,7 @@
 
 goog.provide("chesterGL.ParticleSystem");
 
+goog.require("goog.vec.Vec4");
 goog.require("chesterGL.Block");
 
 /**
@@ -41,13 +42,13 @@ var BUFFER_ELEMENTS = 10;
 var PARTICLE_SIZE = 40;
 
 /**
- * @param {vec3} original The original vector
- * @param {vec3} variance the variance for every coordinate in the original vector
- * @return {vec3}
+ * @param {goog.vec.Vec3.Type} original The original vector
+ * @param {goog.vec.Vec3.Type} variance the variance for every coordinate in the original vector
+ * @return {goog.vec.Vec3.Type}
  * @ignore
  */
 function randomVec3(original, variance) {
-	var vec = vec3.create();
+	var vec = goog.vec.Vec3.createFloat32();
 	if (variance) {
 		vec[0] = original[0] + (variance[0] * 2 * Math.random());
 		vec[1] = original[1] + (variance[1] * 2 * Math.random());
@@ -165,31 +166,31 @@ chesterGL.ParticleSystem.prototype.lifetimeVariance = 0;
 
 /**
  * The starting color
- * @type {?quat4}
+ * @type {?goog.vec.Vec4.Type}
  */
 chesterGL.ParticleSystem.prototype.startColor = null;
 
 /**
  * The starting position variance
- * @type {?vec3}
+ * @type {?goog.vec.Vec3.Type}
  */
 chesterGL.ParticleSystem.prototype.positionVariance = null;
 
 /**
  * The end color
- * @type {?quat4}
+ * @type {?goog.vec.Vec4.Type}
  */
 chesterGL.ParticleSystem.prototype.endColor = null;
 
 /**
  * The particle speed
- * @type {?vec3}
+ * @type {?goog.vec.Vec3.Type}
  */
 chesterGL.ParticleSystem.prototype.particleSpeed = null;
 
 /**
  * The particle speed variance
- * @type {?vec3}
+ * @type {?goog.vec.Vec3.Type}
  */
 chesterGL.ParticleSystem.prototype.particleSpeedVariance = null;
 
@@ -247,11 +248,11 @@ chesterGL.ParticleSystem.prototype.loadProperties = function (properties) {
 	this.duration = parseFloat(properties['duration']) * 1000.0;
 	this.lifetime = parseFloat(properties['lifetime']) * 1000.0;
 	this.lifetimeVariance = parseFloat(properties['lifetimeVariance']) * 1000.0;
-	this.startColor = quat4.create(properties['startColor']);
-	this.positionVariance = vec3.create(properties['positionVariance']);
-	this.endColor = quat4.create(properties['endColor']);
-	this.particleSpeed = vec3.create(properties['speed']);
-	this.particleSpeedVariance = vec3.create(properties['speedVariance']);
+	this.startColor = goog.vec.Vec4.createFloat32FromArray(properties['startColor']);
+	this.positionVariance = goog.vec.Vec3.createFloat32FromArray(properties['positionVariance']);
+	this.endColor = goog.vec.Vec4.createFloat32FromArray(properties['endColor']);
+	this.particleSpeed = goog.vec.Vec3.createFloat32FromArray(properties['speed']);
+	this.particleSpeedVariance = goog.vec.Vec3.createFloat32FromArray(properties['speedVariance']);
 	this.startSize = parseFloat(properties['startSize']);
 	this.startSizeVariance = parseFloat(properties['startSizeVariance']);
 	this.endSize = parseFloat(properties['endSize']);
@@ -416,7 +417,7 @@ chesterGL.ParticleSystem.prototype.render = function () {
 	// and draw:
 	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 	if (transformDirty) {
-		mat4.multiply(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+		goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
 	}
 	gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 	gl.drawArrays(gl.POINTS, 0, this.maxParticles);

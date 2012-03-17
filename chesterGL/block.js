@@ -25,7 +25,7 @@
 
 goog.provide("chesterGL.Block");
 
-goog.require("goog.math.Vec2");
+goog.require("goog.vec.Mat4");
 goog.require("goog.math.Size");
 goog.require("chesterGL.core");
 
@@ -34,7 +34,7 @@ goog.require("chesterGL.core");
  * creation time.
  * 
  * @constructor
- * @param {Object.<string,number>|string=} rect
+ * @param {goog.vec.Vec4.Vec4Like|string=} rect
  * @param {number=} type
  * @param {chesterGL.Block=} parent
  */
@@ -48,13 +48,7 @@ chesterGL.Block = function (rect, type, parent) {
 	this.program = chesterGL.Block.PROGRAM['DEFAULT'];
 
 	if (rect) {
-		if (typeof(rect) === 'string') {
-			/** @type {chesterGL.Block.frameType} */ var f = chesterGL.BlockFrames.getFrame(rect);
-			this.setTexture(f.texture);
-			this.setFrame(f.frame);
-		} else {
-			this.setFrame(rect);
-		}
+		this.setFrame(rect);
 	}
 	// set default color
 	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
@@ -69,9 +63,9 @@ chesterGL.Block = function (rect, type, parent) {
 	}
 
 	// always create the mvMatrix
-	this.mvMatrix = mat4.create();
-	this.mvpMatrix = mat4.create();
-	mat4.identity(this.mvMatrix);
+	this.mvMatrix = goog.vec.Mat4.createFloat32();
+	this.mvpMatrix = goog.vec.Mat4.createFloat32();
+	this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(goog.vec.Mat4.createFloat32()));
 
 	// create the remove/add lists
 	this._scheduledAdd = [];
@@ -147,17 +141,17 @@ chesterGL.Block.RAD_TO_DEG = 180.0 / Math.PI;
  * the full frame
  * 
  * @const
- * @type {quat4}
+ * @type {goog.vec.Vec4.Type}
  */
-chesterGL.Block.FullFrame = quat4.create([0.0, 0.0, 1.0, 1.0]);
+chesterGL.Block.FullFrame = goog.vec.Vec4.createFloat32FromValues(0.0, 0.0, 1.0, 1.0);
 
 /**
  * the size zero constant
  * 
  * @const
- * @type {goog.math.Vec2}
+ * @type {goog.math.Size}
  */
-chesterGL.Block.SizeZero = new goog.math.Vec2(0.0, 0.0);
+chesterGL.Block.SizeZero = new goog.math.Size(0.0, 0.0);
 
 /**
  * @type {string}
@@ -171,66 +165,77 @@ chesterGL.Block.prototype.title = "";
 chesterGL.Block.prototype.debugNodeAdded = false;
 
 /**
- * @type {?mat4}
+ * @type {?goog.vec.Mat4.Type}
+ * @ignore
  */
 chesterGL.Block.prototype.mvMatrix = null;
 
 /**
- * @type {?mat4}
+ * @type {?goog.vec.Mat4.Type}
+ * @ignore
  */
 chesterGL.Block.prototype.mvpMatrix = null;
 
 /**
+ * Sets whether or not the block is visible
  * @type {boolean}
  */
 chesterGL.Block.prototype.visible = true;
 
 /**
  * did the position, scale or rotation change?
- *
  * @type {boolean}
+ * @ignore
  */
 chesterGL.Block.prototype.isTransformDirty = false;
 
 /**
  * @type {boolean}
+ * @ignore
  */
 chesterGL.Block.prototype.isColorDirty = false;
 
 /**
  * @type {boolean}
+ * @ignore
  */
 chesterGL.Block.prototype.isFrameDirty = false;
 
 /**
  * @type {number}
+ * @ignore
  */
 chesterGL.Block.prototype.baseBufferIndex = 0;
 
 /**
  * @type {?WebGLBuffer}
+ * @ignore
  */
 chesterGL.Block.prototype.glBuffer = null;
 
 /**
  * @type {Float32Array}
+ * @ignore
  */
 chesterGL.Block.prototype.glBufferData = null;
 
 /**
- * @type {vec3}
+ * the position of the center of the block
+ * @type {goog.vec.Vec3.Type}
  */
-chesterGL.Block.prototype.position = vec3.create();
+chesterGL.Block.prototype.position = goog.vec.Vec3.createFloat32();
 
 /**
+ * the content size of the block
  * @type {?goog.math.Size}
  */
 chesterGL.Block.prototype.contentSize = null;
 
 /**
- * @type {quat4}
+ * the color of the block
+ * @type {goog.vec.Vec4.Type}
  */
-chesterGL.Block.prototype.color = quat4.create([1.0, 1.0, 1.0, 1.0]);
+chesterGL.Block.prototype.color = goog.vec.Vec4.createFloat32FromValues(1.0, 1.0, 1.0, 1.0);
 
 /**
  * @type {?string}
@@ -262,7 +267,7 @@ chesterGL.Block.prototype.update = null;
 
 /**
  * the texture frame
- * @type {?quat4}
+ * @type {?goog.vec.Vec4.Type}
  */
 chesterGL.Block.prototype.frame = null;
 
@@ -318,17 +323,19 @@ chesterGL.Block.prototype.addDebugNode = function () {
 /**
  * sets the frame for this block
  * 
- * @param {quat4} newFrame
+ * @param {Array|Float32Array|string} newFrame
  */
 chesterGL.Block.prototype.setFrame = function (newFrame) {
 	if (typeof newFrame === "string") {
 		// just get the cached frame
-		newFrame = chesterGL.BlockFrames.getFrame(/** @type {string} */(newFrame)).frame;
+		var tmpFrame = chesterGL.BlockFrames.getFrame(newFrame);
+		newFrame = tmpFrame.frame;
+		this.setTexture(tmpFrame.texture);
 	}
-	this.frame = quat4.create(newFrame);
+	this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
 	this.setContentSize(newFrame[2], newFrame[3]);
 	this.isFrameDirty = true;
-}
+};
 
 /**
  * sets the size of the block in pixels
@@ -356,17 +363,21 @@ chesterGL.Block.prototype.setScale = function (newScale) {
 
 /**
  * sets the color of the block
- * the quat4 should be created in the order RGBA
+ * the array should be created in the order RGBA
  * 
- * @param {quat4} color
+ * @param {Array|Float32Array} color
  */
 chesterGL.Block.prototype.setColor = function (color) {
-	this.color = quat4.create(color);
+	this.color = goog.vec.Vec4.createFloat32FromArray(color);
 	this.isColorDirty = true;
 };
 
+/**
+ * sets the position of the block (x, y, z)
+ * @param {Array|Float32Array} p
+ */
 chesterGL.Block.prototype.setPosition = function (p) {
-	this.position = vec3.create(p);
+	this.position = goog.vec.Vec3.createFloat32FromArray(p);
 	this.isTransformDirty = true;
 };
 
@@ -453,14 +464,14 @@ chesterGL.Block.prototype.transform = function () {
 	var gl = chesterGL.gl;
 	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 	if (transformDirty) {
-		mat4.identity(this.mvMatrix);
-		mat4.translate(this.mvMatrix, this.position);
-		mat4.rotate(this.mvMatrix, this.rotation * (chesterGL.webglMode ? -1 : 1), [0, 0, 1]);
-		mat4.scale(this.mvMatrix, [this.scale, this.scale, 1]);
+		this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(this.mvMatrix));
+		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
+		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * (chesterGL.webglMode ? -1 : 1), 0, 0, 1);
+		goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
 		// concat with parent's transform
 		var ptransform = (this.parent ? this.parent.mvMatrix : null);
 		if (ptransform) {
-			mat4.multiply(ptransform, this.mvMatrix, this.mvMatrix);
+			goog.vec.Mat4.multMat(ptransform, this.mvMatrix, this.mvMatrix);
 		}
 	}
 
@@ -492,10 +503,10 @@ chesterGL.Block.prototype.transform = function () {
 					tl = [-hw,  hh, 0],
 					br = [ hw, -hh, 0],
 					bl = [-hw, -hh, 0];
-				mat4.multiplyVec3(this.mvMatrix, tr);
-				mat4.multiplyVec3(this.mvMatrix, tl);
-				mat4.multiplyVec3(this.mvMatrix, bl);
-				mat4.multiplyVec3(this.mvMatrix, br);
+				goog.vec.Mat4.multVec3(this.mvMatrix, tr, tr);
+				goog.vec.Mat4.multVec3(this.mvMatrix, tl, tl);
+				goog.vec.Mat4.multVec3(this.mvMatrix, bl, bl);
+				goog.vec.Mat4.multVec3(this.mvMatrix, br, br);
 
 				bufferData[_idx           ] =  bl[0]; bufferData[_idx + 1           ] =  bl[1]; bufferData[_idx + 2           ] = z;
 				bufferData[_idx +   offset] =  tl[0]; bufferData[_idx + 1 +   offset] =  tl[1]; bufferData[_idx + 2 +   offset] = z;
@@ -620,7 +631,7 @@ chesterGL.Block.prototype.render = function () {
 		// set the matrix uniform (the multiplied model view projection matrix)
 		var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 		if (transformDirty) {
-			mat4.multiply(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+			goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
 		}
 		gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

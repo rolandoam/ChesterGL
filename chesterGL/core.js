@@ -104,7 +104,7 @@ chesterGL.programs = {};
 chesterGL.currentProgram = null;
 
 /**
- * @type {?mat4}
+ * @type {?goog.vec.Mat4.Type}
  */
 chesterGL.pMatrix = null;
 
@@ -218,7 +218,7 @@ chesterGL.mouseEvents = {
 
 /**
  * the global list of mouse down handlers
- * @type {Array.<function(vec3, chesterGL.mouseEvents)>}
+ * @type {Array.<function(goog.vec.Vec3.Vec3Like, chesterGL.mouseEvents)>}
  */
 chesterGL.mouseHandlers = [];
 
@@ -232,7 +232,7 @@ chesterGL.selectProgram = function (program) {
 	var prog = chesterGL.programs[program];
 	var gl = chesterGL.gl;
 	if (program != chesterGL.currentProgram) {
-		console.log("selecting program " + program);
+		// console.log("selecting program " + program);
 		chesterGL.currentProgram = program;
 		gl.validateProgram(prog);
 		gl.useProgram(prog);
@@ -697,46 +697,46 @@ chesterGL.defaultAssetLoader = function (type, params) {
  */
 chesterGL.setupPerspective = function () {
 	var gl = chesterGL.gl;
-	
+
 	// quick bail if we're not on a webgl rendering mode
 	if (!chesterGL.webglMode) {
 		return;
 	}
-	
+
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	// gl.clearDepth(1.0);
-	
+
 	// global blending options
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.enable(gl.BLEND);
 	// disable depth test
 	gl.disable(gl.DEPTH_TEST)
-	
+
 	var width = gl.viewportWidth;
 	var height = gl.viewportHeight;
 	gl.viewport(0, 0, width, height);
-	
-	chesterGL.pMatrix = mat4.create();
-	
+
+	chesterGL.pMatrix = goog.vec.Mat4.createFloat32();
+
 	if (chesterGL.projection == "2d") {
 		// 2d projection
 		console.log("setting up 2d projection (" + width + "," + height + ")");
-		mat4.ortho(0, width, 0, height, -1024, 1024, chesterGL.pMatrix);
+		goog.vec.Mat4.makeOrtho(chesterGL.pMatrix, 0, width, 0, height, -1024, 1024);
 	} else if (chesterGL.projection == "3d") {
 		// 3d projection
 		console.log("setting up 3d projection (" + width + "," + height + ")");
 		// var f_aspect = (1.7320508075688776 / (width / height));
 		var zeye   = height / 1.1566;
-		var matA   = mat4.perspective(60, width / height, 0.5, 1500.0);
+		var matA   = goog.vec.Mat4.makePerspective(goog.vec.Mat4.createFloat32(), 60 * Math.PI / 180.0, width / height, 0.5, 1500.0);
 		var eye    = [width/2, height/2, zeye];
 		var center = [width/2, height/2, 0];
 		var up     = [0, 1, 0];
-		var matB = mat4.lookAt(eye, center, up);
-		mat4.multiply(matA, matB, chesterGL.pMatrix);
+		var matB   = goog.vec.Mat4.makeLookAt(goog.vec.Mat4.createFloat32(), eye, center, up);
+		goog.vec.Mat4.multMat(matA, matB, chesterGL.pMatrix);
 	} else {
 		throw "Invalid projection: " + chesterGL.projection;
 	}
-}
+};
 
 /**
  * @param {chesterGL.Block} block
@@ -745,7 +745,7 @@ chesterGL.setRunningScene = function (block) {
 	if (block.type == chesterGL.Block.TYPE['SCENE']) {
 		chesterGL.runningScene = block;
 	}
-}
+};
 
 /**
  * main draw function, will call the root block
@@ -777,7 +777,7 @@ chesterGL.drawScene = function () {
 	var current = Date.now(); // milliseconds
 	chesterGL.delta = current - chesterGL.lastTime;
 	chesterGL.lastTime = current;	
-}
+};
 
 /**
  * @type {number}
@@ -836,6 +836,7 @@ chesterGL.updateDebugTime = function () {
 
 /**
  * install all handlers on the canvas element
+ * @ignore
  */
 chesterGL.installMouseHandlers = function () {
 	$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
@@ -843,15 +844,15 @@ chesterGL.installMouseHandlers = function () {
 	$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
 };
 
-
 /**
- * @type {vec3}
+ * @type {goog.vec.Vec3.Type}
  * @ignore
  */
-var __tmp_mouse_vec = vec3.create();
+var __tmp_mouse_vec = new Float32Array(3);
 
 /**
  * @param {Event} event
+ * @ignore
  */
 chesterGL.mouseDownHandler = function (event) {
 	/** @type {goog.math.Vec2} */
@@ -865,6 +866,7 @@ chesterGL.mouseDownHandler = function (event) {
 
 /**
  * @param {Event} event
+ * @ignore
  */
 chesterGL.mouseMoveHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
@@ -877,6 +879,7 @@ chesterGL.mouseMoveHandler = function (event) {
 
 /**
  * @param {Event} event
+ * @ignore
  */
 chesterGL.mouseUpHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
@@ -889,6 +892,7 @@ chesterGL.mouseUpHandler = function (event) {
 
 /**
  * @param {function(goog.math.Vec2, number)} callback
+ * @ignore
  */
 chesterGL.addMouseHandler = function (callback) {
 	if (chesterGL.mouseHandlers.indexOf(callback) == -1) {
@@ -897,7 +901,8 @@ chesterGL.addMouseHandler = function (callback) {
 };
 
 /**
- * @param {function(vec3, number)} callback
+ * @param {function(goog.vec.Vec3.Vec3Like, number)} callback
+ * @ignore
  */
 chesterGL.removeMouseHandler = function (callback) {
 	var idx = chesterGL.mouseHandlers.indexOf(callback);
