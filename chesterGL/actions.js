@@ -30,8 +30,8 @@ goog.require("chesterGL.Block");
 
 /**
  * @constructor
- * @param {number} totalTime
- * @param {chesterGL.Block=} block
+ * @param {number} totalTime in seconds
+ * @param {chesterGL.Block=} block The target block
  */
 chesterGL.Action = function (totalTime, block) {
 	this.totalTime = totalTime * 1000;
@@ -81,7 +81,7 @@ chesterGL.Action.prototype.finished = false;
 chesterGL.Action.prototype.running = false;
 
 /**
- * This is the default delta function (does nothing)
+ * This is the default update function (does nothing)
  * @param {number} delta
  */
 chesterGL.Action.prototype.update = function (delta) {
@@ -103,9 +103,9 @@ chesterGL.Action.prototype.begin = function () {
 
 /**
  * @constructor
- * @param {Array|Float32Array} finalPosition
- * @param {number} totalTime
- * @param {chesterGL.Block=} block
+ * @param {Array|Float32Array} finalPosition The final position (the initial position is the current one of the block)
+ * @param {number} totalTime The total time in seconds that this action should take
+ * @param {chesterGL.Block=} block The block that will execute this action
  * @extends {chesterGL.Action}
  */
 chesterGL.MoveToAction = function (finalPosition, totalTime, block) {
@@ -128,10 +128,11 @@ chesterGL.MoveToAction.prototype.startPosition = null;
  * @type {goog.vec.Vec3.Type}
  * @ignore
  */
-var __tmp_pos = goog.vec.Vec3.createFloat32();
+chesterGL.MoveToAction__tmp_pos = goog.vec.Vec3.createFloat32();
 
 /**
  * @param {number} delta miliseconds from last time we updated
+ * @ignore
  */
 chesterGL.MoveToAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
@@ -141,13 +142,14 @@ chesterGL.MoveToAction.prototype.update = function (delta) {
 	} else {
 		var t = Math.min(1, this.elapsed / this.totalTime);
 		// console.log("t: " + t + "\t(" + dx + ")");
-		goog.vec.Vec3.lerp(this.startPosition, this.finalPosition, t, __tmp_pos);
-		block.setPosition(__tmp_pos);
+		goog.vec.Vec3.lerp(this.startPosition, this.finalPosition, t, chesterGL.MoveToAction__tmp_pos);
+		block.setPosition(chesterGL.MoveToAction__tmp_pos);
 	}
 };
 
 /**
  * just set the initial position
+ * @ignore
  */
 chesterGL.MoveToAction.prototype.begin = function () {
 	if (!this.block) {
@@ -158,18 +160,18 @@ chesterGL.MoveToAction.prototype.begin = function () {
 
 /**
  * @constructor
- * @param {number} delay in seconds
- * @param {Array.<Object>} frames
- * @param {boolean?} loop
- * @param {chesterGL.Block=} block
+ * @param {number} delay in seconds between frames
+ * @param {Array.<Object>} frames The frames of the animation
+ * @param {boolean=} loop Whether or not this animation should loop
+ * @param {chesterGL.Block=} block The block that will receive this action
  * @extends {chesterGL.Action}
  */
 chesterGL.AnimateAction = function (delay, frames, loop, block) {
 	this.delay = delay * 1000.0;
 	var totalTime = this.delay * frames.length;
-	if (loop == true) totalTime = -1;
+	if (loop === true) totalTime = -1;
 	chesterGL.Action.call(this, totalTime, block);
-	this.shouldLoop = (loop == true);
+	this.shouldLoop = (loop === true);
 	this.frames = frames.slice(0);
 };
 goog.inherits(chesterGL.AnimateAction, chesterGL.Action);
@@ -177,18 +179,21 @@ goog.inherits(chesterGL.AnimateAction, chesterGL.Action);
 /**
  * the current frame
  * @type {number}
+ * @ignore
  */
 chesterGL.AnimateAction.prototype.currentFrame = 0;
 
 /**
  * The delay between frames
  * @type {number}
+ * @ignore
  */
 chesterGL.AnimateAction.prototype.delay = 0.0;
 
 /**
  * The total frames of the animation
  * @type {Array.<goog.vec.Vec4.Type>}
+ * @ignore
  */
 chesterGL.AnimateAction.prototype.frames = null;
 
@@ -200,6 +205,7 @@ chesterGL.AnimateAction.prototype.shouldLoop = false;
 
 /**
  * @param {number} delta
+ * @ignore
  */
 chesterGL.AnimateAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
@@ -246,6 +252,7 @@ chesterGL.ActionManager.scheduleAction = function (action) {
 /**
  * Iterate over all scheduled actions
  * @param {number} delta number of miliseconds to run in all actions
+ * @ignore
  */
 chesterGL.ActionManager.tick = function (delta) {
 	var i = 0, len = chesterGL.ActionManager.scheduledActions_.length;

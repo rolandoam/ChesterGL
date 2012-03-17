@@ -103,32 +103,38 @@ chesterGL.TMXBlock.prototype.render = function () {};
  * The size (in pixels) of the tiles (in the texture)
  * 
  * @type {?goog.math.Size}
+ * @ignore
  */
 chesterGL.TMXBlock.prototype.tileSize = null;
 
 /**
  * The tile size in the map
  * @type {?goog.math.Size}
+ * @ignore
  */
 chesterGL.TMXBlock.prototype.mapTileSize = null;
 
 /**
  * @type {number}
+ * @ignore
  */
 chesterGL.TMXBlock.prototype.totalTiles = 0;
 
 /**
  * @type {number}
+ * @ignore
  */
 chesterGL.TMXBlock.prototype.spacing = 0;
 
 /**
  * @type {number}
+ * @ignore
  */
 chesterGL.TMXBlock.prototype.margin = 0;
 
 /**
  * @type {Object.<string,Object>}
+ * @ignore
  */
 chesterGL.TMXBlock.maps = {};
 

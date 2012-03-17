@@ -114,6 +114,7 @@ chesterGL.Block.TYPE = {
  * 12 (verts, 3 floats) + 8 (tex coords, 2 floats) + 16 (color, 4 floats)
  * @const
  * @type {number}
+ * @ignore
  */
 chesterGL.Block.QUAD_SIZE = 36;
 
@@ -122,6 +123,7 @@ chesterGL.Block.QUAD_SIZE = 36;
  * 3 (vert) + 2 (tex) + 4 (color) = 9; 9 * 4 (verts) = 36
  * @const
  * @type {number}
+ * @ignore
  */
 chesterGL.Block.BUFFER_SIZE = 36;
 
@@ -136,6 +138,13 @@ chesterGL.Block.DEG_TO_RAD = Math.PI / 180.0;
  * @type {number}
  */
 chesterGL.Block.RAD_TO_DEG = 180.0 / Math.PI;
+
+/**
+ * One degree in radians
+ * @const
+ * @type {number}
+ */
+chesterGL.Block.ONE_DEG = 1 * chesterGL.Block.DEG_TO_RAD;
 
 /**
  * the full frame
@@ -154,6 +163,7 @@ chesterGL.Block.FullFrame = goog.vec.Vec4.createFloat32FromValues(0.0, 0.0, 1.0,
 chesterGL.Block.SizeZero = new goog.math.Size(0.0, 0.0);
 
 /**
+ * Sets the title of this block, only used in the scenes right now (for analytics)
  * @type {string}
  */
 chesterGL.Block.prototype.title = "";
@@ -220,24 +230,25 @@ chesterGL.Block.prototype.glBuffer = null;
 chesterGL.Block.prototype.glBufferData = null;
 
 /**
- * the position of the center of the block
+ * the position of the center of the block. Use the setter to modify this property
  * @type {goog.vec.Vec3.Type}
  */
 chesterGL.Block.prototype.position = goog.vec.Vec3.createFloat32();
 
 /**
- * the content size of the block
+ * the content size of the block. Use the setter to modify this property
  * @type {?goog.math.Size}
  */
 chesterGL.Block.prototype.contentSize = null;
 
 /**
- * the color of the block
+ * the color of the block. Use the setter to modify this property
  * @type {goog.vec.Vec4.Type}
  */
 chesterGL.Block.prototype.color = goog.vec.Vec4.createFloat32FromValues(1.0, 1.0, 1.0, 1.0);
 
 /**
+ * The name of the texture associated with this block. Use the setter to modify this property
  * @type {?string}
  */
 chesterGL.Block.prototype.texture = null;
@@ -248,37 +259,37 @@ chesterGL.Block.prototype.texture = null;
 chesterGL.Block.prototype.opacity = 1.0;
 
 /**
- * rotation of the box - in radians
+ * rotation of the box - in radians. Use the setter to modify this property
  * @type {number}
  */
 chesterGL.Block.prototype.rotation = 0;
 
 /**
- * the scale of the box
+ * the scale of the box. Use the setter to modify this property
  * @type {number}
  */
 chesterGL.Block.prototype.scale = 1.0;
 
 /**
- * update function
+ * update function - called every frame with the delta in milliseconds since last frame
  * @type {?function(number)}
  */
 chesterGL.Block.prototype.update = null;
 
 /**
- * the texture frame
+ * the texture frame. Use the setter to modify this property
  * @type {?goog.vec.Vec4.Type}
  */
 chesterGL.Block.prototype.frame = null;
 
 /**
- * the block group this block belongs to
+ * the block group this block belongs to. Read only
  * @type {?chesterGL.Block}
  */
 chesterGL.Block.prototype.parent = null;
 
 /**
- * the array to hold children blocks
+ * the array to hold children blocks. Read only, to modify use addChild or removeChild
  * @type {?Array.<chesterGL.Block>}
  */
 chesterGL.Block.prototype.children = null;
@@ -459,6 +470,7 @@ chesterGL.Block.prototype.removeChild = function (block) {
 
 /**
  * actually performs the transformation
+ * @ignore
  */
 chesterGL.Block.prototype.transform = function () {
 	var gl = chesterGL.gl;
@@ -553,6 +565,7 @@ chesterGL.Block.prototype.transform = function () {
 
 /**
  * prepares the block for the rendering (transforms if necessary)
+ * @ignore
  */
 chesterGL.Block.prototype.visit = function () {
 	this._inVisit = true;
@@ -591,6 +604,7 @@ chesterGL.Block.prototype.visit = function () {
 
 /**
  * render (only will work for non-blockgroup blocks)
+ * @ignore
  */
 chesterGL.Block.prototype.render = function () {
 	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP']) {
@@ -658,6 +672,9 @@ goog.exportSymbol('chesterGL.Block.SizeZero', chesterGL.Block.SizeZero);
 goog.exportSymbol('chesterGL.Block.TYPE', chesterGL.Block.TYPE);
 goog.exportSymbol('chesterGL.Block.PROGRAM', chesterGL.Block.PROGRAM);
 goog.exportSymbol('chesterGL.Block.PROGRAM_NAME', chesterGL.Block.PROGRAM_NAME);
+goog.exportSymbol('chesterGL.Block.DEG_TO_RAD', chesterGL.Block.DEG_TO_RAD);
+goog.exportSymbol('chesterGL.Block.RAD_TO_DEG', chesterGL.Block.RAD_TO_DEG);
+goog.exportSymbol('chesterGL.Block.ONE_DEG', chesterGL.Block.ONE_DEG);
 // properties
 goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototype.title);
 // instance methods

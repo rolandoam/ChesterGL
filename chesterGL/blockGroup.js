@@ -58,21 +58,25 @@ goog.inherits(chesterGL.BlockGroup, chesterGL.Block);
 /**
  * The max number of children this blockgroup can hold (this is here for the buffer data)
  * @type {number}
+ * @ignore
  */
 chesterGL.BlockGroup.prototype.maxChildren = 0;
 
 /**
  * @type {boolean}
+ * @ignore
  */
 chesterGL.BlockGroup.prototype.isChildDirty = false;
 		
 /**
  * @type {?WebGLBuffer}
+ * @ignore
  */
 chesterGL.BlockGroup.prototype.indexBuffer = null;
 
 /**
  * @type {?Uint16Array}
+ * @ignore
  */
 chesterGL.BlockGroup.prototype.indexBufferData = null;
 
@@ -156,6 +160,7 @@ chesterGL.BlockGroup.prototype.removeBlock = function (b) {
 
 /**
  * where the fun begins
+ * @ignore
  */
 chesterGL.BlockGroup.prototype.visit = function () {
 	if (this.update) {
@@ -191,6 +196,7 @@ chesterGL.BlockGroup.prototype.visit = function () {
 
 /**
  * actually render the block group
+ * @ignore
  */
 chesterGL.BlockGroup.prototype.render = function () {
 	var gl = chesterGL.gl;
