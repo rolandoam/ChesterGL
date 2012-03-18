@@ -25,7 +25,7 @@ $(document).ready(function () {
 	function setupGame() {
 		// set to false to force canvas mode
 		// chesterGL.webglMode = false;
-		chesterGL.useGoogleAnalytics = true;
+		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
 		var oneDeg = Math.PI / 180.0;
@@ -42,7 +42,7 @@ $(document).ready(function () {
 			chesterGL.setRunningScene(sceneBlock);
 
 			// add some extra blocks
-			for (var i=0; i < 20; i++) {
+			for (var i=0; i < 45; i++) {
 				var b = new chesterGL.Block();
 				b.setTexture("images/star.png");
 				b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);

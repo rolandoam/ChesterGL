@@ -287,16 +287,6 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								chesterGL.<b><a href="../symbols/chesterGL.html#.debugSpanId">debugSpanId</a></b>
-								</div>
-								<div class="description">the id of the span that will hold the debug info.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
 								chesterGL.<b><a href="../symbols/chesterGL.html#.debugSprite">debugSprite</a></b>
 								</div>
 								<div class="description">whether or not to debug sprites (show bounding box)
@@ -318,16 +308,6 @@ set this by adding a ?_cdbg=1 to the url of the document</div>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								chesterGL.<b><a href="../symbols/chesterGL.html#.projection">projection</a></b>
-								</div>
-								<div class="description">default projection: 3d</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
 								chesterGL.<b><a href="../symbols/chesterGL.html#.runningScene">runningScene</a></b>
 								</div>
 								<div class="description"></div>
@@ -338,30 +318,12 @@ set this by adding a ?_cdbg=1 to the url of the document</div>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								chesterGL.<b><a href="../symbols/chesterGL.html#.update">update</a></b>
+								chesterGL.<b><a href="../symbols/chesterGL.html#.settings">settings</a></b>
 								</div>
-								<div class="description">the global update function, to be called every
-frame - with the delta from last frame</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								chesterGL.<b><a href="../symbols/chesterGL.html#.useGoogleAnalytics">useGoogleAnalytics</a></b>
-								</div>
-								<div class="description">For debug/performance metrics.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								chesterGL.<b><a href="../symbols/chesterGL.html#.usesOffscreenBuffer">usesOffscreenBuffer</a></b>
-								</div>
-								<div class="description">whether or not to use an offscreen buffer when in not webgl mode</div>
+								<div class="description">Basic settings for chesterGL
+Settings:
+<ul>
+<li>useGoogleAnalytics: whether or not to track fps and send analytics.</div>
 							</td>
 						</tr>
 					
@@ -372,17 +334,6 @@ frame - with the delta from last frame</div>
 								chesterGL.<b><a href="../symbols/chesterGL.html#.version">version</a></b>
 								</div>
 								<div class="description">chesterGL version</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								chesterGL.<b><a href="../symbols/chesterGL.html#.webglMode">webglMode</a></b>
-								</div>
-								<div class="description">are we on webgl?
-You can force canvas mode by setting this to false before calling setupPerspective()</div>
 							</td>
 						</tr>
 					
@@ -605,28 +556,6 @@ fallback: canvas</div>
 
 					<hr />
 				
-					<a name=".debugSpanId"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.</span><b>debugSpanId</b>
-					
-					</div>
-					<div class="description">
-						the id of the span that will hold the debug info. Defaults to "debug-info"
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".debugSprite"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -672,28 +601,6 @@ set this by adding a ?_cdbg=1 to the url of the document
 
 					<hr />
 				
-					<a name=".projection"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.</span><b>projection</b>
-					
-					</div>
-					<div class="description">
-						default projection: 3d
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".runningScene"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -716,64 +623,31 @@ set this by adding a ?_cdbg=1 to the url of the document
 
 					<hr />
 				
-					<a name=".update"> </a>
+					<a name=".settings"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">chesterGL.</span><b>update</b>
+					<span class="light">chesterGL.</span><b>settings</b>
 					
 					</div>
 					<div class="description">
-						the global update function, to be called every
-frame - with the delta from last frame
+						Basic settings for chesterGL
+Settings:
+<ul>
+<li>useGoogleAnalytics: whether or not to track fps and send analytics. Will send every 5 seconds</li>
+<li>projection: "3d" or "2d" (ortho)</li>
+<li>webglMode: true to try for webGL, false to force canvas mode</li>
+</ul>
 						
 						
 					</div>
 					
 					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".useGoogleAnalytics"> </a>
-					<div class="fixedFont">&lt;static&gt; 
 					
-					
-					<span class="light">chesterGL.</span><b>useGoogleAnalytics</b>
-					
-					</div>
-					<div class="description">
-						For debug/performance metrics. You can set this to false to ignore analytics (no data will be sent).
-This will use whatever profile you have for analytics on the game page
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".usesOffscreenBuffer"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.</span><b>usesOffscreenBuffer</b>
-					
-					</div>
-					<div class="description">
-						whether or not to use an offscreen buffer when in not webgl mode
-						
-						
-					</div>
+					<pre class="code">// use google analytics and force canvas mode
+chesterGL.settings['useGoogleAnalytics'] = true;
+chesterGL.settings['webglMode'] = false;
+chesterGL.setup('canvas-id');</pre>
 					
 					
 
@@ -793,29 +667,6 @@ This will use whatever profile you have for analytics on the game page
 					</div>
 					<div class="description">
 						chesterGL version
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".webglMode"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.</span><b>webglMode</b>
-					
-					</div>
-					<div class="description">
-						are we on webgl?
-You can force canvas mode by setting this to false before calling setupPerspective()
 						
 						
 					</div>
@@ -1401,7 +1252,7 @@ modify the status property.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Mar 17 2012 14:36:13 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Mar 18 2012 12:51:12 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>
