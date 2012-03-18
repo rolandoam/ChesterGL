@@ -75,22 +75,32 @@ function throwOnGLError(err, funcName, args) {
 	console.log(WebGLDebugUtils.glEnumToString(err) + " was caused by call to " + funcName);
 }
 
+// this is here for the docs
+// uncomment before running make doc
 /** @namespace */
 // var chesterGL = {};
 
 /**
  * chesterGL version
+ * @const
  * @type {string}
  */
-chesterGL.version = '0.2';
+chesterGL.version = '0.2.1';
 
 /**
  * Basic settings for chesterGL
  * Settings:
- * * useGoogleAnalytics: whether or not to track fps and send analytics. Will send every 5 seconds
- * * projection: "3d" or "2d" (ortho)
- * * webglMode: true to try for webGL, false to force canvas mode
+ * <ul>
+ * <li>useGoogleAnalytics: whether or not to track fps and send analytics. Will send every 5 seconds</li>
+ * <li>projection: "3d" or "2d" (ortho)</li>
+ * <li>webglMode: true to try for webGL, false to force canvas mode</li>
+ * </ul>
  * @type {Object.<string,string|boolean>}
+ * @example
+ * // use google analytics and force canvas mode
+ * chesterGL.settings['useGoogleAnalytics'] = true;
+ * chesterGL.settings['webglMode'] = false;
+ * chesterGL.setup('canvas-id');
  */
 chesterGL.settings = {
 	'useGoogleAnalytics': false,
@@ -869,7 +879,7 @@ chesterGL.updateDebugTime = function () {
 				// Let us know if this is WebGL or canvas mode, and what version of chester
 				'renderTime-' + (chesterGL.webglMode) + '-' + chesterGL.version,
 				chesterGL.runningScene.title,
-				Math.floor(chesterGL.sumAvg/chesterGL.sampledAvg)
+				1.0 * (chesterGL.sumAvg/chesterGL.sampledAvg)
 			]);
 			chesterGL.sumAvg = chesterGL.sampledAvg = 0;
 		}
