@@ -41,10 +41,13 @@ HTMLCanvasElement._canvas_tmp_mouse = new goog.math.Vec2(0, 0);
 HTMLCanvasElement.prototype.relativePosition = function (evt) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
 	pt.x = 0; pt.y = 0;
+	if (this.__offset == undefined) {
+		this.__offset = $(this).offset();
+		this.__height = $(this).height();
+	}
 
-	var off = $(this).offset(), height = $(this).height();
-	pt.x = (evt.pageX - off.left);
-	pt.y = (height - (evt.pageY - off.top));
+	pt.x = (evt.pageX - this.__offset.left);
+	pt.y = (this.__height - (evt.pageY - this.__offset.top));
 	return pt;
 };
 
