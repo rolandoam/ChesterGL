@@ -230,13 +230,6 @@ chesterGL.lastTime = Date.now();
 chesterGL.delta = 0;
 
 /**
- * the current number of frames per second
- * @type {number}
- * @ignore
- */
-chesterGL.fps = 0;
-
-/**
  * the span that will hold the debug info
  * @type {?Element}
  * @ignore
