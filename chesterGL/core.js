@@ -855,6 +855,20 @@ chesterGL.sampledAvg = 0;
  */
 chesterGL.sumAvg = 0;
 
+/**
+ * the last milliseconds per frame calculated
+ * (updated every second)
+ * @type {number}
+ */
+chesterGL.lastSampledMpf = 0;
+
+/**
+ * @return {number}
+ */
+chesterGL.getSampledMpf = function () {
+	return chesterGL.lastSampledMpf;
+};
+
 /** @ignore */
 chesterGL.updateDebugTime = function () {
 	var now = Date.now();
@@ -862,6 +876,7 @@ chesterGL.updateDebugTime = function () {
 	chesterGL.frames_ ++;
 	if (now - chesterGL.lastDebugSecond_ > 1000) {
 		var avg = (chesterGL.elapsed_ / chesterGL.frames_);
+		chesterGL.lastSampledMpf = 1.0 * avg;
 		chesterGL.sumAvg += avg;
 		chesterGL.sampledAvg ++;
 		if (chesterGL.debugSpan) {
@@ -1007,6 +1022,7 @@ goog.exportSymbol('chesterGL.mouseEvents.DOWN', chesterGL.mouseEvents.DOWN);
 goog.exportSymbol('chesterGL.mouseEvents.MOVE', chesterGL.mouseEvents.MOVE);
 goog.exportSymbol('chesterGL.mouseEvents.UP', chesterGL.mouseEvents.UP);
 // methods
+goog.exportSymbol('chesterGL.getSampledMpf', chesterGL.getSampledMpf);
 goog.exportSymbol('chesterGL.viewportSize', chesterGL.viewportSize);
 goog.exportSymbol('chesterGL.setup', chesterGL.setup);
 goog.exportSymbol('chesterGL.canvasResized', chesterGL.canvasResized);
