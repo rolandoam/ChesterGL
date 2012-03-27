@@ -507,7 +507,7 @@ chesterGL.ActionManager.tick = function (delta) {
 	}
 	// remove finished actions
 	var a;
-	while((a = chesterGL.ActionManager.scheduledActionsToBeRemoved_.pop())) {
+	while(a = chesterGL.ActionManager.scheduledActionsToBeRemoved_.pop()) {
 		var idx = chesterGL.ActionManager.scheduledActions_.indexOf(a);
 		if (idx > 0) {
 			chesterGL.ActionManager.scheduledActions_.splice(idx, 1);
