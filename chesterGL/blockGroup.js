@@ -82,14 +82,27 @@ chesterGL.BlockGroup.prototype.indexBufferData = null;
 
 /**
  * Creates the buffers for the current maxChildren size
+ * @param {Array|Float32Array=} oldBufferData
+ * @param {Array|Uint16Array=} oldIndexData
  * @ignore
  */
-chesterGL.BlockGroup.prototype.createBuffers = function () {
+chesterGL.BlockGroup.prototype.createBuffers = function (oldBufferData, oldIndexData) {
 	var gl = chesterGL.gl;
-	this.glBuffer        = gl.createBuffer();
-	this.glBufferData    = new Float32Array(chesterGL.Block.QUAD_SIZE * this.maxChildren);
-	this.indexBuffer     = gl.createBuffer();
-	this.indexBufferData = new Uint16Array(6 * this.maxChildren);
+	if (!this.glBuffer)
+		this.glBuffer = gl.createBuffer();
+	if (!this.indexBuffer)
+		this.indexBuffer = gl.createBuffer();
+
+	var glBufferData    = new Float32Array(chesterGL.Block.QUAD_SIZE * this.maxChildren);
+	var indexBufferData = new Uint16Array(6 * this.maxChildren);
+	if (oldBufferData) {
+		glBufferData.set(oldBufferData);
+	}
+	if (oldIndexData) {
+		indexBufferData.set(oldIndexData);
+	}
+	this.glBufferData = glBufferData;
+	this.indexBufferData = indexBufferData;
 };
 
 /**
@@ -110,7 +123,10 @@ chesterGL.BlockGroup.prototype.createBlock = function (rect) {
  */
 chesterGL.BlockGroup.prototype.addChild = function (block) {
 	if (this.children.length >= this.maxChildren) {
-		throw "Error: too many children - Make the initial size of the BlockGroup larger"
+		// should resize the buffers
+		this.maxChildren *= 2;
+		console.log("resize " + this.maxChildren);
+		this.createBuffers(this.glBufferData, this.indexBufferData);
 	}
 	if (block.parent != this) {
 		throw "Invalid child: can only add children created with BlockGroup.create";
@@ -133,6 +149,32 @@ chesterGL.BlockGroup.prototype.addChild = function (block) {
 };
 
 /**
+ * removes a block from the group
+ * @param {chesterGL.Block} b
+ */
+chesterGL.BlockGroup.prototype.removeChild = function (b) {
+	if (b.parent != this) {
+		throw "Invalid child";
+	}
+	if (this._inVisit) {
+		this._scheduledRemove.push(b);
+	} else {
+		var idx = this.children.indexOf(b);
+		if (idx > 0) {
+			this.children.splice(idx, 1);
+			// for the rest of the children, mark them as dirty and reduce the baseBufferIndex
+			for (var i=idx; i < this.totalChildren; i++) {
+				var _b = this.children[i];
+				_b.baseBufferIndex = i;
+				_b.isTransformDirty = true;
+				_b.isColorDirty = true;
+			}
+		}
+		this.isChildDirty = true;
+	}
+};
+
+/**
  * when the block list changes, the indices array must be recreated
  * @param {number} startIdx
  */
@@ -151,22 +193,16 @@ chesterGL.BlockGroup.prototype.recreateIndices = function (startIdx) {
 };
 
 /**
- * removes a block from the group
- * @param {chesterGL.Block} b
- */
-chesterGL.BlockGroup.prototype.removeBlock = function (b) {
-	throw "not implemented";
-};
-
-/**
  * where the fun begins
  * @ignore
  */
 chesterGL.BlockGroup.prototype.visit = function () {
+	this._inVisit = true;
 	if (this.update) {
 		this.update(chesterGL.delta);
 	}
 	if (!this.visible) {
+		this._inVisit = false;
 		return;
 	}
 	this.transform();
@@ -192,6 +228,12 @@ chesterGL.BlockGroup.prototype.visit = function () {
 	
 	// reset our dirty markers
 	this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
+	this._inVisit = false;
+
+	var b;
+	while (b = this._scheduledRemove.shift()) {
+		this.removeChild(b);
+	}
 };
 
 /**
@@ -239,4 +281,4 @@ goog.exportSymbol('chesterGL.BlockGroup', chesterGL.BlockGroup);
 // instance methods
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'createBlock', chesterGL.BlockGroup.prototype.createBlock);
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'addChild', chesterGL.BlockGroup.prototype.addChild);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeBlock', chesterGL.BlockGroup.prototype.removeBlock);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeChild', chesterGL.BlockGroup.prototype.removeChild);
