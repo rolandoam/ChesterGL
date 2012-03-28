@@ -466,7 +466,7 @@ chesterGL.Block.prototype.removeChild = function (block) {
 			this.children.splice(idx,1);
 		}
 	}
-}
+};
 
 /**
  * actually performs the transformation
@@ -478,7 +478,7 @@ chesterGL.Block.prototype.transform = function () {
 	if (transformDirty) {
 		this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(this.mvMatrix));
 		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
-		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * (chesterGL.webglMode ? -1 : 1), 0, 0, 1);
+		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
 		goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
 		// concat with parent's transform
 		var ptransform = (this.parent ? this.parent.mvMatrix : null);
@@ -561,7 +561,7 @@ chesterGL.Block.prototype.transform = function () {
 			gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
 		}
 	}
-}
+};
 
 /**
  * prepares the block for the rendering (transforms if necessary)
@@ -600,7 +600,7 @@ chesterGL.Block.prototype.visit = function () {
 	while (b = this._scheduledRemove.shift()) {
 		this.removeChild(b);
 	}
-}
+};
 
 /**
  * render (only will work for non-blockgroup blocks)
@@ -656,13 +656,13 @@ chesterGL.Block.prototype.render = function () {
 			var m = this.mvMatrix;
 			var texture = chesterGL.getAsset('texture', this.texture);
 			gl.globalAlpha = this.opacity;
-			gl.setTransform(m[0], m[1], m[4], m[5], m[12], gl.viewportHeight - m[13]);
+			gl.setTransform(m[0], m[4], m[1], m[5], m[12], gl.viewportHeight - m[13]);
 			var w = this.contentSize.width, h = this.contentSize.height;
 			var frame = this.frame;
 			gl.drawImage(texture, frame[0], texture.height - (frame[1] + h), frame[2], frame[3], -w/2, -h/2, w, h);
 		}
 	}
-}
+};
 
 // export symbols
 goog.exportSymbol('chesterGL.Block', chesterGL.Block);
