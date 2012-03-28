@@ -27,7 +27,7 @@ $(document).ready(function () {
 			sceneBlock.setUpdate(function (delta) {
 				var now = Date.now();
 				var mpf = chesterGL.getSampledMpf();
-				if ((now - this.lastAdd) > 1000 && mpf < 30.0) {
+				if ((now - this.lastAdd) > 500 && mpf < 33.0) {
 					addBlocks(100);
 					this.lastAdd = now;
 				} else if ((now - this.lastAdd) > 2000 && mpf > 35.0) {
