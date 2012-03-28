@@ -2,7 +2,7 @@
 
 ## What is this?
 
-It's a simple WebGL 2d library that I've been writing since early 2011 mainly to teach myself OpenGL-ES 2.0. Nothing more than that. If you can build a game with this, awesome :) (and let me know)
+ChesterGL (Chester Game Library) is a WebGL/canvas 2d game library that focuses on ease of use and performance. It supports a simple scene graph and provides a minimal interface for you to create games, and extend the library if you need. Current features: time based actions, simple scene graph, Tiled (tmx) map support, different shaders (webgl only), batched sprites.
 
 The API is somewhat inspired in [cocos2d-iphone](https://github.com/cocos2d/cocos2d-iphone), but just inspired. It's not intended to be a port of cocos2d for WebGL.
 
@@ -48,7 +48,7 @@ Check the Makefile for where to place them or modify that to suit your needs.
 
 ## How fast
 
-The WebGL implementation might depend a lot on your graphic card, but I tried to make it very efficient, so it should go *very* fast with lots of sprites on the screen. Try to use BlockGroups (batched sprites) as much as you can.
+The WebGL implementation might depend a lot on your graphic card, but I tried to make it very efficient, so it should go *very* fast with lots of sprites on the screen. Try to use BlockGroups (batched sprites) as much as you can. As a reference, you might want to look at the [performance test](http://funkaster.github.com/ChesterGL/test/test_perf.html), for my dev machine (4 years old MacBook Pro, Firefox 11), it's around 13,000 blocks at 33ms per frame (~ 30 frames per second).
 
 For the canvas version, the is a bit more slow, but pretty decent even on iOS devices:
 
@@ -64,6 +64,16 @@ For the canvas version, the is a bit more slow, but pretty decent even on iOS de
 * You will not get a z-position, for really obvious reasons.
 * Color tinting will not work (I haven't found a way to replace that part)
 * Block groups (batched sprites) will not add any improvement, for obvious reasons
+
+## What's with the name?
+
+That's my dog's name. And I would like this library to have the same goals that my dog usually has
+
+* Help you have fun (easy to learn)
+* Always be ready to have fun (easy to use, docs, examples)
+* Simple (simple API)
+* Not very demanding (few dependencies)
+* Fast (Chester runs very fast!)
 
 ## Roadmap
 
