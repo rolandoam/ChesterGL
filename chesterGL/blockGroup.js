@@ -122,14 +122,13 @@ chesterGL.BlockGroup.prototype.createBlock = function (rect) {
  * @param {chesterGL.Block} block
  */
 chesterGL.BlockGroup.prototype.addChild = function (block) {
+	if (block.parent != this) {
+		throw "Invalid child: can only add children created with BlockGroup.create";
+	}
 	if (this.children.length >= this.maxChildren) {
 		// should resize the buffers
 		this.maxChildren *= 2;
-		console.log("resize " + this.maxChildren);
 		this.createBuffers(this.glBufferData, this.indexBufferData);
-	}
-	if (block.parent != this) {
-		throw "Invalid child: can only add children created with BlockGroup.create";
 	}
 	if (!this.texture) {
 		this.texture = block.texture;
