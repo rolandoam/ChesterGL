@@ -1010,6 +1010,7 @@ chesterGL.togglePause = function () {
 		chesterGL._paused = true;
 	} else {
 		chesterGL._paused = false;
+		chesterGL.lastTime = Date.now();
 		chesterGL.run();
 	}
 };
