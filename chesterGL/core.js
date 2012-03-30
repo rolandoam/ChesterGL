@@ -242,8 +242,10 @@ chesterGL.debugSpan = null;
 chesterGL.mouseEvents = {
 	DOWN: 0,
 	MOVE: 1,
-	UP: 2
-}
+	UP: 2,
+	ENTER: 3,
+	LEAVE: 4
+};
 
 /**
  * the global list of mouse down handlers
@@ -909,6 +911,8 @@ chesterGL.installMouseHandlers = function () {
 	$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
 	$(chesterGL.canvas).mousemove(chesterGL.mouseMoveHandler);
 	$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
+	$(chesterGL.canvas).mouseenter(chesterGL.mouseEnterHandler);
+	$(chesterGL.canvas).mouseleave(chesterGL.mouseLeaveHandler);
 };
 
 /**
@@ -953,6 +957,32 @@ chesterGL.mouseUpHandler = function (event) {
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
 	for (; i < len; i++) {
 		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP);
+	}
+};
+
+/**
+ * @param {Event} event
+ * @ignore
+ */
+chesterGL.mouseEnterHandler = function (event) {
+	var pt = chesterGL.canvas.relativePosition(event);
+	var i = 0, len = chesterGL.mouseHandlers.length;
+	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	for (; i < len; i++) {
+		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER);
+	}
+};
+
+/**
+ * @param {Event} event
+ * @ignore
+ */
+chesterGL.mouseLeaveHandler = function (event) {
+	var pt = chesterGL.canvas.relativePosition(event);
+	var i = 0, len = chesterGL.mouseHandlers.length;
+	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	for (; i < len; i++) {
+		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE);
 	}
 };
 
@@ -1021,9 +1051,11 @@ chesterGL.togglePause = function () {
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
 goog.exportSymbol('chesterGL.mouseEvents', chesterGL.mouseEvents);
-goog.exportSymbol('chesterGL.mouseEvents.DOWN', chesterGL.mouseEvents.DOWN);
-goog.exportSymbol('chesterGL.mouseEvents.MOVE', chesterGL.mouseEvents.MOVE);
-goog.exportSymbol('chesterGL.mouseEvents.UP', chesterGL.mouseEvents.UP);
+goog.exportProperty(chesterGL.mouseEvents, 'UP', chesterGL.mouseEvents.UP);
+goog.exportProperty(chesterGL.mouseEvents, 'DOWN', chesterGL.mouseEvents.DOWN);
+goog.exportProperty(chesterGL.mouseEvents, 'MOVE', chesterGL.mouseEvents.MOVE);
+goog.exportProperty(chesterGL.mouseEvents, 'ENTER', chesterGL.mouseEvents.ENTER);
+goog.exportProperty(chesterGL.mouseEvents, 'LEAVE', chesterGL.mouseEvents.LEAVE);
 // methods
 goog.exportSymbol('chesterGL.getSampledMpf', chesterGL.getSampledMpf);
 goog.exportSymbol('chesterGL.viewportSize', chesterGL.viewportSize);
