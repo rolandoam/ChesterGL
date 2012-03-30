@@ -431,6 +431,22 @@ chesterGL.Block.prototype.setUpdate = function (callback) {
 };
 
 /**
+ * sets whether or not the block is visible
+ * @param {boolean} visible
+ */
+chesterGL.Block.prototype.setVisible = function (visible) {
+	this.visible = visible;
+};
+
+/**
+ * returns whether or not the block is visible
+ * @returns {boolean}
+ */
+chesterGL.Block.prototype.isVisible = function () {
+	return this.visible;
+};
+
+/**
  * Adds a block as a child. If you add the block while in a visit of the parent block,
  * the child will be scheduled to be added after the visit.
  * 
@@ -689,3 +705,5 @@ goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block
 goog.exportProperty(chesterGL.Block.prototype, 'setTexture', chesterGL.Block.prototype.setTexture);
 goog.exportProperty(chesterGL.Block.prototype, 'setScale', chesterGL.Block.prototype.setScale);
 goog.exportProperty(chesterGL.Block.prototype, 'setUpdate', chesterGL.Block.prototype.setUpdate);
+goog.exportProperty(chesterGL.Block.prototype, 'setVisible', chesterGL.Block.prototype.setVisible);
+goog.exportProperty(chesterGL.Block.prototype, 'isVisible', chesterGL.Block.prototype.isVisible);
