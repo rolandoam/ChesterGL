@@ -49,8 +49,6 @@ var unpackUInt32 = function (buffer, offset) {
  * @ignore
  */
 var handleLoadTMX = function (path, data) {
-	console.log("tmx loaded: " + path);
-	
 	var map = chesterGL.assets['tmx'][path];
 	map.data = data;
 	return true;
@@ -159,7 +157,6 @@ chesterGL.TMXBlock.findTilesetForGid = function (tilesets, gid) {
 			tex = ts;
 		}
 	}
-	console.log("found tileset " + tex['texture'] + " for gid " + gid);
 	return tex;
 };
 
