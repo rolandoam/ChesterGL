@@ -32,7 +32,7 @@ goog.require("chesterGL.Block");
  * creates a new block group
  * 
  * @constructor
- * @param {string} texture An optional texture that will be shared with all children
+ * @param {(string|null)=} texture An optional texture that will be shared with all children
  * @param {number=} noChildren The optional initial number of maxChidlren. Defaults to 10
  * @extends {chesterGL.Block}
  */
