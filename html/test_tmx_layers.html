@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	setupGame();
+	function setupGame() {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+
+		chesterGL.loadAsset('texture', 'images/TileA1.png');
+		chesterGL.loadAsset('texture', 'images/TileA4.png');
+		chesterGL.loadAsset('texture', 'images/TileD.png');
+		chesterGL.TMXBlock.loadTMX("images/test_dungeon.tmx");
+		chesterGL.assetsLoaded("all", function () {
+			// $("#loading").html("Test Single Block");        	
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::TMXLayers";
+			chesterGL.setRunningScene(sceneBlock);
+
+			/** @type {chesterGL.TMXBlock} */
+			var tmx = new chesterGL.TMXBlock('images/test_dungeon.tmx');
+			sceneBlock.addChild(tmx);
+
+			/** @type {?Float32Array} */
+			var stPoint = null;
+			chesterGL.addMouseHandler(function (pt, type) {
+				if (type == chesterGL.mouseEvents.DOWN) {
+					stPoint = new Float32Array(pt);
+				} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
+					var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
+					tmx.setPosition([tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]]);
+					stPoint.set(pt);
+				} else {
+					stPoint = null;
+				}
+			});
+
+			chesterGL.run();
+			// draw a single frame (for debug purposes)
+			// chesterGL.drawScene();
+		});
+	} // setupGame()
+
+	$("#pause").click(function () {
+		chesterGL.togglePause();
+	});
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_setDomainName', 'github.com']);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<span id="debug-info">00</span> ms per frame - <input type="button" id="pause" value="pause"/>
+		</div>
+	</div>
+</body>
+</html>
