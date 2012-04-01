@@ -15,3 +15,7 @@ closure-library/
 
 #vim swapfiles
 .*.swp
+.*.swo
+
+#make artifacts
+make.out
