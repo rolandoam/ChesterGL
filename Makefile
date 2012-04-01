@@ -10,7 +10,7 @@ EXTERNS = jquery-1.5.js base64.js glMatrix-1.0.0.js webkit_console.js google_ana
 COMPILE_LEVEL_RELEASE = ADVANCED_OPTIMIZATIONS
 COMPILE_LEVEL_DEBUG = $(COMPILE_LEVEL_RELEASE)
 # the next line just for docs
-JSDOC_HOME = ${HOME}/Applications/jsdoc-toolkit
+JSDOC_HOME = ${HOME}/bin/jsdoc-toolkit
 DOC_OUTPUT = doc
 
 # do not modify after this line unless you know what you're doing
