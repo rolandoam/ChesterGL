@@ -552,10 +552,10 @@ chesterGL.Block.prototype.transform = function () {
 				var texW = tex.width,
 					texH = tex.height;
 
-			        var l = this.frame[0] / texW + 0.001,
-			            b = this.frame[1] / texH + 0.001,
-			            w = this.frame[2] / texW - 0.002,
-			            h = this.frame[3] / texH - 0.002;
+				var l = this.frame[0] / texW + 0.001,
+					b = this.frame[1] / texH + 0.001,
+					w = this.frame[2] / texW - 0.002,
+					h = this.frame[3] / texH - 0.002;
 
 				_idx += 3;
 				bufferData[_idx           ] = l  ; bufferData[_idx+1           ] = b;
