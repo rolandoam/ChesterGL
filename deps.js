@@ -1,5 +1,5 @@
 /**
- * @preserve ChesterGL - Simple 2D WebGL demo/library
+ * ChesterGL - Simple 2D WebGL demo/library
  *
  * Copyright (c) 2010-2011 Rolando Abarca
  *
@@ -28,72 +28,6 @@
  * @see https://github.com/funkaster/ChesterGL
  * @externs
  */
-
-/** @type {Object} */
-var ChesterGL = {};
-
-/**
- * creates a new block. Pass the rect if you want to set the frame at
- * creation time.
- *
- * @constructor
- * @param {Object.<string,number>|string=} rect
- * @param {number=} type
- * @param {ChesterGL.Block=} parent
- */
-ChesterGL.Block = function (rect, type, parent) {};
-
-/**
- * creates a new block group
- *
- * @constructor
- * @extends ChesterGL.Block
- * @param {string} texture An optional texture that will be shared with all children
- * @param {number=} noChildren The optional initial number of maxChidlren. Defaults to 10
- */
-ChesterGL.BlockGroup = function (texture, noChildren) {};
-
-/**
- * @namespace
- */
-ChesterGL.BlockFrames;
-
-/**
- * @typedef {{frame, texture}}
- */
-ChesterGL.BlockFrames.frameType;
-
-/**
- * @constructor
- * @extends ChesterGL.Block
- * @param {string} tmxFile
- */
-ChesterGL.TMXBlock = function (tmxFile) {};
-
-/**
- * @constructor
- * @extends ChesterGL.Block
- * @param {Object} properties
- */
-ChesterGL.ParticleSystem = function (properties) {};
-
-/**
- * @constructor
- * @param {ChesterGL.Block} block
- * @param {number=} totalTime
- */
-ChesterGL.Action = function (block, totalTime) {};
-
-/**
- * @constructor
- * @extends ChesterGL.Action
- * @param {ChesterGL.Block} block
- * @param {number} totalTime
- * @param {vec3} finalPosition
- */
-ChesterGL.MoveToAction = function (block, totalTime, finalPosition) {};
-
-
 
 // external - request animation frame for different browsers and window.WebGLDebugUtils
 

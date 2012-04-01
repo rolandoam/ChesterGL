@@ -1,46 +1,54 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
     <script type="text/javascript">
 
 $(document).ready(function () {
 	setupGame();
-
 	function setupGame() {
 		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
-		var totalBlocks = 500;
+		var oneDeg = Math.PI / 180.0;
 
+		chesterGL.loadAsset("texture", "images/test.png");
 		chesterGL.loadAsset("texture", "images/star.png");
 		chesterGL.assetsLoaded("texture", function () {
-			$("#loading").html("Test BlockGroup");
+			// $("#loading").html("Test Single Block");        	
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
-
-			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
-			sceneBlock.title = "Test::BlockGroup";
+			
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
+			sceneBlock.title = "Test::Primitives";
 			chesterGL.setRunningScene(sceneBlock);
 
-			var group = new chesterGL.BlockGroup("images/star.png", totalBlocks);
+			// create a primitive block
+			var someBlock = new chesterGL.PrimitiveBlock();
+			var w = size.width / 2, h = size.height / 2;
+			var poly1 = [[w - 50, h - 50, 0], [w - 50, h + 50, 0], [w + 50, h + 50, 0], [w + 50, h - 50, 0]];
+			var poly2 = [[w, h , 0], [w, h + 100, 0], [w + 100, h + 100, 0], [w + 100, h, 0]];
+			someBlock.setUpdate(function () {
+				var i;
+				var color = [1, 1, 1, 1];
+				for (i=0; i < size.width / 4; i += 2) {
+					color[0] = Math.random();
+					color[1] = Math.random();
+					color[2] = Math.random();
+					someBlock.drawPoint(i, i, color);
+				}
 
-			// add lots of blocks
-			for (var i=0; i < totalBlocks; i++) {
-				var b = group.createBlock();
-				b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
-				b.speed = [Math.random() * 10 - 5, Math.random() * 10 - 5, 0];
-				b.setUpdate(function () {
-					this.setPosition([this.position[0] + this.speed[0], this.position[1] + this.speed[1], this.position[2] + this.speed[2]]);
-					if (this.position[0] >= size.width  || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
-					if (this.position[1] >= size.height || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
-				});
-				group.addChild(b);
-			}
+				someBlock.drawLine(0, 0, 12, 150);
+				someBlock.drawLine(10, 300, 100, 300);
+				someBlock.drawPolygon(poly1, [1, 0, 0, 1], true);
+				someBlock.drawPolygon(poly2, [0, 1, 0, 1], true);
+			});
 
-			sceneBlock.addChild(group);
+			sceneBlock.addChild(someBlock);
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();
@@ -68,7 +76,6 @@ _gaq.push(['_trackPageview']);
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
 			<span id="debug-info">00</span> ms per frame
-			<a href="index.html">Test Index</a>
 		</div>
 	</div>
 </body>

@@ -2,87 +2,104 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/glMatrix-1.0.0.min.js"></script>
-	<script type="text/javascript" src="externals/base64.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
     <script type="text/javascript">
 
 $(document).ready(function () {
-	setupGame();
 	var useBlockGroup = true;
-	var totalBlocks = 1500;
+	var totalBlocks = 0;
 	var sceneBlock, group;
-	$("#totalBlocks").val(totalBlocks);
 
-	function setupGame() {
-		ChesterGL.useGoogleAnalytics = true;
-		ChesterGL.setup("demo-canvas");
+	var setupGame = function () {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
 
-		ChesterGL.loadAsset("texture", "images/sprite-default-000.png");
-		ChesterGL.assetsLoaded("texture", function () {
+		chesterGL.loadAsset("texture", "images/sprite-default-000.png");
+		chesterGL.assetsLoaded("texture", function () {
 			$("#loading").html("Test BlockGroup");
 			// finish with the setup and run the game
-			ChesterGL.setupPerspective();
+			chesterGL.setupPerspective();
 
-			sceneBlock = new ChesterGL.Block(null, ChesterGL.Block.TYPE.SCENE);
+			sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::PerfFillRate";
-			ChesterGL.setRunningScene(sceneBlock);
+			sceneBlock.lastAdd = 0;
+			sceneBlock.setUpdate(function (delta) {
+				var now = Date.now();
+				var mpf = chesterGL.getSampledMpf();
+				if ((now - this.lastAdd) > 500 && mpf < 33.0) {
+					addBlocks(100);
+					this.lastAdd = now;
+				} else if ((now - this.lastAdd) > 2000 && mpf > 35.0) {
+					removeBlocks(50);
+					this.lastAdd = now;
+				}
+			});
+			chesterGL.setRunningScene(sceneBlock);
 
 			createGroup();
 
 			sceneBlock.addChild(group);
-			ChesterGL.run();
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
-			// ChesterGL.drawScene();
+			// chesterGL.drawScene();
 		});
-	} // setupGame()
-	
-	function createGroup() {
-		var useWebgl = ChesterGL.webglMode;
-		group = (useWebgl && useBlockGroup) ? (new ChesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new ChesterGL.Block());
-		var width = ChesterGL.gl.viewportWidth;
-		var height = ChesterGL.gl.viewportHeight;
-		
-		// add lots of blocks
-		for (var i=0; i < totalBlocks; i++) {
+	}; // setupGame()
+
+	var removeBlocks = function (n) {
+		console.log("remove " + n);
+		for (var i=0; i < n; i++) {
+			var b = group.children[group.children.length - 1];
+			b && group.removeChild(b);
+		}
+		totalBlocks -= n;
+		$("#totalBlocks").html(totalBlocks);
+	};
+
+	var addBlocks = function (n) {
+		console.log("add " + n);
+		var useWebgl = chesterGL.settings['webglMode'];
+		var size = chesterGL.viewportSize();
+		for (var i=0; i < n; i++) {
 			var b;
-			if (useBlockGroup) {
+			if (useBlockGroup && useWebgl) {
 				b = group.createBlock();
 			} else {
-				b = new ChesterGL.Block();
+				b = new chesterGL.Block();
 				b.setTexture("images/sprite-default-000.png");
+				b.opacity = 0.1;
 			}
 			b.setColor([1, 1, 1, 0.1]);
-			b.moveTo([Math.random() * width, Math.random() * height, 0]);
+			b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
 			group.addChild(b);
 		}
-	}
+		totalBlocks += n;
+		$("#totalBlocks").html(totalBlocks);
+	};
 
-	var fullScreen = false;
-	$("#fullScreen").click(function () {
-		var canvas = document.getElementById("game-container");
-		canvas.onwebkitfullscreenchange = function () {
-			fullScreen = !fullScreen;
-			console.log("we went full screen: " + fullScreen);
-			canvas.webkitCancelFullScreen();
-		}
-		if (!fullScreen) {
-			canvas.webkitRequestFullScreen();
-		}
-	});
-	
+	var createGroup = function () {
+		var useWebgl = chesterGL.settings['webglMode'];
+		group = (useWebgl && useBlockGroup) ? (new chesterGL.BlockGroup("images/sprite-default-000.png", totalBlocks)) : (new chesterGL.Block());
+		var size = chesterGL.viewportSize();
+
+		// add lots of blocks
+		addBlocks(5000);
+		sceneBlock.lastAdd = Date.now() + 3000;
+	};
+
 	$("#reset").click(function () {
 		totalBlocks = parseInt($("#totalBlocks").val());
 		useBlockGroup = $("#useBlockGroup").is(':checked');
-		ChesterGL.togglePause();
-		
+		chesterGL.togglePause();
+
 		sceneBlock.removeChild(group);
 		createGroup();
 		sceneBlock.addChild(group);
-		
-		ChesterGL.togglePause();
+
+		chesterGL.togglePause();
 	});
+
+	setupGame();
 });
     </script>
 	<script type="text/javascript">
@@ -103,11 +120,10 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Full Screen" id="fullScreen"/>
 			<span id="debug-info">00</span> ms per frame
 			<a href="index.html">Test Index</a>
 			<div>
-				Number of blocks: <input type="text" id="totalBlocks"/> |
+				Number of blocks: <span id="totalBlocks"></span> |
 				Use block group (batched sprites): <input id="useBlockGroup" type="checkbox" checked value="1"/>
 				<input type="button" id="reset" value="Reset"/>
 			</div>

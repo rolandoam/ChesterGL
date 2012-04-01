@@ -1,7 +1,17 @@
 .DS_Store
 html/chester.js
+html/chester.js.map
 html/test_lessons.html
+html/chesterGL
+html/chesterGL-latest.zip
 doc/
+release/
 
 # remove this after the iOS project is working properly
 iOS/
+.svn
+closure-library/
+*.flags
+
+#vim swapfiles
+.*.swp
