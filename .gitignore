@@ -12,3 +12,10 @@ iOS/
 .svn
 closure-library/
 *.flags
+
+#vim swapfiles
+.*.swp
+.*.swo
+
+#make artifacts
+make.out
