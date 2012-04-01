@@ -1,0 +1,15 @@
+v0.3 - 2012-04-XX
+	[FIX] fixes indentation
+	[FIX] Added a small fudge factor on texture edges so TMX tiles look right.
+	[NEW] tests for multiple layers on tmx files
+	[NEW] adds support for tmx layers
+	[FIX] forces ECMASCRIPT 5 strict
+	[NEW] adds enter and leave mouse events
+	[FIX] adds support for NPOT textures
+	[FIX] fixes pause
+	[FIX] fixes rotation for canvas mode
+	[NEW] adds getLastSampledMpf
+	[FIX] improves performance test
+	[FIX] improves blockGroup
+	[FIX] improved actions
+	[FIX] small performance improvement for mouse events
