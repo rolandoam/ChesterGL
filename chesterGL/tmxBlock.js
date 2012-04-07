@@ -31,30 +31,6 @@ goog.require("goog.math.Size");
 goog.require("chesterGL.Block");
 
 /**
- * unpacks a UInt32 from a string
- * @param {Array} buffer
- * @param {number} offset
- * @ignore
- */
-var unpackUInt32 = function (buffer, offset) {
-	return (buffer[offset + 3] << 24) |
-		   (buffer[offset + 2] << 16) |
-		   (buffer[offset + 1] <<  8) |
-		    buffer[offset + 0] >>> 0;
-};
-
-/**
- * @param {string} path
- * @param {string} data
- * @ignore
- */
-var handleLoadTMX = function (path, data) {
-	var map = chesterGL.assets['tmx'][path];
-	map.data = data;
-	return true;
-};
-
-/**
  * Creates a new TMXBlock (from a TMX file)
  * The first line of children are the layers of the tmx map and they're all BlockGroups
  * 
@@ -144,6 +120,30 @@ chesterGL.TMXBlock.prototype.margin = 0;
 chesterGL.TMXBlock.maps = {};
 
 /**
+ * unpacks a UInt32 from a string
+ * @param {Array} buffer
+ * @param {number} offset
+ * @ignore
+ */
+chesterGL.TMXBlock.unpackUInt32 = function (buffer, offset) {
+	return (buffer[offset + 3] << 24) |
+		   (buffer[offset + 2] << 16) |
+		   (buffer[offset + 1] <<  8) |
+		    buffer[offset + 0] >>> 0;
+};
+
+/**
+ * @param {string} path
+ * @param {string} data
+ * @ignore
+ */
+chesterGL.TMXBlock.handleLoadTMX = function (path, data) {
+	var map = chesterGL.assets['tmx'][path];
+	map.data = data;
+	return true;
+};
+
+/**
  * finds the right texture for the given gid
  * @param {Array.<Object>} tilesets
  * @param {number} gid
@@ -224,7 +224,7 @@ chesterGL.TMXBlock.loadTMX = function (path) {
 					var tileset = null;
 					for (var row = 0; row < layerSize.height; row++) {
 						for (var col = 0; col < layerSize.width; col++) {
-							var gid = unpackUInt32(decodedData, offset);
+							var gid = chesterGL.TMXBlock.unpackUInt32(decodedData, offset);
 							if (gid == 0) {
 								offset += 4;
 								continue;
@@ -276,7 +276,7 @@ chesterGL.TMXBlock.loadTMX = function (path) {
 };
 	
 // just register a dummy handler
-chesterGL.registerAssetHandler('tmx', handleLoadTMX);
+chesterGL.registerAssetHandler('tmx', chesterGL.TMXBlock.handleLoadTMX);
 
 // export symbols
 goog.exportSymbol('chesterGL.TMXBlock', chesterGL.TMXBlock);
