@@ -73,7 +73,7 @@ That's my dog's name. And I would like this library to have the same goals that 
 * Always be ready to have fun (easy to use, docs, examples)
 * Simple (simple API)
 * Not very demanding (few dependencies)
-* Fast (Chester runs very fast!)
+* Fast and performant (Chester runs very fast and requires only food and water!)
 
 ## Roadmap
 
