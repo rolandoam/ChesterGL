@@ -88,7 +88,7 @@ function throwOnGLError(err, funcName, args) {
  * @const
  * @type {string}
  */
-chesterGL.version = '0.2.1';
+chesterGL.version = '0.3';
 
 /**
  * Basic settings for chesterGL
@@ -107,7 +107,7 @@ chesterGL.version = '0.2.1';
  */
 chesterGL.settings = {
 	'useGoogleAnalytics': false,
-	'projection': "3d",
+	'projection': '3d',
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
 	'debugSpanId': 'debug-info'
