@@ -810,6 +810,8 @@ chesterGL.setupPerspective = function () {
 	} else {
 		throw "Invalid projection: " + chesterGL.projection;
 	}
+
+	chesterGL.basePMatrix = chesterGL.pMatrix;
 };
 
 /**
@@ -823,10 +825,53 @@ chesterGL.setRunningScene = function (block) {
 };
 
 /**
+ * Sets the current camera.
+ * @param {chesterGL.Block} block
+ */
+chesterGL.setCamera = function(block) {
+	if (block.type == chesterGL.Block.TYPE['CAMERA']) {
+		chesterGL.camera = block;
+	}
+}
+
+/**
  * main draw function, will call the root block
  * @ignore
  */
 chesterGL.drawScene = function () {
+	//Setup camera transformation
+	var par = chesterGL.camera;
+	var parents = [];
+	// Work up the camera's chain of parents. This is somewhat inefficient, as they'll also get 
+	// transformed as part of rendering the scene, but it's worth having the ability to just
+	// attach a camera to some block and have it follow the block, etc.
+	while(par) {
+		parents.push(par);
+		par = par.parent;
+	}
+	
+	// We go backwards so that we start at the root and finish with the camera.
+	for(var i=parents.length-1; i >= 0; i--) {
+		parents[i].updateTransform();
+	}
+
+	// Invert and multiply onto the view transform.
+	// this looks a little wonky when using a camera that is a child of a normal block
+	// because we end up using the previous frame's transform for that block.
+	// TODO: refactor Block.visit into separate update and transform steps so we can
+	// use the current frame's transform here. This would also let us have multiple
+	// cameras each with their own viewport in the main port, picture in picture style.
+	chesterGL.pMatrix = goog.vec.Mat4.createFloat32();
+	var camTransform = goog.vec.Mat4.createFloat32();
+	if(goog.vec.Mat4.invert(chesterGL.camera.mvMatrix, camTransform)) {
+		goog.vec.Mat4.multMat(chesterGL.basePMatrix, camTransform, chesterGL.pMatrix);
+	}
+	else {
+		if(console) console.log("Inverse of camera transform is undefined!");
+	}
+
+	chesterGL.runningScene.isTransformDirty = true;
+
 	var gl = undefined;
 	if (chesterGL.webglMode) {
 		gl = chesterGL.gl;
@@ -1103,3 +1148,4 @@ goog.exportSymbol('chesterGL.togglePause', chesterGL.togglePause);
 goog.exportSymbol('chesterGL.isPaused', chesterGL.isPaused);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);
+goog.exportSymbol('chesterGL.setCamera', chesterGL.setCamera);
