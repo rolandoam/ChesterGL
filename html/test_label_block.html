@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+  <link href='http://fonts.googleapis.com/css?family=Della+Respira' rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	var randColorComp = function () {
+		return Math.round(Math.random() * 255);
+	};
+
+	var randColor = function () {
+		return "rgb(" + [
+			randColorComp(),
+			randColorComp(),
+			randColorComp()
+		].join(",") + ")"
+	};
+
+	var randLetter = function () {
+		return String.fromCharCode(65 + Math.floor(Math.random() * 25));
+	};
+
+	var setupGame = function () {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
+
+		chesterGL.assetsLoaded("texture", function () {
+		// $("#loading").html("Test Single Block");        	
+		// finish with the setup and run the game
+		chesterGL.setupPerspective();
+		var text = "Hello World!"
+		var font = "normal 400 30pt 'Della Respira'"
+
+		var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
+		sceneBlock.title = "Test::Label Block";
+		chesterGL.setRunningScene(sceneBlock);
+
+		// create a label block
+		var someBlock = new chesterGL.LabelBlock(text, font);
+		someBlock.setPosition([size.width/2, size.height/2, 0]);
+
+		sceneBlock.addChild(someBlock);
+
+		// add lots of label blocks
+		var total = 100;
+		var smallFont = "normal 400 20pt 'Della Respira'";
+		for (var i=0; i < total; i++) {
+			var b = new chesterGL.LabelBlock(randLetter(), smallFont, randColor());
+			b.setPosition([Math.random() * size.width, Math.random() * size.height, 0])
+			sceneBlock.addChild(b);
+		}
+
+		// add some action
+		var dz = 10;
+		time = 0.0;
+		someBlock.setUpdate(function (delta) {
+			time += delta;
+			this.setRotation(this.rotation + oneDeg);
+			// this.setPosition([this.position[0], this.position[1], this.position[2] + dz]);
+			// if (this.position[2] >=  200) { dz = -dz; }
+			// if (this.position[2] <= -200) { dz = -dz; }
+			if (time >= 1000) {
+				this.fillStyle = randColor();
+				this.setText(Date.now());
+				time = 0.0;
+			}
+		});
+
+		chesterGL.run();
+		});
+	}; // setupGame()
+
+	$("#pause").click(function () {
+		chesterGL.togglePause();
+	});
+
+	setupGame();
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<span id="debug-info">00</span> ms per frame - <input type="button" id="pause" value="pause"/>
+		</div>
+		<!-- need to add this in order to actually use the font in a canvas -->
+		<p style="font-family: 'Della Respira'"></p>
+	</div>
+</body>
+</html>
