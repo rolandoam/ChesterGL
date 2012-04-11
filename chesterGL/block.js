@@ -657,7 +657,6 @@ chesterGL.Block.prototype.render = function () {
 			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 			gl.uniform1i(program.samplerUniform, 0);
-			gl.activatedTexture = true;
 		}
 
 		// set the matrix uniform (the multiplied model view projection matrix)
