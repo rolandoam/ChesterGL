@@ -825,8 +825,8 @@ chesterGL.setRunningScene = function (block) {
 };
 
 /**
- * Sets the current camera.
- * @param {chesterGL.Block} block
+ * Sets the current camera. The scene will be rendered as if seen from a camera attached to the block.
+ * @param {chesterGL.Block} A Block of type Camera, created thusly: new chesterGL.Block(null, chesterGL.Block.TYPE.CAMERA)
  */
 chesterGL.setCamera = function(block) {
 	if (block.type == chesterGL.Block.TYPE['CAMERA']) {
