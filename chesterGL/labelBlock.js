@@ -36,41 +36,27 @@ goog.require("chesterGL.Block");
  * 
  * @constructor
  * @param {string} text the string to render
- * @param {string=} font the name/family of the font, defaults to "sans-serif"
- * @param {string=} fontSize the size of the font, defaults to '20pt'
- * @param {goog.math.Size=} size the size of the container for the text. Defaults to the width of the text,
- * the height is approximage (rotating the letter m and measuring the width)
+ * @param {string=} font the name/family of the font, defaults to "20pt sans-serif"
+ * @param {string=} fillStyle the style of the font, defaults to 'white'
  * @extends {chesterGL.Block}
  */
-chesterGL.LabelBlock = function (text, font, fontSize, size) {
-	font = font || "sans-serif";
-	fontSize = fontSize || "12pt";
+chesterGL.LabelBlock = function (text, font, fillStyle) {
+	font = font || "20pt sans-serif";
+	fillStyle = fillStyle || "White";
 	var canvas = document.createElement("canvas");
 	this.canvas = canvas;
 	var context = canvas.getContext('2d');
 	this.context = context;
-	context.font = fontSize + " " + font;
+	this.font = font;
+	this.fillStyle = fillStyle;
 
-	// measure the height of the text (assume one line always)
-	if (!size) {
-		context.save();
-		context.rotate(90);
-		var height = context.measureText("m").width * 1.15;
-		context.restore();
-		var width = context.measureText(text).width;
-		size = new goog.math.Size(width, height);
-	}
-	chesterGL.Block.call(this, [0, 0, size.width, size.height]);
-
-	canvas.width = size.width;
-	canvas.height = size.height;
-	context.fillStyle = "Red";
-	context.fillText(text, 0, size.height / 2.0);
-	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
-	this.texture = "" + Math.random() + ".canvas";
+	this.texture = Date.now() + ".canvas";
 	if (!chesterGL.assets['texture']) chesterGL.assets['texture'] = {};
 	chesterGL.assets['texture'][this.texture] = canvas;
-	chesterGL.defaultTextureHandler(this.texture, canvas);
+
+	chesterGL.Block.call(this, this.resetCanvas(text));
+	this.setText(text, true);
+	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
 };
 goog.inherits(chesterGL.LabelBlock, chesterGL.Block);
 
@@ -94,4 +80,102 @@ chesterGL.LabelBlock.prototype.context = null;
  */
 chesterGL.LabelBlock.prototype.needsTextUpdate = false;
 
+/**
+ * the actual string to draw
+ * @ignore
+ * @type {string}
+ */
+chesterGL.LabelBlock.prototype.text = "";
+
+/**
+ * the height of the text (aprox.)
+ * @ignore
+ * @type {number}
+ */
+chesterGL.LabelBlock.prototype.textHeight = 0;
+
+/**
+ * the font that will be used to render the text
+ * @type {string}
+ */
+chesterGL.LabelBlock.prototype.font = "";
+
+/**
+ * the style used to render the text. Need to set the text again
+ * to actually change the style
+ * @type {string}
+ */
+chesterGL.LabelBlock.prototype.fillStyle = "";
+
+/**
+ * sets the text to be displayed. This will reset the underlying canvas and resize it to the size of the text
+ * @param {string} text
+ * @param {boolean=} onlyDraw if true, then just draw the text on the canvas
+ */
+chesterGL.LabelBlock.prototype.setText = function (text, onlyDraw) {
+	this.text = text;
+	if (onlyDraw) {
+		this.drawText();
+	} else {
+		this.setFrame(this.resetCanvas());
+		this.needsTextUpdate = true;
+	}
+};
+
+/**
+ * redraws the text on the offscreen canvas (clearing it first)
+ * @ignore
+ */
+chesterGL.LabelBlock.prototype.drawText = function () {
+	var cx = this.context;
+	var canvas = this.canvas;
+	cx.clearRect(0, 0, canvas.width, canvas.height);
+	cx.fillText(this.text, 0, canvas.height * 0.8);
+	chesterGL.defaultTextureHandler(/** @type {string} */(this.texture), canvas);
+	this.needsTextUpdate = false;
+};
+
+/**
+ * resets the canvas: sets the style, measures the text, changes the canvas size.
+ * Returns an array that can be passed to setFrame().
+ * @ignore
+ * @param {string=} text optional text to set
+ * @returns {Array}
+ */
+chesterGL.LabelBlock.prototype.resetCanvas = function (text) {
+	var cx = this.context;
+	var canvas = this.canvas;
+	cx.font = this.font;
+	cx.fillStyle = this.fillStyle;
+	if (text) {
+		this.text = text;
+	}
+
+	if (this.textHeight == 0) {
+		cx.save();
+		cx.rotate(90);
+		this.textHeight = cx.measureText("M").width * 1.25;
+		cx.restore();
+	}
+	var width = cx.measureText(this.text).width;
+
+	canvas.width = width;
+	canvas.height = this.textHeight;
+	cx.font = this.font;
+	cx.fillStyle = this.fillStyle;
+	return [0, 0, width, this.textHeight];
+};
+
+/**
+ * override visit, update offscreen canvas if needed
+ * @ignore
+ */
+chesterGL.LabelBlock.prototype.visit = function () {
+	if (this.needsTextUpdate) {
+		this.drawText();
+	}
+	chesterGL.Block.prototype.visit.call(this);
+};
+
 goog.exportSymbol('chesterGL.LabelBlock', chesterGL.LabelBlock);
+goog.exportProperty(chesterGL.LabelBlock.prototype, 'setText', chesterGL.LabelBlock.prototype.setText);
