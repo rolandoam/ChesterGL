@@ -1,4 +1,13 @@
 v0.3 - 2012-04-XX
+	[NEW] test for label blocks
+	[NEW] somewhat working labelBlock
+	[FIX] better support for NPOT
+	[NEW] changes version
+	[FIX] fixes analytics code in examples
+	[FIX] moves anonymous functions to TMXBlock
+	[FIX] updates read me
+	[NEW] adds isPaused
+	[FIX] adds Authors and Changelog
 	[FIX] fixes indentation
 	[FIX] Added a small fudge factor on texture edges so TMX tiles look right.
 	[NEW] tests for multiple layers on tmx files
