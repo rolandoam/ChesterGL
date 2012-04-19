@@ -8,7 +8,9 @@ The API is somewhat inspired in [cocos2d-iphone](https://github.com/cocos2d/coco
 
 ## How to have fun
 
-Get the latest "stable" release from here:
+The easy way: play with the [official jsfiddle](http://jsfiddle.net/U8fCz/2/)
+
+If you want to play more, you can get the latest "stable" release from here:
 
 [http://funkaster.github.com/ChesterGL/chesterGL-latest.zip](http://funkaster.github.com/ChesterGL/chester-latest.zip)
 
