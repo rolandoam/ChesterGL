@@ -110,6 +110,7 @@ chesterGL.settings = {
 	'projection': '3d',
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
+	'basePath': '',
 	'debugSpanId': 'debug-info'
 };
 
@@ -136,6 +137,12 @@ chesterGL.usesOffscreenBuffer = false;
  * @ignore
  */
 chesterGL.useGoogleAnalytics = false;
+
+/**
+ * @type {string}
+ * @ignore
+ */
+chesterGL.basePath = "";
 
 /**
  * This is the WebGL context
@@ -291,6 +298,7 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.webglMode = /** @type {boolean} */(settings['webglMode']);
 	chesterGL.useGoogleAnalytics = /** @type {boolean} */(settings['useGoogleAnalytics']);
 	chesterGL.usesOffscreenBuffer = /** @type {boolean} */(settings['usesOffscreenBuffer']);
+	chesterGL.basePath = /** @type {string} */(settings['basePath']);
 
 	chesterGL.initGraphics(canvas);
 	if (chesterGL.webglMode) {
@@ -448,7 +456,7 @@ chesterGL.initShader = function (prefix, callback) {
 chesterGL.loadShader = function (prefix, type) {
 	var shaderData = "";
 	$.ajax({
-		url: "shaders/" + prefix + "." + type,
+		url: chesterGL.basePath + "shaders/" + prefix + "." + type,
 		async: false,
 		type: 'GET',
 		success: function (data, textStatus) {
@@ -706,7 +714,14 @@ chesterGL.defaultTextureLoader = function (type, params) {
 			chesterGL.loadAsset(type, path);
 		}
 	}, false);
-	img.src = path;
+	// append the basePath if it's not an absolute url
+	if (path.match(/^http(s)?:\/\//)) {
+		img.crossOrigin = 'anonymous';
+		img.src = path;
+	} else {
+		img.crossOrigin = 'anonymous';
+		img.src = chesterGL.basePath + path;
+	}
 };
 
 /**
@@ -716,9 +731,16 @@ chesterGL.defaultTextureLoader = function (type, params) {
  */
 chesterGL.defaultAssetLoader = function (type, params) {
 	var path = params.url;
+	var realPath = path;
+	if (!path.match(/^http(s)?:\/\//)) {
+		realPath = chesterGL.basePath + path;
+	}
 	$.ajax({
-		url: path,
+		url: realPath,
 		dataType: params.dataType,
+		beforeSend: function (xhr) {
+			xhr.withCredentials = true;
+		},
 		success: function (data, textStatus) {
 			var asset = chesterGL.assets[type][path];
 			if (textStatus == "success") {
