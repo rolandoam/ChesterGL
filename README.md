@@ -4,11 +4,9 @@
 
 ChesterGL (Chester Game Library) is a WebGL/canvas 2d game library that focuses on ease of use and performance. It supports a simple scene graph and provides a minimal interface for you to create games, and extend the library if you need. Current features: time based actions, simple scene graph, Tiled (tmx) map support, different shaders (webgl only), batched sprites.
 
-The API is somewhat inspired in [cocos2d-iphone](https://github.com/cocos2d/cocos2d-iphone), but just inspired. It's not intended to be a port of cocos2d for WebGL.
-
 ## How to have fun
 
-The easy way: play with the [official jsfiddle](http://jsfiddle.net/U8fCz/2/)
+The easy way: play with the [official jsfiddle](http://jsfiddle.net/U8fCz/3/)
 
 If you want to play more, you can get the latest "stable" release from here:
 
