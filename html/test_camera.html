@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	setupGame();
+	function setupGame() {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
+
+		chesterGL.loadAsset("texture", "images/test.png");
+		chesterGL.loadAsset("texture", "images/star.png");
+		chesterGL.assetsLoaded("texture", function () {
+			// $("#loading").html("Test Single Block");        	
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+			
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
+			sceneBlock.title = "Test::Single Block";
+			chesterGL.setRunningScene(sceneBlock);
+
+			// create a block
+			var someBlock = new chesterGL.Block();
+			someBlock.setTexture("images/test.png")
+			// someBlock.rotateBy(-45);
+			someBlock.setPosition([size.width/2, size.height/2, 0]);
+			
+			var someBlock2 = new chesterGL.Block();
+			someBlock2.setTexture("images/star.png");
+			someBlock2.setPosition([60, 0, 0]);
+			someBlock.addChild(someBlock2);
+			
+			sceneBlock.addChild(someBlock);
+			
+
+			var someBlock3 = new chesterGL.Block();
+			someBlock3.setTexture("images/star.png");
+			someBlock3.setPosition([30, 60, 0]);
+
+			// === CAMERA EXAMPLE ===
+			// create a camera:
+			var camera = new chesterGL.Block(null, chesterGL.Block.TYPE.CAMERA);
+			// Misfeature: the camera's position is actually the location of the lower-left
+			// corner of the viewport. So, if you want the camera's parent in the center,
+			// you have to set the offset yourself. This should be fixed in a later update.
+			camera.setPosition([-200, -200, 220]);
+			
+			// attach the camera to some block:
+			someBlock3.addChild(camera);
+
+			sceneBlock.addChild(someBlock3);
+
+			// VERY IMPORTANT: actually set the camera. 
+			chesterGL.setCamera(camera);
+			// === END CAMERA CODE ===
+
+			// add some action
+			var bouncyFn = function () {
+				if(typeof this.dz === "undefined") this.dz = 10;
+				//this.setRotation(this.rotation + oneDeg);
+				this.setPosition([this.position[0], this.position[1], this.position[2] + this.dz]);
+				if (this.position[2] >=  200) { this.dz = -this.dz; }
+				if (this.position[2] <= -200) { this.dz = -this.dz; }
+			}
+
+			someBlock.setUpdate(bouncyFn);
+			someBlock2.setUpdate(bouncyFn);
+			someBlock3.setUpdate(function () {
+				this.setRotation(this.rotation - oneDeg/10);
+			});
+
+			chesterGL.run();
+			// draw a single frame (for debug purposes)
+			// chesterGL.drawScene();
+		});
+	} // setupGame()
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<span id="debug-info">00</span> ms per frame
+		</div>
+	</div>
+</body>
+</html>

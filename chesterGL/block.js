@@ -106,7 +106,8 @@ chesterGL.Block.TYPE = {
 	'SCENE':      2,
 	'TMXBLOCK':   3,
 	'PARTICLE':   4,
-	'PRIMITIVE':  5
+	'PRIMITIVE':  5,
+	'CAMERA':     6
 };
 
 /**
@@ -484,6 +485,18 @@ chesterGL.Block.prototype.removeChild = function (block) {
 	}
 };
 
+chesterGL.Block.prototype.updateTransform = function () {
+	this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(this.mvMatrix));
+	goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
+	goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
+	goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
+	// concat with parent's transform
+	var ptransform = (this.parent ? this.parent.mvMatrix : null);
+	if (ptransform) {
+		goog.vec.Mat4.multMat(ptransform, this.mvMatrix, this.mvMatrix);
+	}
+}
+
 /**
  * actually performs the transformation
  * @ignore
@@ -492,19 +505,11 @@ chesterGL.Block.prototype.transform = function () {
 	var gl = chesterGL.gl;
 	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 	if (transformDirty) {
-		this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(this.mvMatrix));
-		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
-		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
-		goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
-		// concat with parent's transform
-		var ptransform = (this.parent ? this.parent.mvMatrix : null);
-		if (ptransform) {
-			goog.vec.Mat4.multMat(ptransform, this.mvMatrix, this.mvMatrix);
-		}
+		this.updateTransform();
 	}
 
-	// bail out if we're a block group or a primitive block
-	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP'] || this.type == chesterGL.Block.TYPE['PRIMITIVE']) {
+	// bail out if we're a block group or a primitive block, or a camera
+	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP'] || this.type == chesterGL.Block.TYPE['PRIMITIVE'] || this.type == chesterGL.Block.TYPE['CAMERA']) {
 		return;
 	}
 
