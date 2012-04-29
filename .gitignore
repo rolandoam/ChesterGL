@@ -6,6 +6,7 @@ html/chesterGL
 html/chesterGL-latest.zip
 doc/
 release/
+developer.mk
 
 # remove this after the iOS project is working properly
 iOS/
