@@ -1,3 +1,8 @@
+# NOTE
+# if you want to define your own paths, copy developer.template.mk to developer.mk and modify that
+# please do not modify anything in this makefile unless is really necesary
+#
+
 -include developer.mk
 
 JAVA ?= /usr/bin/java
