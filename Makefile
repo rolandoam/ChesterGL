@@ -1,18 +1,24 @@
-JAVA = /usr/bin/java
-CLOSURE_HOME = ${HOME}/Applications/closure-compiler
-CLOSURE_LIBRARY= ${HOME}/Applications/closure-library
+-include developer.mk
+
+JAVA ?= /usr/bin/java
+
+CLOSURE_HOME ?= /Applications/closure-compiler
+CLOSURE_LIBRARY ?= /Applications/closure-library
 CLOSURE_JAR = compiler.jar
 OUTPUT_DIR ?= ${PWD}/html
+
 # default name for library
 OUTPUT_FILE = chester.js
 EXTERNAL_SOURCES = 
 SOURCES = ${EXTERNAL_SOURCES} chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js chesterGL/tmxBlock.js chesterGL/particleSystem.js chesterGL/primitivesBlock.js chesterGL/labelBlock.js
+
 # externs should live in the same dir as the compiler.jar
 EXTERNS = jquery-1.5.js webkit_console.js google_analytics_api.js
 COMPILE_LEVEL_RELEASE = ADVANCED_OPTIMIZATIONS
 COMPILE_LEVEL_DEBUG = ${COMPILE_LEVEL_RELEASE}
+
 # the next line just for docs
-JSDOC_HOME = ${HOME}/Applications/jsdoc-toolkit
+JSDOC_HOME ?= ${HOME}/Applications/jsdoc-toolkit
 DOC_OUTPUT = doc
 
 # do not modify after this line unless you know what you're doing
