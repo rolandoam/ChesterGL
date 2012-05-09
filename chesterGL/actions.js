@@ -497,19 +497,20 @@ chesterGL.ActionManager.unscheduleAction = function (actionId) {
  * @ignore
  */
 chesterGL.ActionManager.tick = function (delta) {
-	var i = 0, len = chesterGL.ActionManager.scheduledActions_.length;
+	var i = 0,
+		len = chesterGL.ActionManager.scheduledActions_.length,
+		a = null;
 	for (i=0; i < len; i++) {
-		var a = chesterGL.ActionManager.scheduledActions_[i];
-		a.running && a.update(delta);
+		a = chesterGL.ActionManager.scheduledActions_[i];
+		if (a.running) a.update(delta);
 		if (a.finished) {
 			chesterGL.ActionManager.scheduledActionsToBeRemoved_.push(a);
 		}
 	}
 	// remove finished actions
-	var a;
-	while(a = chesterGL.ActionManager.scheduledActionsToBeRemoved_.pop()) {
+	while((a = chesterGL.ActionManager.scheduledActionsToBeRemoved_.pop())) {
 		var idx = chesterGL.ActionManager.scheduledActions_.indexOf(a);
-		if (idx > 0) {
+		if (idx >= 0) {
 			chesterGL.ActionManager.scheduledActions_.splice(idx, 1);
 		}
 	}
