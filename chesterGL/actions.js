@@ -48,7 +48,7 @@ chesterGL.Action.prototype.actionId = 0;
 
 /**
  * The block to which this action will be applied
- * 
+ *
  * @type {chesterGL.Block|null|undefined}
  */
 chesterGL.Action.prototype.block = null;
@@ -56,7 +56,7 @@ chesterGL.Action.prototype.block = null;
 /**
  * The total time in seconds this action should take
  * (might not be relevant for all actions)
- * 
+ *
  * @type {number}
  */
 chesterGL.Action.prototype.totalTime = 0;
@@ -64,7 +64,7 @@ chesterGL.Action.prototype.totalTime = 0;
 /**
  * Current time in seconds of the action
  * (might not be relevant for all actions)
- * 
+ *
  * @type {number}
  */
 chesterGL.Action.prototype.elapsed = 0;
@@ -299,7 +299,7 @@ chesterGL.SequenceAction.prototype.reset = function () {
  */
 chesterGL.SequenceAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
-	if (this.currentAction == 0 && this.elapsed >= this.splitTime) {
+	if (this.currentAction === 0 && this.elapsed >= this.splitTime) {
 		console.log("switching actions (" + this.actions[1].totalTime + "," + this.actions[1].elapsed + ")");
 		this.actions[0].stop();
 		this.currentAction = 1;
@@ -465,7 +465,7 @@ chesterGL.ActionManager.internalIdCounter_ = 0;
 
 /**
  * adds an action to the scheduler
- * 
+ *
  * @param {chesterGL.Action} action
  * @return {number} the actionId of the recently scheduled action
  */
