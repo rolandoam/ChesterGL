@@ -9,11 +9,13 @@
 
 $(document).ready(function () {
 	setupGame();
+	var size = chesterGL.viewportSize(),
+		oneDeg = Math.PI / 180.0,
+		wiggle = null;
 
 	function setupGame() {
 		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
-		var size = chesterGL.viewportSize();
 
 		chesterGL.BlockFrames.loadFrames("images/1945.json");
 		chesterGL.assetsLoaded('all', function () {
@@ -49,14 +51,35 @@ $(document).ready(function () {
 			var seq = new chesterGL.SequenceAction.createSequence(a1, a2, a3, a4);
 			b1.runAction(seq);
 
+			// 4.- wiggle sprite
+			wiggle = new chesterGL.Block("1945-4-2.png");
+			wiggle.setPosition([50, 150, 0]);
+
 			sceneBlock.addChild(b1);
 			sceneBlock.addChild(b2);
+			sceneBlock.addChild(wiggle);
+
+			// add a label so the user can know that he needs to unpause the scene
+			var label = new chesterGL.LabelBlock("Click Play to Start");
+			label.setPosition([320, 460, 0]);
+			sceneBlock.addChild(label);
 
 			chesterGL.run();
+			chesterGL.togglePause();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();
 		});
 	} // setupGame()
+
+	$("#pause").click(function () {
+		chesterGL.togglePause();
+		$(this).val(chesterGL.isPaused() ? "Play" : "Pause");
+	});
+	$("#wiggle").click(function () {
+		// two cycles of 10 degrees each, in one second
+		var action = new chesterGL.WiggleAction(oneDeg * 15, 2, 300);
+		wiggle.runAction(action);
+	});
 });
     </script>
 	<script type="text/javascript">
@@ -75,7 +98,9 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<span id="debug-info">00</span> ms per frame
+			<span id="debug-info">00</span> ms per frame<br/>
+			<input type="button" id="pause" value="Play"/>
+			<input type="button" id="wiggle" value="Wiggle"/>
 		</div>
 	</div>
 </body>
