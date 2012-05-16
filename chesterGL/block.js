@@ -607,26 +607,27 @@ chesterGL.Block.prototype.visit = function () {
 	}
 	this.transform();
 
+	// render this block if not in a block group
+	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
+		this.render();
+	}
+
 	var children = this.children;
 	var len = children.length;
 	for (var i=0; i < len; i++) {
 		children[i].visit();
 	}
 
-	// render this block if not in a block group
-	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
-		this.render();
-	}
 	// reset our dirty markers
 	this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
 	this._inVisit = false;
 
 	// do we have blocks scheduled to be removed/added?
 	var b;
-	while (b = this._scheduledAdd.shift()) {
+	while ((b = this._scheduledAdd.shift())) {
 		this.addChild(b);
 	}
-	while (b = this._scheduledRemove.shift()) {
+	while ((b = this._scheduledRemove.shift())) {
 		this.removeChild(b);
 	}
 };
