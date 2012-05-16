@@ -437,6 +437,52 @@ chesterGL.AnimateAction.prototype.update = function (delta) {
 };
 
 /**
+ * @constructor
+ * Will rotate the block using a sin(t) function with the given
+ * Amplitude.
+ *
+ * @param {number} amplitude in radians of the wiggle
+ * @param {number} cycles the total number of cycles
+ * @param {number} totalTime the total duration (in milliseconds)
+ * @param {chesterGL.Block=} block The block that will receive this action
+ * @extends {chesterGL.Action}
+ */
+chesterGL.WiggleAction = function (amplitude, cycles, totalTime, block) {
+	this.amplitude = amplitude;
+	this.cycles = cycles;
+	chesterGL.Action.call(this, totalTime, block);
+};
+goog.inherits(chesterGL.WiggleAction, chesterGL.Action);
+
+/**
+ * @type {number} the amplitude of the wiggle
+ */
+chesterGL.WiggleAction.prototype.amplitude = 0;
+
+/**
+ * @type {number} the number of cycles of the wiggle
+ */
+chesterGL.WiggleAction.prototype.cycles = 0;
+
+/**
+ * @param {number} delta
+ * @ignore
+ */
+chesterGL.WiggleAction.prototype.update = function (delta) {
+	chesterGL.Action.prototype.update.call(this, delta);
+	if (!this.finished) {
+		// t' = t * cycles * 2 * PI / duration
+		var _t = this.elapsed / 1000.0 * this.cycles * 2 * Math.PI / (this.totalTime / 1000.0);
+		var sin = Math.sin(_t);
+		// console.log("sin: " + sin + " - " + this.elapsed + " - " + t);
+		this.block.setRotation(this.amplitude * sin);
+	} else {
+		// reset rotation
+		this.block.setRotation(0);
+	}
+};
+
+/**
  * global action manager
  * @namespace
  */
@@ -529,6 +575,7 @@ goog.exportSymbol('chesterGL.MoveAction', chesterGL.MoveAction);
 goog.exportSymbol('chesterGL.SequenceAction', chesterGL.SequenceAction);
 goog.exportSymbol('chesterGL.RepeatAction', chesterGL.RepeatAction);
 goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
+goog.exportSymbol('chesterGL.WiggleAction', chesterGL.WiggleAction);
 goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
 goog.exportProperty(chesterGL.SequenceAction, 'createSequence', chesterGL.SequenceAction.createSequence);
