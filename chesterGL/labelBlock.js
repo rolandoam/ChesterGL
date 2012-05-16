@@ -33,7 +33,7 @@ goog.require("chesterGL.Block");
  * These blocks should not be used for high-frecuency updated labels, for that you
  * should use bitmap fonts (not yet supported) or an off-screen DOM element.
  * Use this for static elements, like dialogues, menus, etc.
- * 
+ *
  * @constructor
  * @param {string} text the string to render
  * @param {string=} font the name/family of the font, defaults to "20pt sans-serif"
