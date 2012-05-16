@@ -32,7 +32,7 @@ goog.require("chesterGL.core");
 /**
  * creates a new block. Pass the rect if you want to set the frame at
  * creation time.
- * 
+ *
  * @constructor
  * @param {goog.vec.Vec4.Vec4Like|string=} rect
  * @param {number=} type
@@ -148,7 +148,7 @@ chesterGL.Block.ONE_DEG = 1 * chesterGL.Block.DEG_TO_RAD;
 
 /**
  * the full frame
- * 
+ *
  * @const
  * @type {goog.vec.Vec4.Type}
  */
@@ -156,7 +156,7 @@ chesterGL.Block.FullFrame = goog.vec.Vec4.createFloat32FromValues(0.0, 0.0, 1.0,
 
 /**
  * the size zero constant
- * 
+ *
  * @const
  * @type {goog.math.Size}
  */
@@ -333,7 +333,7 @@ chesterGL.Block.prototype.addDebugNode = function () {
 
 /**
  * sets the frame for this block
- * 
+ *
  * @param {Array|Float32Array|string} newFrame
  */
 chesterGL.Block.prototype.setFrame = function (newFrame) {
@@ -350,7 +350,7 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 
 /**
  * sets the size of the block in pixels
- * 
+ *
  * @param {number} width
  * @param {number} height
  * @example
@@ -364,18 +364,18 @@ chesterGL.Block.prototype.setContentSize = function (width, height) {
 
 /**
  * sets the scale of the block
- * 
+ *
  * @param {number} newScale
  */
 chesterGL.Block.prototype.setScale = function (newScale) {
 	this.scale = newScale;
-	this.isTransformDirty = true;			
+	this.isTransformDirty = true;
 };
 
 /**
  * sets the color of the block
  * the array should be created in the order RGBA
- * 
+ *
  * @param {Array|Float32Array} color
  */
 chesterGL.Block.prototype.setColor = function (color) {
@@ -460,7 +460,7 @@ chesterGL.Block.prototype.isVisible = function () {
 /**
  * Adds a block as a child. If you add the block while in a visit of the parent block,
  * the child will be scheduled to be added after the visit.
- * 
+ *
  * @param {chesterGL.Block} block
  */
 chesterGL.Block.prototype.addChild = function (block) {
@@ -478,7 +478,7 @@ chesterGL.Block.prototype.addChild = function (block) {
 /**
  * removes a block from the children list. If you remove the child while in a visit of the parent block,
  * the child will be scheduled to be removed after the visit.
- * 
+ *
  * @param {chesterGL.Block} block
  */
 chesterGL.Block.prototype.removeChild = function (block) {
@@ -706,8 +706,8 @@ goog.exportSymbol('chesterGL.Block.ONE_DEG', chesterGL.Block.ONE_DEG);
 // properties
 goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototype.title);
 // instance methods
-goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);	
-goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);	
+goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);
+goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
