@@ -393,6 +393,17 @@ chesterGL.Block.prototype.setPosition = function (p) {
 };
 
 /**
+ * returns the current bounding box as an Array [bottom, left, width, height]
+ * @returns {Array}
+ */
+chesterGL.Block.prototype.getBoundingBox = function () {
+	var p = this.position,
+		w = this.frame[2],
+		h = this.frame[3];
+	return [p[0] - w/2, p[1] - h/2, w, h];
+};
+
+/**
  * sets the texture of the block - the texture will be loaded if needed
  * @param {string} texturePath
  */
@@ -698,6 +709,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototyp
 goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);	
 goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);	
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
+goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
