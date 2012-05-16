@@ -241,8 +241,8 @@ goog.inherits(chesterGL.SequenceAction, chesterGL.Action);
  * @return {chesterGL.Action}
  */
 chesterGL.SequenceAction.createSequence = function (actions) {
-	if (arguments.length == 0) {
-		throw "Needs at least one action to create a sequence!"
+	if (arguments.length === 0) {
+		throw "Needs at least one action to create a sequence!";
 	}
 	var prev = arguments[0];
 	for (var i=1; i < arguments.length; i++) {
@@ -278,7 +278,7 @@ chesterGL.SequenceAction.prototype.begin = function () {
 	chesterGL.Action.prototype.begin.call(this);
 	this.splitTime = this.actions[0].totalTime;
 	this.block.runAction(this.actions[0]);
-	console.log("[seq begin] setting split time: " + this.splitTime);
+	// console.log("[seq begin] setting split time: " + this.splitTime);
 };
 
 /**
@@ -300,7 +300,7 @@ chesterGL.SequenceAction.prototype.reset = function () {
 chesterGL.SequenceAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
 	if (this.currentAction === 0 && this.elapsed >= this.splitTime) {
-		console.log("switching actions (" + this.actions[1].totalTime + "," + this.actions[1].elapsed + ")");
+		// console.log("switching actions (" + this.actions[1].totalTime + "," + this.actions[1].elapsed + ")");
 		this.actions[0].stop();
 		this.currentAction = 1;
 		this.block.runAction(this.actions[1]);
@@ -357,9 +357,9 @@ chesterGL.RepeatAction.prototype.begin = function () {
 chesterGL.RepeatAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
 	if (this.finished) {
-		console.log("repeat finished");
+		// console.log("repeat finished");
 		if (this.maxTimes < 0 || this.times < this.maxTimes) {
-			console.log("repeating action");
+			// console.log("repeating action");
 			this.times++;
 			this.reset();
 			chesterGL.ActionManager.unscheduleAction(this.action.actionId);
@@ -423,7 +423,6 @@ chesterGL.AnimateAction.prototype.update = function (delta) {
 	var block = this.block;
 	if (this.finished) {
 		this.currentFrame = this.frames.length - 1;
-		this.finished = true;
 		// set last frame
 		block.setFrame(this.frames[this.currentFrame]);
 	} else {
