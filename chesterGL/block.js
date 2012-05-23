@@ -55,7 +55,7 @@ chesterGL.Block = function (rect, type, parent) {
 		this.setColor([1, 1, 1, 1]);
 	}
 
-	if (chesterGL.webglMode && this.type == chesterGL.Block.TYPE['STANDALONE'] && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
+	if (chesterGL.webglMode && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
 		// just a single buffer for all data (a 4x"quad")
 		this.glBuffer = gl.createBuffer();
@@ -523,16 +523,17 @@ chesterGL.Block.prototype.transform = function () {
 	var inBlockGroup = this.parent && this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP'];
 
 	if (chesterGL.webglMode) {
+		var _idx, offset = 9;
 		if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		}
 		if (this.isFrameDirty || (inBlockGroup && this.isTransformDirty)) {
 			// NOTE
 			// the tex coords and the frame coords need to match. Otherwise you get a distorted image
-			var offset = 9;
-			var hw = this.contentSize.width * 0.5, hh = this.contentSize.height * 0.5;
-			var _idx = this.baseBufferIndex * chesterGL.Block.BUFFER_SIZE;
-			var z = this.position[2];
+			var hw = this.contentSize.width * 0.5,
+				hh = this.contentSize.height * 0.5,
+				z = this.position[2];
+			_idx = this.baseBufferIndex * chesterGL.Block.BUFFER_SIZE;
 
 			// NOTE
 			// this is going to be slow :P
