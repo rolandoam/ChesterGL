@@ -209,7 +209,7 @@ chesterGL.debugSprite = false;
 /**
  * @type {Object.<string,Object>}
  * @ignore
- */ 
+ */
 chesterGL.assets = {};
 
 /**
@@ -275,7 +275,7 @@ chesterGL.mouseHandlers = [];
 
 /**
  * sets the current program, also sets the uniforms for that shader
- * 
+ *
  * @param {string} program
  * @return {WebGLProgram}
  * @ignore
@@ -329,6 +329,7 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.debugSpan = document.getElementById("debug-info");
 	// register the default handler for textures
 	chesterGL.registerAssetHandler('texture', chesterGL.defaultTextureHandler);
+	chesterGL.registerAssetHandler('default', chesterGL.defaultAssetHandler);
 	chesterGL.registerAssetLoader('texture', chesterGL.defaultTextureLoader);
 	chesterGL.registerAssetLoader('default', chesterGL.defaultAssetLoader);
 };
@@ -337,7 +338,7 @@ chesterGL.setup = function (canvasId) {
  * tryies to init the graphics stuff:
  * 1st attempt: webgl
  * fallback: canvas
- * 
+ *
  * @param {Element} canvas
  */
 chesterGL.initGraphics = function (canvas) {
@@ -409,7 +410,7 @@ chesterGL.initDefaultShaders = function () {
 		program.attribs = {
 			'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
 			'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
-		}
+		};
 		goog.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
 		goog.exportProperty(program, 'attribs', program.attribs);
 	});
@@ -539,7 +540,7 @@ chesterGL.registerAssetHandler = function (type, handler) {
 
 /**
  * Register a way to load an asset
- * 
+ *
  * @param {string} type
  * @param {Function} loader
  */
@@ -550,7 +551,7 @@ chesterGL.registerAssetLoader = function (type, loader) {
 /**
  * Loads and asset using the registered method to download it. You can register different loaders
  * (to be called to actually do the request) and asset handlers (to be called after the asset is loaded).
- * 
+ *
  * @param {string} type the type of asset being loaded, it could be "texture" or "default"
  * @param {string|Object} assetPath the path for the asset
  * @param {function(Object)=} cb the callback that will be executed as soon as the asset is loaded
@@ -573,7 +574,7 @@ chesterGL.loadAsset = function (type, assetPath, cb) {
 			data: null,
 			status: 'try',
 			listeners: []
-		}
+		};
 		cb && assets[assetPath].listeners.push(cb);
 		chesterGL.loadAsset(type, {path: assetPath, dataType: dataType_});
 	} else if (assets[assetPath].status == 'loading') {
@@ -594,7 +595,7 @@ chesterGL.loadAsset = function (type, assetPath, cb) {
 
 /**
  * adds a listener/query for when all assets are loaded
- * 
+ *
  * @param {string} type You can query for all types if you pass "all" as type
  * @param {function()=} callback The callback to be executed when all assets of that type are loaded
  */
@@ -632,7 +633,7 @@ chesterGL.assetsLoaded = function (type, callback) {
 	}
 	if (allLoaded) {
 		var l;
-		while (l = listeners.shift()) { l(); }
+		while ((l = listeners.shift())) { l(); }
 	}
 };
 
@@ -666,7 +667,7 @@ chesterGL.prepareWebGLTexture = function (texture) {
 		gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 		error = gl.getError();
-		if (error != 0) {
+		if (error !== 0) {
 			console.log("gl error " + error);
 			result = false;
 		}
@@ -683,14 +684,30 @@ chesterGL.prepareWebGLTexture = function (texture) {
 };
 
 /**
- * The default texture handler
- * 
+ * The default asset handler, just sets the 'data' property
+ * of the asset.
  * @param {string} path
- * @param {Object|HTMLImageElement} img
+ * @param {Object} data
+ * @param {string} type
  * @return {boolean}
  * @ignore
  */
-chesterGL.defaultTextureHandler = function (path, img) {
+chesterGL.defaultAssetHandler = function (path, data, type) {
+	var asset = chesterGL.assets[type][path];
+	asset.data = data;
+	return true;
+};
+
+/**
+ * The default texture handler
+ *
+ * @param {string} path
+ * @param {Object|HTMLImageElement} img
+ * @param {string=} type
+ * @return {boolean}
+ * @ignore
+ */
+chesterGL.defaultTextureHandler = function (path, img, type) {
 	if (chesterGL.webglMode && !img.tex) {
 		img.tex = chesterGL.gl.createTexture();
 	}
@@ -716,7 +733,7 @@ chesterGL.defaultTextureLoader = function (type, params) {
 			// call all listeners
 			texture.status = 'loaded';
 			var l;
-			while (l = texture.listeners.shift()) { l(texture.data); }
+			while ((l = texture.listeners.shift())) { l(texture.data); }
 			// test for assets loaded
 			chesterGL.assetsLoaded(type);
 			chesterGL.assetsLoaded('all');
@@ -756,13 +773,12 @@ chesterGL.defaultAssetLoader = function (type, params) {
 		success: function (data, textStatus) {
 			var asset = chesterGL.assets[type][path];
 			if (textStatus == "success") {
-				var handler = chesterGL.assetsHandlers[type];
-				if (!handler) { throw "No handler for asset of type " + type; }
-				if (handler(path, data)) {
+				var handler = chesterGL.assetsHandlers[type] || chesterGL.assetsHandlers['default'];
+				if (handler(path, data, type)) {
 					asset.status = 'loaded';
 					// call all listeners
 					var l;
-					while (l = asset.listeners.shift()) { l(asset.data); }
+					while ((l = asset.listeners.shift())) { l(asset.data); }
 					// test for assets loaded
 					chesterGL.assetsLoaded(type);
 					chesterGL.assetsLoaded('all');
