@@ -362,6 +362,10 @@ chesterGL.Block.prototype.setContentSize = function (width, height) {
 	this.isFrameDirty = true;
 };
 
+chesterGL.Block.prototype.getContentSize = function () {
+	return this.contentSize;
+};
+
 /**
  * sets the scale of the block
  *
@@ -717,6 +721,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
 goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
+goog.exportProperty(chesterGL.Block.prototype, 'getContentSize', chesterGL.Block.prototype.getContentSize);
 goog.exportProperty(chesterGL.Block.prototype, 'setTexture', chesterGL.Block.prototype.setTexture);
 goog.exportProperty(chesterGL.Block.prototype, 'setScale', chesterGL.Block.prototype.setScale);
 goog.exportProperty(chesterGL.Block.prototype, 'setUpdate', chesterGL.Block.prototype.setUpdate);
