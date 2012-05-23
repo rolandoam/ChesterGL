@@ -151,7 +151,7 @@ chesterGL.LabelBlock.prototype.resetCanvas = function (text) {
 		this.text = text;
 	}
 
-	if (this.textHeight == 0) {
+	if (this.textHeight === 0) {
 		cx.save();
 		cx.rotate(90);
 		this.textHeight = cx.measureText("M").width * 1.25;
