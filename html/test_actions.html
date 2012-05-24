@@ -48,7 +48,10 @@ $(document).ready(function () {
 			var a2 = a1.reverse();
 			var a3 = new chesterGL.MoveAction([0, 100, 0], 1000);
 			var a4 = a3.reverse();
-			var seq = new chesterGL.SequenceAction.createSequence(a1, a2, a3, a4);
+			var a5 = new chesterGL.CallbackAction(function () {
+				console.log("sequence ended: " + this);
+			}, b1);
+			var seq = new chesterGL.SequenceAction.createSequence(a1, a2, a3, a4, a5);
 			b1.runAction(seq);
 
 			// 4.- wiggle sprite

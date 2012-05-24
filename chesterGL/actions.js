@@ -219,12 +219,51 @@ chesterGL.MoveAction.prototype.reverse = function () {
 };
 
 /**
+ * A simple action that will execute the callback, useful for
+ * sequences, e.g.: move, then execute some callback.
+ * @constructor
+ * @extends {chesterGL.Action}
+ * @param {function ()} callback the callback to be executed
+ * @param {Object=} thisObject the object to be passed as `this` to the
+ * callback.
+ * @example
+ * // move 100 points up in 0.5 seconds (500 milliseconds)
+ * var move = new chesterGL.MoveAction([0, 100, 0], 250);
+ * var remove = new chesterGL.CallbackAction(function () {
+ *   this.remove();
+ * }, someBlock);
+ */
+chesterGL.CallbackAction = function (callback, thisObject) {
+	this.callback = callback;
+	this.thisObject = thisObject;
+	chesterGL.Action.call(this, 1);
+};
+goog.inherits(chesterGL.CallbackAction, chesterGL.Action);
+
+/**
+ * The callback
+ * @type {?function ()}
+ */
+chesterGL.CallbackAction.prototype.callback = null;
+
+/**
+ * The object that can be used as `this` inside the callback.
+ * @type {Object|undefined}
+ */
+chesterGL.CallbackAction.prototype.thisObject = null;
+
+chesterGL.CallbackAction.prototype.update = function (delta) {
+	this.callback.call((this.thisObject || null));
+	chesterGL.Action.prototype.update.call(this, delta);
+};
+
+/**
  * @constructor
  * @param {chesterGL.Action} action1 the first action
  * @param {chesterGL.Action} action2 the second action
  * @extends {chesterGL.Action}
  * @example
- * var a1 = new chesterGL.MoveAction([100, 100, 0], 5);
+ * var a1 = new chesterGL.MoveAction([100, 100, 0], 5000);
  * var a2 = a1.reverse();
  * var seq = new chesterGL.SequenceAction(a1, a2);
  * block.runAction(seq);
@@ -572,6 +611,7 @@ chesterGL.Block.prototype.runAction = function (action) {
 
 goog.exportSymbol('chesterGL.ActionManager', chesterGL.ActionManager);
 goog.exportSymbol('chesterGL.MoveAction', chesterGL.MoveAction);
+goog.exportSymbol('chesterGL.CallbackAction', chesterGL.CallbackAction);
 goog.exportSymbol('chesterGL.SequenceAction', chesterGL.SequenceAction);
 goog.exportSymbol('chesterGL.RepeatAction', chesterGL.RepeatAction);
 goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
