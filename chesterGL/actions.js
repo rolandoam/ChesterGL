@@ -223,8 +223,8 @@ chesterGL.MoveAction.prototype.reverse = function () {
  * sequences, e.g.: move, then execute some callback.
  * @constructor
  * @extends {chesterGL.Action}
- * @param {function ()} callback the callback to be executed
- * @param {Object=} thisObject the object to be passed as `this` to the
+ * @param {function (Object=)} callback the callback to be executed
+ * @param {Object=} arg the object to be passed as argument to the
  * callback.
  * @example
  * // move 100 points up in 0.5 seconds (500 milliseconds)
@@ -233,16 +233,16 @@ chesterGL.MoveAction.prototype.reverse = function () {
  *   this.remove();
  * }, someBlock);
  */
-chesterGL.CallbackAction = function (callback, thisObject) {
+chesterGL.CallbackAction = function (callback, arg) {
 	this.callback = callback;
-	this.thisObject = thisObject;
+	this.arg = arg;
 	chesterGL.Action.call(this, 1);
 };
 goog.inherits(chesterGL.CallbackAction, chesterGL.Action);
 
 /**
  * The callback
- * @type {?function ()}
+ * @type {?function (Object=)}
  */
 chesterGL.CallbackAction.prototype.callback = null;
 
@@ -250,10 +250,10 @@ chesterGL.CallbackAction.prototype.callback = null;
  * The object that can be used as `this` inside the callback.
  * @type {Object|undefined}
  */
-chesterGL.CallbackAction.prototype.thisObject = null;
+chesterGL.CallbackAction.prototype.arg = null;
 
 chesterGL.CallbackAction.prototype.update = function (delta) {
-	this.callback.call((this.thisObject || null));
+	this.callback.call(null, this.arg);
 	chesterGL.Action.prototype.update.call(this, delta);
 };
 
