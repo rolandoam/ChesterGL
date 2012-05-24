@@ -345,7 +345,7 @@ chesterGL.initGraphics = function (canvas) {
 	try {
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
-			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false});
+			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false, preserveDrawingBuffer: true});
 			if (chesterGL.gl && window['WebGLDebugUtils']) {
 				console.log("installing debug context");
 				chesterGL.gl = WebGLDebugUtils.makeDebugContext(chesterGL.gl, throwOnGLError);
