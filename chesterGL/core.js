@@ -370,7 +370,7 @@ chesterGL.initGraphics = function (canvas) {
 		if (!chesterGL.gl || !chesterGL.offContext) {
 			throw "Error initializing graphic context!";
 		}
-		chesterGL.webglMode = false;
+		chesterGL.webglMode = chesterGL.settings['webglMode'] = false;
 	}
 	// first resize of the canvas
 	chesterGL.canvasResized();
