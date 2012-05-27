@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - chesterGL.ActionManager</title>
+		<title>JsDoc Reference - chesterGL.LabelBlock</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -230,25 +230,27 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace chesterGL.ActionManager
+				Class chesterGL.LabelBlock
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/chesterGL_actions.js.html">actions.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/chesterGL_labelBlock.js.html">labelBlock.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.ActionManager.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.LabelBlock.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -260,9 +262,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.ActionManager.html#constructor">chesterGL.ActionManager</a></b>
+								<b><a href="../symbols/chesterGL.LabelBlock.html#constructor">chesterGL.LabelBlock</a></b>(text, font, fillStyle)
 							</div>
-							<div class="description">global action manager</div>
+							<div class="description">creates a new Label Block.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -271,12 +273,60 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class chesterGL.LabelBlock.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/chesterGL.LabelBlock.html#fillStyle">fillStyle</a></b>
+								</div>
+								<div class="description">the style used to render the text.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/chesterGL.LabelBlock.html#font">font</a></b>
+								</div>
+								<div class="description">the font that will be used to render the text</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/chesterGL.LabelBlock.html#needsTextUpdate">needsTextUpdate</a></b>
+								</div>
+								<div class="description">Whether or not we need to redraw the text</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class chesterGL.ActionManager.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class chesterGL.LabelBlock.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -287,20 +337,11 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">chesterGL.ActionManager.<b><a href="../symbols/chesterGL.ActionManager.html#.scheduleAction">scheduleAction</a></b>(action)
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.LabelBlock.html#setText">setText</a></b>(text, onlyDraw)
 								</div>
-								<div class="description">adds an action to the scheduler</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">chesterGL.ActionManager.<b><a href="../symbols/chesterGL.ActionManager.html#.unscheduleAction">unscheduleAction</a></b>(actionId)
-								</div>
-								<div class="description">removes an action of the manager</div>
+								<div class="description">sets the text to be displayed.</div>
 							</td>
 						</tr>
 					
@@ -317,21 +358,47 @@ ul.inheritsList
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>chesterGL.ActionManager</b>
+						<b>chesterGL.LabelBlock</b>(text, font, fillStyle)
 				</div>
 				
 				<div class="description">
-					global action manager
+					creates a new Label Block. Label blocks internally use a canvas to render the text.
+These blocks should not be used for high-frecuency updated labels, for that you
+should use bitmap fonts (not yet supported) or an off-screen DOM element.
+Use this for static elements, like dialogues, menus, etc.
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>text</b>
+								
+							</dt>
+								<dd>the string to render</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string=}</span>  <b>font</b>
+								
+							</dt>
+								<dd>the name/family of the font, defaults to "20pt sans-serif"</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string=}</span>  <b>fillStyle</b>
+								
+							</dt>
+								<dd>the style of the font, defaults to 'white'</dd>
+						
+						</dl>
 					
 					
 					
@@ -345,6 +412,78 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="fillStyle"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>fillStyle</b>
+					
+					</div>
+					<div class="description">
+						the style used to render the text. Need to set the text again
+to actually change the style
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="font"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>font</b>
+					
+					</div>
+					<div class="description">
+						the font that will be used to render the text
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="needsTextUpdate"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>needsTextUpdate</b>
+					
+					</div>
+					<div class="description">
+						Whether or not we need to redraw the text
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
 
 <!-- ============================== method details ========================= -->		
 			
@@ -352,15 +491,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".scheduleAction"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="setText"> </a>
+					<div class="fixedFont">
 					
-					<span class="light">{number}</span>
-					<span class="light">chesterGL.ActionManager.</span><b>scheduleAction</b>(action)
+					
+					<b>setText</b>(text, onlyDraw)
 					
 					</div>
 					<div class="description">
-						adds an action to the scheduler
+						sets the text to be displayed. This will reset the underlying canvas and resize it to the size of the text
 						
 						
 					</div>
@@ -372,53 +511,16 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/chesterGL.Action.html">chesterGL.Action</a>}</span> <b>action</b>
+									<span class="light fixedFont">{string}</span> <b>text</b>
 									
 								</dt>
 								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{number}</span> the actionId of the recently scheduled action</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".unscheduleAction"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.ActionManager.</span><b>unscheduleAction</b>(actionId)
-					
-					</div>
-					<div class="description">
-						removes an action of the manager
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{number}</span> <b>actionId</b>
+									<span class="light fixedFont">{boolean=}</span> <b>onlyDraw</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>if true, then just draw the text on the canvas</dd>
 							
 							</dl>
 						
@@ -443,7 +545,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:39 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:40 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

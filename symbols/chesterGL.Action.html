@@ -203,13 +203,23 @@ ul.inheritsList
 	
 	<li><a href="../symbols/chesterGL.BlockGroup.html">chesterGL.BlockGroup</a></li>
 	
-	<li><a href="../symbols/chesterGL.MoveToAction.html">chesterGL.MoveToAction</a></li>
+	<li><a href="../symbols/chesterGL.CallbackAction.html">chesterGL.CallbackAction</a></li>
+	
+	<li><a href="../symbols/chesterGL.LabelBlock.html">chesterGL.LabelBlock</a></li>
+	
+	<li><a href="../symbols/chesterGL.MoveAction.html">chesterGL.MoveAction</a></li>
 	
 	<li><a href="../symbols/chesterGL.ParticleSystem.html">chesterGL.ParticleSystem</a></li>
 	
 	<li><a href="../symbols/chesterGL.PrimitiveBlock.html">chesterGL.PrimitiveBlock</a></li>
 	
+	<li><a href="../symbols/chesterGL.RepeatAction.html">chesterGL.RepeatAction</a></li>
+	
+	<li><a href="../symbols/chesterGL.SequenceAction.html">chesterGL.SequenceAction</a></li>
+	
 	<li><a href="../symbols/chesterGL.TMXBlock.html">chesterGL.TMXBlock</a></li>
+	
+	<li><a href="../symbols/chesterGL.WiggleAction.html">chesterGL.WiggleAction</a></li>
 	
 </ul>
 <hr />
@@ -277,9 +287,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Action.html#block">block</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#actionId">actionId</a></b>
 								</div>
-								<div class="description">The block to which this action will be applied</div>
+								<div class="description">The internal action id, useful to unschedule an action.</div>
 							</td>
 						</tr>
 					
@@ -287,9 +297,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.Action.html#currentTime">currentTime</a></b>
+								<b><a href="../symbols/chesterGL.Action.html#block">block</a></b>
 								</div>
-								<div class="description">The current time of the action</div>
+								<div class="description">The block to which this action will be applied</div>
 							</td>
 						</tr>
 					
@@ -359,18 +369,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/chesterGL.Action.html#begin">begin</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Action.html#stop">stop</a></b>()
 								</div>
-								<div class="description">will be called the first time - usually overriden by subclasses</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/chesterGL.Action.html#update">update</a></b>(delta)
-								</div>
-								<div class="description">This is the default update function (does nothing)</div>
+								<div class="description">will be called at the end of the function (or to stop it)</div>
 							</td>
 						</tr>
 					
@@ -410,7 +411,7 @@ ul.inheritsList
 								<span class="light fixedFont">{number}</span>  <b>totalTime</b>
 								
 							</dt>
-								<dd>in seconds</dd>
+								<dd>in milliseconds</dd>
 						
 							<dt>
 								<span class="light fixedFont">{<a href="../symbols/chesterGL.Block.html">chesterGL.Block</a>=}</span>  <b>block</b>
@@ -436,15 +437,16 @@ ul.inheritsList
 					Field Detail
 				</div>
 				
-					<a name="block"> </a>
+					<a name="actionId"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>block</b>
+					<b>actionId</b>
 					
 					</div>
 					<div class="description">
-						The block to which this action will be applied
+						The internal action id, useful to unschedule an action. It's only
+valid after scheduling an action.
 						
 						
 					</div>
@@ -458,15 +460,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="currentTime"> </a>
+					<a name="block"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>currentTime</b>
+					<b>block</b>
 					
 					</div>
 					<div class="description">
-						The current time of the action
+						The block to which this action will be applied
 						
 						
 					</div>
@@ -578,57 +580,21 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="begin"> </a>
+					<a name="stop"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>begin</b>()
+					<b>stop</b>()
 					
 					</div>
 					<div class="description">
-						will be called the first time - usually overriden by subclasses
+						will be called at the end of the function (or to stop it)
 						
 						
 					</div>
 					
 					
 					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="update"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>update</b>(delta)
-					
-					</div>
-					<div class="description">
-						This is the default update function (does nothing)
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{number}</span> <b>delta</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -651,7 +617,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Mar 18 2012 12:51:12 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:39 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

@@ -203,13 +203,23 @@ ul.inheritsList
 	
 	<li><a href="../symbols/chesterGL.BlockGroup.html">chesterGL.BlockGroup</a></li>
 	
-	<li><a href="../symbols/chesterGL.MoveToAction.html">chesterGL.MoveToAction</a></li>
+	<li><a href="../symbols/chesterGL.CallbackAction.html">chesterGL.CallbackAction</a></li>
+	
+	<li><a href="../symbols/chesterGL.LabelBlock.html">chesterGL.LabelBlock</a></li>
+	
+	<li><a href="../symbols/chesterGL.MoveAction.html">chesterGL.MoveAction</a></li>
 	
 	<li><a href="../symbols/chesterGL.ParticleSystem.html">chesterGL.ParticleSystem</a></li>
 	
 	<li><a href="../symbols/chesterGL.PrimitiveBlock.html">chesterGL.PrimitiveBlock</a></li>
 	
+	<li><a href="../symbols/chesterGL.RepeatAction.html">chesterGL.RepeatAction</a></li>
+	
+	<li><a href="../symbols/chesterGL.SequenceAction.html">chesterGL.SequenceAction</a></li>
+	
 	<li><a href="../symbols/chesterGL.TMXBlock.html">chesterGL.TMXBlock</a></li>
+	
+	<li><a href="../symbols/chesterGL.WiggleAction.html">chesterGL.WiggleAction</a></li>
 	
 </ul>
 <hr />
@@ -291,6 +301,15 @@ The first line of children are the layers of the tmx map and they're all BlockGr
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">chesterGL.TMXBlock.<b><a href="../symbols/chesterGL.TMXBlock.html#.findTilesetForGid">findTilesetForGid</a></b>(tilesets, gid)
+								</div>
+								<div class="description">finds the right texture for the given gid</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">chesterGL.TMXBlock.<b><a href="../symbols/chesterGL.TMXBlock.html#.loadTMX">loadTMX</a></b>(path)
 								</div>
 								<div class="description">Will load a TMX file, parse it when loaded and add the metadata to create
@@ -304,7 +323,7 @@ the TMX block later</div>
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/chesterGL.Block.html">chesterGL.Block</a>: </dt><dd><a href="../symbols/chesterGL.Block.html#addChild">addChild</a>, <a href="../symbols/chesterGL.Block.html#removeChild">removeChild</a>, <a href="../symbols/chesterGL.Block.html#runAction">runAction</a>, <a href="../symbols/chesterGL.Block.html#setColor">setColor</a>, <a href="../symbols/chesterGL.Block.html#setContentSize">setContentSize</a>, <a href="../symbols/chesterGL.Block.html#setFrame">setFrame</a>, <a href="../symbols/chesterGL.Block.html#setPosition">setPosition</a>, <a href="../symbols/chesterGL.Block.html#setRotation">setRotation</a>, <a href="../symbols/chesterGL.Block.html#setScale">setScale</a>, <a href="../symbols/chesterGL.Block.html#setTexture">setTexture</a>, <a href="../symbols/chesterGL.Block.html#setUpdate">setUpdate</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/chesterGL.Block.html">chesterGL.Block</a>: </dt><dd><a href="../symbols/chesterGL.Block.html#addChild">addChild</a>, <a href="../symbols/chesterGL.Block.html#getBoundingBox">getBoundingBox</a>, <a href="../symbols/chesterGL.Block.html#getColor">getColor</a>, <a href="../symbols/chesterGL.Block.html#getContentSize">getContentSize</a>, <a href="../symbols/chesterGL.Block.html#getFrame">getFrame</a>, <a href="../symbols/chesterGL.Block.html#getRotation">getRotation</a>, <a href="../symbols/chesterGL.Block.html#getScale">getScale</a>, <a href="../symbols/chesterGL.Block.html#getTexture">getTexture</a>, <a href="../symbols/chesterGL.Block.html#isVisible">isVisible</a>, <a href="../symbols/chesterGL.Block.html#removeChild">removeChild</a>, <a href="../symbols/chesterGL.Block.html#runAction">runAction</a>, <a href="../symbols/chesterGL.Block.html#setColor">setColor</a>, <a href="../symbols/chesterGL.Block.html#setContentSize">setContentSize</a>, <a href="../symbols/chesterGL.Block.html#setFrame">setFrame</a>, <a href="../symbols/chesterGL.Block.html#setPosition">setPosition</a>, <a href="../symbols/chesterGL.Block.html#setRotation">setRotation</a>, <a href="../symbols/chesterGL.Block.html#setScale">setScale</a>, <a href="../symbols/chesterGL.Block.html#setTexture">setTexture</a>, <a href="../symbols/chesterGL.Block.html#setUpdate">setUpdate</a>, <a href="../symbols/chesterGL.Block.html#setVisible">setVisible</a></dd>
 				</dl>
 				
 			
@@ -362,6 +381,55 @@ The first line of children are the layers of the tmx map and they're all BlockGr
 					Method Detail
 				</div>
 				
+					<a name=".findTilesetForGid"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{Object}</span>
+					<span class="light">chesterGL.TMXBlock.</span><b>findTilesetForGid</b>(tilesets, gid)
+					
+					</div>
+					<div class="description">
+						finds the right texture for the given gid
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Array.<Object>}</span> <b>tilesets</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>gid</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name=".loadTMX"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -411,7 +479,7 @@ the TMX block later
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Mar 18 2012 12:51:13 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:40 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

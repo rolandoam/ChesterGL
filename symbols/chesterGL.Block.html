@@ -203,13 +203,23 @@ ul.inheritsList
 	
 	<li><a href="../symbols/chesterGL.BlockGroup.html">chesterGL.BlockGroup</a></li>
 	
-	<li><a href="../symbols/chesterGL.MoveToAction.html">chesterGL.MoveToAction</a></li>
+	<li><a href="../symbols/chesterGL.CallbackAction.html">chesterGL.CallbackAction</a></li>
+	
+	<li><a href="../symbols/chesterGL.LabelBlock.html">chesterGL.LabelBlock</a></li>
+	
+	<li><a href="../symbols/chesterGL.MoveAction.html">chesterGL.MoveAction</a></li>
 	
 	<li><a href="../symbols/chesterGL.ParticleSystem.html">chesterGL.ParticleSystem</a></li>
 	
 	<li><a href="../symbols/chesterGL.PrimitiveBlock.html">chesterGL.PrimitiveBlock</a></li>
 	
+	<li><a href="../symbols/chesterGL.RepeatAction.html">chesterGL.RepeatAction</a></li>
+	
+	<li><a href="../symbols/chesterGL.SequenceAction.html">chesterGL.SequenceAction</a></li>
+	
 	<li><a href="../symbols/chesterGL.TMXBlock.html">chesterGL.TMXBlock</a></li>
+	
+	<li><a href="../symbols/chesterGL.WiggleAction.html">chesterGL.WiggleAction</a></li>
 	
 </ul>
 <hr />
@@ -516,6 +526,78 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getBoundingBox">getBoundingBox</a></b>()
+								</div>
+								<div class="description">returns the current bounding box as an Array [bottom, left, width, height]</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getColor">getColor</a></b>()
+								</div>
+								<div class="description">gets the color of the block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getContentSize">getContentSize</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getFrame">getFrame</a></b>()
+								</div>
+								<div class="description">gets the frame for this block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getRotation">getRotation</a></b>()
+								</div>
+								<div class="description">gets the rotation of the block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getScale">getScale</a></b>()
+								</div>
+								<div class="description">gets the scale of the block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#getTexture">getTexture</a></b>()
+								</div>
+								<div class="description">gets the texture of the block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#isVisible">isVisible</a></b>()
+								</div>
+								<div class="description">returns whether or not the block is visible</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#removeChild">removeChild</a></b>(block)
 								</div>
 								<div class="description">removes a block from the children list.</div>
@@ -601,6 +683,15 @@ the array should be created in the order RGBA</div>
 								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#setUpdate">setUpdate</a></b>(callback)
 								</div>
 								<div class="description">sets the update function - to be called every frame for this block</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/chesterGL.Block.html#setVisible">setVisible</a></b>(visible)
+								</div>
+								<div class="description">sets whether or not the block is visible</div>
 							</td>
 						</tr>
 					
@@ -1180,6 +1271,255 @@ the child will be scheduled to be added after the visit.
 
 					<hr />
 				
+					<a name="getBoundingBox"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Array}</span>
+					<b>getBoundingBox</b>()
+					
+					</div>
+					<div class="description">
+						returns the current bounding box as an Array [bottom, left, width, height]
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Array}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getColor"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Float32Array}</span>
+					<b>getColor</b>()
+					
+					</div>
+					<div class="description">
+						gets the color of the block
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Float32Array}</span> an array with the color [r, g, b, a]</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getContentSize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getContentSize</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getFrame"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Float32Array}</span>
+					<b>getFrame</b>()
+					
+					</div>
+					<div class="description">
+						gets the frame for this block
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Float32Array}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getRotation"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>getRotation</b>()
+					
+					</div>
+					<div class="description">
+						gets the rotation of the block
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> then current rotation angle in radians, CW</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getScale"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>getScale</b>()
+					
+					</div>
+					<div class="description">
+						gets the scale of the block
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getTexture"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string|null}</span>
+					<b>getTexture</b>()
+					
+					</div>
+					<div class="description">
+						gets the texture of the block
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string|null}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="isVisible"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>isVisible</b>()
+					
+					</div>
+					<div class="description">
+						returns whether or not the block is visible
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="removeChild"> </a>
 					<div class="fixedFont">
 					
@@ -1554,6 +1894,42 @@ block.setContentSize(128, 128);</pre>
 						
 						
 
+					<hr />
+				
+					<a name="setVisible"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setVisible</b>(visible)
+					
+					</div>
+					<div class="description">
+						sets whether or not the block is visible
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{boolean}</span> <b>visible</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -1568,7 +1944,7 @@ block.setContentSize(128, 128);</pre>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Mar 18 2012 12:51:13 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:40 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

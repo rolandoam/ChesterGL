@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - chesterGL.ActionManager</title>
+		<title>JsDoc Reference - chesterGL.WiggleAction</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -230,12 +230,14 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace chesterGL.ActionManager
+				Class chesterGL.WiggleAction
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					.<br />
 				
 			
 				
@@ -247,8 +249,8 @@ ul.inheritsList
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.ActionManager.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.WiggleAction.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -260,9 +262,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.ActionManager.html#constructor">chesterGL.ActionManager</a></b>
+								<b><a href="../symbols/chesterGL.WiggleAction.html#constructor">chesterGL.WiggleAction</a></b>(amplitude, cycles, totalTime, block)
 							</div>
-							<div class="description">global action manager</div>
+							<div class="description"></div>
 						</td>
 					</tr>
 				</tbody>
@@ -271,36 +273,35 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
-
-<!-- ============================== methods summary ======================== -->
-			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class chesterGL.ActionManager.">
-					<caption>Method Summary</caption>
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class chesterGL.WiggleAction.">
+					<caption>Field Summary</caption>
 					<thead>
 						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
 						</tr>
 					</thead>
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">chesterGL.ActionManager.<b><a href="../symbols/chesterGL.ActionManager.html#.scheduleAction">scheduleAction</a></b>(action)
+								<div class="fixedFont">
+								<b><a href="../symbols/chesterGL.WiggleAction.html#amplitude">amplitude</a></b>
 								</div>
-								<div class="description">adds an action to the scheduler</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">chesterGL.ActionManager.<b><a href="../symbols/chesterGL.ActionManager.html#.unscheduleAction">unscheduleAction</a></b>(actionId)
+								<div class="fixedFont">
+								<b><a href="../symbols/chesterGL.WiggleAction.html#cycles">cycles</a></b>
 								</div>
-								<div class="description">removes an action of the manager</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -310,6 +311,9 @@ ul.inheritsList
 				
 				
 			
+
+<!-- ============================== methods summary ======================== -->
+			
 <!-- ============================== events summary ======================== -->
 			
 
@@ -317,21 +321,50 @@ ul.inheritsList
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>chesterGL.ActionManager</b>
+						<b>chesterGL.WiggleAction</b>(amplitude, cycles, totalTime, block)
 				</div>
 				
 				<div class="description">
-					global action manager
+					
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>amplitude</b>
+								
+							</dt>
+								<dd>in radians of the wiggle</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>cycles</b>
+								
+							</dt>
+								<dd>the total number of cycles</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>totalTime</b>
+								
+							</dt>
+								<dd>the total duration (in milliseconds)</dd>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/chesterGL.Block.html">chesterGL.Block</a>=}</span>  <b>block</b>
+								
+							</dt>
+								<dd>The block that will receive this action</dd>
+						
+						</dl>
 					
 					
 					
@@ -345,85 +378,47 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
-
-<!-- ============================== method details ========================= -->		
-			
 				<div class="sectionTitle">
-					Method Detail
+					Field Detail
 				</div>
 				
-					<a name=".scheduleAction"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="amplitude"> </a>
+					<div class="fixedFont">
 					
-					<span class="light">{number}</span>
-					<span class="light">chesterGL.ActionManager.</span><b>scheduleAction</b>(action)
+					<span class="light">{the amplitude of the wiggle}</span>
+					<b>amplitude</b>
 					
 					</div>
 					<div class="description">
-						adds an action to the scheduler
+						
 						
 						
 					</div>
 					
 					
-					
+
 						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/chesterGL.Action.html">chesterGL.Action</a>}</span> <b>action</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{number}</span> the actionId of the recently scheduled action</dd>
-							
-							</dl>
 						
 						
 						
 
 					<hr />
 				
-					<a name=".unscheduleAction"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="cycles"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">chesterGL.ActionManager.</span><b>unscheduleAction</b>(actionId)
+					<span class="light">{the number of cycles of the wiggle}</span>
+					<b>cycles</b>
 					
 					</div>
 					<div class="description">
-						removes an action of the manager
+						
 						
 						
 					</div>
 					
 					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{number}</span> <b>actionId</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
+
 						
 						
 						
@@ -431,6 +426,9 @@ ul.inheritsList
 
 					
 				
+			
+
+<!-- ============================== method details ========================= -->		
 			
 			
 <!-- ============================== event details ========================= -->		
@@ -443,7 +441,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:39 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:40 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

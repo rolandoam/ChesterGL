@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - chesterGL.ActionManager</title>
+		<title>JsDoc Reference - chesterGL.RepeatAction</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -230,12 +230,14 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace chesterGL.ActionManager
+				Class chesterGL.RepeatAction
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					.<br />
 				
 			
 				
@@ -247,8 +249,8 @@ ul.inheritsList
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.ActionManager.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class chesterGL.RepeatAction.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -260,9 +262,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/chesterGL.ActionManager.html#constructor">chesterGL.ActionManager</a></b>
+								<b><a href="../symbols/chesterGL.RepeatAction.html#constructor">chesterGL.RepeatAction</a></b>(action, maxTimes)
 							</div>
-							<div class="description">global action manager</div>
+							<div class="description"></div>
 						</td>
 					</tr>
 				</tbody>
@@ -274,42 +276,6 @@ ul.inheritsList
 
 <!-- ============================== methods summary ======================== -->
 			
-				
-				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class chesterGL.ActionManager.">
-					<caption>Method Summary</caption>
-					<thead>
-						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
-						</tr>
-					</thead>
-					<tbody>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">chesterGL.ActionManager.<b><a href="../symbols/chesterGL.ActionManager.html#.scheduleAction">scheduleAction</a></b>(action)
-								</div>
-								<div class="description">adds an action to the scheduler</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">chesterGL.ActionManager.<b><a href="../symbols/chesterGL.ActionManager.html#.unscheduleAction">unscheduleAction</a></b>(actionId)
-								</div>
-								<div class="description">removes an action of the manager</div>
-							</td>
-						</tr>
-					
-					</tbody>
-				</table>
-				
-				
-				
-			
 <!-- ============================== events summary ======================== -->
 			
 
@@ -317,21 +283,38 @@ ul.inheritsList
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>chesterGL.ActionManager</b>
+						<b>chesterGL.RepeatAction</b>(action, maxTimes)
 				</div>
 				
 				<div class="description">
-					global action manager
+					
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/chesterGL.Action.html">chesterGL.Action</a>}</span>  <b>action</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{number=}</span>  <b>maxTimes</b>
+								
+							</dt>
+								<dd>The number of times an action should be repeated (-1 for infinity). Defaults to 1</dd>
+						
+						</dl>
 					
 					
 					
@@ -348,90 +331,6 @@ ul.inheritsList
 
 <!-- ============================== method details ========================= -->		
 			
-				<div class="sectionTitle">
-					Method Detail
-				</div>
-				
-					<a name=".scheduleAction"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					<span class="light">{number}</span>
-					<span class="light">chesterGL.ActionManager.</span><b>scheduleAction</b>(action)
-					
-					</div>
-					<div class="description">
-						adds an action to the scheduler
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/chesterGL.Action.html">chesterGL.Action</a>}</span> <b>action</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{number}</span> the actionId of the recently scheduled action</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".unscheduleAction"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">chesterGL.ActionManager.</span><b>unscheduleAction</b>(actionId)
-					
-					</div>
-					<div class="description">
-						removes an action of the manager
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{number}</span> <b>actionId</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					
-				
-			
 			
 <!-- ============================== event details ========================= -->		
 			
@@ -443,7 +342,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:39 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 27 2012 14:49:40 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>
