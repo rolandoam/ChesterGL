@@ -349,6 +349,15 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 };
 
 /**
+ * gets the frame for this block
+ *
+ * @returns {Float32Array}
+ */
+chesterGL.Block.prototype.getFrame = function () {
+	return this.frame;
+};
+
+/**
  * sets the size of the block in pixels
  *
  * @param {number} width
@@ -377,6 +386,15 @@ chesterGL.Block.prototype.setScale = function (newScale) {
 };
 
 /**
+ * gets the scale of the block
+ *
+ * @returns {number}
+ */
+chesterGL.Block.prototype.getScale = function () {
+	return this.scale;
+};
+
+/**
  * sets the color of the block
  * the array should be created in the order RGBA
  *
@@ -385,6 +403,14 @@ chesterGL.Block.prototype.setScale = function (newScale) {
 chesterGL.Block.prototype.setColor = function (color) {
 	this.color = goog.vec.Vec4.createFloat32FromArray(color);
 	this.isColorDirty = true;
+};
+
+/**
+ * gets the color of the block
+ * @returns {Float32Array} an array with the color [r, g, b, a]
+ */
+chesterGL.Block.prototype.getColor = function () {
+	return this.color;
 };
 
 /**
@@ -429,12 +455,28 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 };
 
 /**
+ * gets the texture of the block
+ * @returns {string|null}
+ */
+chesterGL.Block.prototype.getTexture = function () {
+	return this.texture;
+};
+
+/**
  * sets the rotation of the block to a specific angle
  * @param {number} angle specified in radians, CW
  */
 chesterGL.Block.prototype.setRotation = function (angle) {
 	this.rotation = angle;
 	this.isTransformDirty = true;
+};
+
+/**
+ * gets the rotation of the block
+ * @returns {number} then current rotation angle in radians, CW
+ */
+chesterGL.Block.prototype.getRotation = function () {
+	return this.rotation;
 };
 
 /**
@@ -649,9 +691,10 @@ chesterGL.Block.prototype.render = function () {
 	if (this.type == chesterGL.Block.TYPE['SCENE']) {
 		return;
 	}
+	var gl, texture;
 
 	if (chesterGL.webglMode) {
-		var gl = chesterGL.gl;
+		gl = chesterGL.gl;
 		// select current shader
 		var program = chesterGL.selectProgram(chesterGL.Block.PROGRAM_NAME[this.program]);
 
@@ -666,7 +709,7 @@ chesterGL.Block.prototype.render = function () {
 		if (this.program == chesterGL.Block.PROGRAM['DEFAULT']) {
 			// no extra attributes for the shader
 		} else if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
-			var texture = chesterGL.getAsset('texture', this.texture);
+			texture = chesterGL.getAsset('texture', this.texture);
 
 			// pass the texture attributes
 			gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, stride, texOff);
@@ -684,11 +727,11 @@ chesterGL.Block.prototype.render = function () {
 		gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	} else {
-		var gl = chesterGL.offContext;
+		gl = chesterGL.offContext;
 		// canvas drawing api - we only draw textures
 		if (this.program == chesterGL.Block.PROGRAM.TEXTURE) {
 			var m = this.mvMatrix;
-			var texture = chesterGL.getAsset('texture', this.texture);
+			texture = chesterGL.getAsset('texture', this.texture);
 			gl.globalAlpha = this.opacity;
 			gl.setTransform(m[0], m[4], m[1], m[5], m[12], gl.viewportHeight - m[13]);
 			var w = this.contentSize.width, h = this.contentSize.height;
@@ -717,13 +760,17 @@ goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.proto
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
-goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
+goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
+goog.exportProperty(chesterGL.Block.prototype, 'getColor', chesterGL.Block.prototype.getColor);
 goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
+goog.exportProperty(chesterGL.Block.prototype, 'getFrame', chesterGL.Block.prototype.getFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
 goog.exportProperty(chesterGL.Block.prototype, 'getContentSize', chesterGL.Block.prototype.getContentSize);
 goog.exportProperty(chesterGL.Block.prototype, 'setTexture', chesterGL.Block.prototype.setTexture);
+goog.exportProperty(chesterGL.Block.prototype, 'getTexture', chesterGL.Block.prototype.getTexture);
 goog.exportProperty(chesterGL.Block.prototype, 'setScale', chesterGL.Block.prototype.setScale);
+goog.exportProperty(chesterGL.Block.prototype, 'getScale', chesterGL.Block.prototype.getScale);
 goog.exportProperty(chesterGL.Block.prototype, 'setUpdate', chesterGL.Block.prototype.setUpdate);
 goog.exportProperty(chesterGL.Block.prototype, 'setVisible', chesterGL.Block.prototype.setVisible);
 goog.exportProperty(chesterGL.Block.prototype, 'isVisible', chesterGL.Block.prototype.isVisible);
