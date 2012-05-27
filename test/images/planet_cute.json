@@ -1,0 +1,452 @@
+{"frames": {
+
+"Brown Block.png":
+{
+	"frame": {"x":824,"y":2,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Character Boy.png":
+{
+	"frame": {"x":927,"y":287,"w":67,"h":89},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":17,"y":62,"w":67,"h":89},
+	"sourceSize": {"w":101,"h":171}
+},
+"Character Cat Girl.png":
+{
+	"frame": {"x":927,"y":194,"w":69,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":16,"y":60,"w":69,"h":91},
+	"sourceSize": {"w":101,"h":171}
+},
+"Character Horn Girl.png":
+{
+	"frame": {"x":211,"y":95,"w":77,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":60,"w":77,"h":91},
+	"sourceSize": {"w":101,"h":171}
+},
+"Character Pink Girl.png":
+{
+	"frame": {"x":927,"y":2,"w":77,"h":89},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":12,"y":62,"w":77,"h":89},
+	"sourceSize": {"w":101,"h":171}
+},
+"Character Princess Girl.png":
+{
+	"frame": {"x":927,"y":93,"w":75,"h":99},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":13,"y":52,"w":75,"h":99},
+	"sourceSize": {"w":101,"h":171}
+},
+"Chest Closed.png":
+{
+	"frame": {"x":721,"y":2,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Chest Lid.png":
+{
+	"frame": {"x":515,"y":246,"w":101,"h":85},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":85},
+	"sourceSize": {"w":101,"h":171}
+},
+"Chest Open.png":
+{
+	"frame": {"x":618,"y":2,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Dirt Block.png":
+{
+	"frame": {"x":515,"y":2,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Door Tall Closed.png":
+{
+	"frame": {"x":2,"y":672,"w":101,"h":151},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":20,"w":101,"h":151},
+	"sourceSize": {"w":101,"h":171}
+},
+"Door Tall Open.png":
+{
+	"frame": {"x":721,"y":357,"w":101,"h":79},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":92,"w":101,"h":79},
+	"sourceSize": {"w":101,"h":171}
+},
+"Enemy Bug.png":
+{
+	"frame": {"x":105,"y":885,"w":99,"h":77},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":77,"w":99,"h":77},
+	"sourceSize": {"w":101,"h":171}
+},
+"Gem Blue.png":
+{
+	"frame": {"x":721,"y":242,"w":101,"h":113},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":57,"w":101,"h":113},
+	"sourceSize": {"w":101,"h":171}
+},
+"Gem Green.png":
+{
+	"frame": {"x":824,"y":240,"w":101,"h":113},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":57,"w":101,"h":113},
+	"sourceSize": {"w":101,"h":171}
+},
+"Gem Orange.png":
+{
+	"frame": {"x":824,"y":125,"w":101,"h":113},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":57,"w":101,"h":113},
+	"sourceSize": {"w":101,"h":171}
+},
+"Grass Block.png":
+{
+	"frame": {"x":108,"y":2,"w":101,"h":131},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":40,"w":101,"h":131},
+	"sourceSize": {"w":101,"h":171}
+},
+"Heart.png":
+{
+	"frame": {"x":211,"y":2,"w":89,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":47,"w":89,"h":91},
+	"sourceSize": {"w":101,"h":171}
+},
+"Key.png":
+{
+	"frame": {"x":927,"y":378,"w":59,"h":99},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":17,"y":56,"w":59,"h":99},
+	"sourceSize": {"w":101,"h":171}
+},
+"Plain Block.png":
+{
+	"frame": {"x":412,"y":2,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Ramp East.png":
+{
+	"frame": {"x":618,"y":125,"w":101,"h":119},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":52,"w":101,"h":119},
+	"sourceSize": {"w":101,"h":171}
+},
+"Ramp North.png":
+{
+	"frame": {"x":618,"y":329,"w":101,"h":81},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":90,"w":101,"h":81},
+	"sourceSize": {"w":101,"h":171}
+},
+"Ramp South.png":
+{
+	"frame": {"x":309,"y":2,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Ramp West.png":
+{
+	"frame": {"x":515,"y":125,"w":101,"h":119},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":52,"w":101,"h":119},
+	"sourceSize": {"w":101,"h":171}
+},
+"Rock.png":
+{
+	"frame": {"x":208,"y":357,"w":99,"h":99},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":65,"w":99,"h":99},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof East.png":
+{
+	"frame": {"x":412,"y":125,"w":101,"h":119},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":52,"w":101,"h":119},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof North East.png":
+{
+	"frame": {"x":412,"y":246,"w":101,"h":85},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":86,"w":101,"h":85},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof North West.png":
+{
+	"frame": {"x":309,"y":246,"w":101,"h":85},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":86,"w":101,"h":85},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof North.png":
+{
+	"frame": {"x":618,"y":246,"w":101,"h":81},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":90,"w":101,"h":81},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof South East.png":
+{
+	"frame": {"x":105,"y":514,"w":101,"h":123},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":48,"w":101,"h":123},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof South West.png":
+{
+	"frame": {"x":105,"y":389,"w":101,"h":123},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":48,"w":101,"h":123},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof South.png":
+{
+	"frame": {"x":206,"y":885,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Roof West.png":
+{
+	"frame": {"x":309,"y":125,"w":101,"h":119},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":52,"w":101,"h":119},
+	"sourceSize": {"w":101,"h":171}
+},
+"Selector.png":
+{
+	"frame": {"x":2,"y":2,"w":101,"h":171},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":101,"h":171},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow East.png":
+{
+	"frame": {"x":998,"y":194,"w":21,"h":81},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":80,"y":50,"w":21,"h":81},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow North East.png":
+{
+	"frame": {"x":131,"y":964,"w":21,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":80,"y":50,"w":21,"h":51},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow North West.png":
+{
+	"frame": {"x":55,"y":964,"w":51,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":51,"h":51},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow North.png":
+{
+	"frame": {"x":309,"y":357,"w":101,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":9,"w":101,"h":91},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow Side West.png":
+{
+	"frame": {"x":208,"y":297,"w":51,"h":41},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":51,"h":41},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow South East.png":
+{
+	"frame": {"x":108,"y":964,"w":21,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":80,"y":80,"w":21,"h":51},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow South West.png":
+{
+	"frame": {"x":2,"y":964,"w":51,"h":51},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":80,"w":51,"h":51},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow South.png":
+{
+	"frame": {"x":309,"y":450,"w":101,"h":21},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":79,"w":101,"h":21},
+	"sourceSize": {"w":101,"h":171}
+},
+"Shadow West.png":
+{
+	"frame": {"x":412,"y":333,"w":51,"h":81},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":51,"h":81},
+	"sourceSize": {"w":101,"h":171}
+},
+"SpeechBubble.png":
+{
+	"frame": {"x":824,"y":355,"w":101,"h":107},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":64,"w":101,"h":107},
+	"sourceSize": {"w":101,"h":171}
+},
+"Star.png":
+{
+	"frame": {"x":208,"y":479,"w":101,"h":101},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":51,"w":101,"h":101},
+	"sourceSize": {"w":101,"h":171}
+},
+"Stone Block Tall.png":
+{
+	"frame": {"x":2,"y":344,"w":101,"h":163},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":101,"h":163},
+	"sourceSize": {"w":101,"h":171}
+},
+"Stone Block.png":
+{
+	"frame": {"x":105,"y":264,"w":101,"h":123},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":48,"w":101,"h":123},
+	"sourceSize": {"w":101,"h":171}
+},
+"Tree Short.png":
+{
+	"frame": {"x":208,"y":188,"w":99,"h":107},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":55,"w":99,"h":107},
+	"sourceSize": {"w":101,"h":171}
+},
+"Tree Tall.png":
+{
+	"frame": {"x":2,"y":825,"w":101,"h":137},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":101,"h":137},
+	"sourceSize": {"w":101,"h":171}
+},
+"Tree Ugly.png":
+{
+	"frame": {"x":721,"y":125,"w":101,"h":115},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":54,"w":101,"h":115},
+	"sourceSize": {"w":101,"h":171}
+},
+"Wall Block Tall.png":
+{
+	"frame": {"x":2,"y":175,"w":101,"h":167},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":4,"w":101,"h":167},
+	"sourceSize": {"w":101,"h":171}
+},
+"Wall Block.png":
+{
+	"frame": {"x":105,"y":135,"w":101,"h":127},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":44,"w":101,"h":127},
+	"sourceSize": {"w":101,"h":171}
+},
+"Water Block.png":
+{
+	"frame": {"x":105,"y":762,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+},
+"Window Tall.png":
+{
+	"frame": {"x":2,"y":509,"w":101,"h":161},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":10,"w":101,"h":161},
+	"sourceSize": {"w":101,"h":171}
+},
+"Wood Block.png":
+{
+	"frame": {"x":105,"y":639,"w":101,"h":121},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":50,"w":101,"h":121},
+	"sourceSize": {"w":101,"h":171}
+}},
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "images/planet_cute.png",
+	"format": "RGBA5555",
+	"size": {"w":1024,"h":1024},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:eae6e09bbe16cdd7a708aa7a6329f4db$"
+}
+}

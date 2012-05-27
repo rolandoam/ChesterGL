@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="chester.js"></script>
+	<script type="text/javascript" src="externals/webgl-debug.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	/** @type {chesterGL.Block} */
+	var scene = new chesterGL.Block(chesterGL.Block.TYPE.SCENE);
+	scene.title = "Test::PlatformerEditor";
+
+	/** @type {chesterGL.Block} */
+	scene.currentTile = null;
+
+	/** @type {number} */
+	scene.tileSize = 32;
+	
+	var TileBlock = function (frameName) {
+		chesterGL.Block.call(this, frameName);
+	};
+
+	TileBlock.prototype = Object.create(chesterGL.Block.prototype);
+
+	/** @param {vec2|Array} pos */
+	TileBlock.prototype.__defineSetter__('gridPosition', function (pos) {
+		console.log("setting position " + pos[0] + "," + pos[1]);
+		this.__gridPosition = [pos[0], pos[1]];
+		this.position = [pos[0] * scene.tileSize, pos[1] * scene.tileSize];
+	});
+
+	TileBlock.prototype.__defineGetter__('gridPosition', function () {
+		return this.__gridPosition;
+	});
+
+	/** @type {?vec2} */
+	TileBlock.prototype.__gridPosition = null;
+
+	function setupGame() {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.webglMode = false;
+		chesterGL.setup("demo-canvas");
+		var width = chesterGL.gl.viewportWidth;
+		var height = chesterGL.gl.viewportHeight;
+
+		chesterGL.BlockFrames.loadFrames("images/planet_cute.json");
+		chesterGL.assetsLoaded('all', function () {
+			// populate the frame-selector
+			for (var f in chesterGL.BlockFrames.frames) {
+				$("#frame-selector").append("<option value=\"" + f + "\">" + f + "</option>");
+			}
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+			chesterGL.setRunningScene(scene);
+			chesterGL.run();
+		});
+	} // setupGame()
+
+	scene.addTile = function (frameName) {
+		console.log("will add new block with frame: " + frameName);
+		var block = new TileBlock(frameName);
+		block.gridPosition = [5, 5];
+		scene.currentTile = block;
+		scene.addChild(block);
+	};
+
+	$("#demo-canvas").mousemove(function (evt) {
+		var off = $(this).offset(), height = $(this).height();
+		var pos = [(evt.pageX - off.left) / scene.tileSize, (height - (evt.pageY - off.top)) / scene.tileSize];
+		pos = [Math.min(Math.max(0, Math.floor(pos[0])), 20), Math.min(Math.max(0, Math.floor(pos[1])), 15)];
+		if (scene.currentTile) {
+			scene.currentTile.gridPosition = pos;
+		}
+	});
+
+	$("#add-sprite").click(function () {
+		var frameName = $("#frame-selector").val();
+		scene.addTile(frameName);
+	});
+
+	setupGame();
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_setDomainName', 'github.com']);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<span id="debug-info">00</span> ms per frame
+			<p>
+				<select id="frame-selector"></select><input type="button" value="add" id="add-sprite">
+			</p>
+		</div>
+	</div>
+</body>
+</html>
