@@ -51,7 +51,6 @@ flags:
 	echo $(COMPILER_ARGUMENTS) > release.flags
 	echo "--externs deps.js" >> release.flags
 	echo "--compilation_level $(COMPILE_LEVEL_DEBUG)" >> release.flags
-	echo "-D ENABLE_DEBUG=1" >> release.flags
 	echo "--create_source_map=$(OUTPUT_DIR)/$(OUTPUT_FILE).map" >> release.flags
 
 debug_flags:
