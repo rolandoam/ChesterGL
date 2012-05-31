@@ -54,6 +54,7 @@ chesterGL.Block = function (rect, type, parent) {
 	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
 		this.setColor([1, 1, 1, 1]);
 	}
+	this.setPosition(0, 0, 0);
 
 	if (chesterGL.webglMode && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
@@ -233,7 +234,7 @@ chesterGL.Block.prototype.glBufferData = null;
  * the position of the center of the block. Use the setter to modify this property
  * @type {goog.vec.Vec3.Type}
  */
-chesterGL.Block.prototype.position = goog.vec.Vec3.createFloat32();
+chesterGL.Block.prototype.position = null;
 
 /**
  * the content size of the block. Use the setter to modify this property
@@ -245,7 +246,7 @@ chesterGL.Block.prototype.contentSize = null;
  * the color of the block. Use the setter to modify this property
  * @type {goog.vec.Vec4.Type}
  */
-chesterGL.Block.prototype.color = goog.vec.Vec4.createFloat32FromValues(1.0, 1.0, 1.0, 1.0);
+chesterGL.Block.prototype.color = null;
 
 /**
  * The name of the texture associated with this block. Use the setter to modify this property
@@ -343,7 +344,11 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 		newFrame = tmpFrame.frame;
 		this.setTexture(tmpFrame.texture);
 	}
-	this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
+	if (!this.frame) {
+		this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
+	} else {
+		goog.vec.Vec4.setFromArray(this.frame, newFrame);
+	}
 	this.setContentSize(newFrame[2], newFrame[3]);
 	this.isFrameDirty = true;
 };
@@ -401,7 +406,11 @@ chesterGL.Block.prototype.getScale = function () {
  * @param {Array|Float32Array} color
  */
 chesterGL.Block.prototype.setColor = function (color) {
-	this.color = goog.vec.Vec4.createFloat32FromArray(color);
+	if (!this.color) {
+		this.color = goog.vec.Vec4.createFloat32FromArray(color);
+	} else {
+		goog.vec.Vec4.setFromArray(this.color, color);
+	}
 	this.isColorDirty = true;
 };
 
@@ -414,11 +423,25 @@ chesterGL.Block.prototype.getColor = function () {
 };
 
 /**
- * sets the position of the block (x, y, z)
- * @param {Array|Float32Array} p
+ * sets the position of the block (x, y, z). It accepts an array
+ * or three values (preferred in order to avoid GC)
+ *
+ * @param {Array|Float32Array|number} x
+ * @param {number=} y
+ * @param {number=} z
  */
-chesterGL.Block.prototype.setPosition = function (p) {
-	this.position = goog.vec.Vec3.createFloat32FromArray(p);
+chesterGL.Block.prototype.setPosition = function (x, y, z) {
+	if (!this.position) {
+		if (arguments.length == 1)
+			this.position = goog.vec.Vec3.createFloat32FromArray(/** @type {Array} */(x));
+		else
+			this.position = goog.vec.Vec3.createFloat32FromValues(/** @type {number} */(x), /** @type {number} */(y), /** @type {number} */(z));
+	} else {
+		if (arguments.length == 1)
+			goog.vec.Vec3.setFromArray(this.position, /** @type {Array} */(x));
+		else
+			goog.vec.Vec3.setFromValues(this.position, /** @type {number} */(x), /** @type {number} */(y), /** @type {number} */(z));
+	}
 	this.isTransformDirty = true;
 };
 
@@ -557,7 +580,7 @@ chesterGL.Block.prototype.transform = function () {
 	var gl = chesterGL.gl;
 	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 	if (transformDirty) {
-		this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(this.mvMatrix));
+		goog.vec.Mat4.makeIdentity(this.mvMatrix);
 		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
 		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
 		goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
@@ -607,10 +630,10 @@ chesterGL.Block.prototype.transform = function () {
 				bufferData[_idx + 2*offset] =  br[0]; bufferData[_idx + 1 + 2*offset] =  br[1]; bufferData[_idx + 2 + 2*offset] = z;
 				bufferData[_idx + 3*offset] =  tr[0]; bufferData[_idx + 1 + 3*offset] =  tr[1]; bufferData[_idx + 2 + 3*offset] = z;
 			} else {
-				bufferData[_idx           ] = -hw; bufferData[_idx + 1           ] = -hh; bufferData[_idx + 2           ] = 0;
-				bufferData[_idx +   offset] = -hw; bufferData[_idx + 1 +   offset] =  hh; bufferData[_idx + 2 +   offset] = 0;
-				bufferData[_idx + 2*offset] =  hw; bufferData[_idx + 1 + 2*offset] = -hh; bufferData[_idx + 2 + 2*offset] = 0;
-				bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = 0;
+				bufferData[_idx           ] = -hw; bufferData[_idx + 1           ] = -hh; bufferData[_idx + 2           ] = z;
+				bufferData[_idx +   offset] = -hw; bufferData[_idx + 1 +   offset] =  hh; bufferData[_idx + 2 +   offset] = z;
+				bufferData[_idx + 2*offset] =  hw; bufferData[_idx + 1 + 2*offset] = -hh; bufferData[_idx + 2 + 2*offset] = z;
+				bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = z;
 			}
 
 			if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
@@ -660,11 +683,15 @@ chesterGL.Block.prototype.visit = function () {
 		this._inVisit = false;
 		return;
 	}
+	// if (ENABLE_DEBUG) console.time("transform");
 	this.transform();
+	// if (ENABLE_DEBUG) console.timeEnd("transform");
 
 	// render this block if not in a block group
 	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
+		// if (ENABLE_DEBUG) console.time("render");
 		this.render();
+		// if (ENABLE_DEBUG) console.timeEnd("render");
 	}
 
 	var children = this.children;
