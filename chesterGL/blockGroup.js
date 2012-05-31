@@ -30,7 +30,7 @@ goog.require("chesterGL.Block");
 
 /**
  * creates a new block group
- * 
+ *
  * @constructor
  * @param {(string|null)=} texture An optional texture that will be shared with all children
  * @param {number=} noChildren The optional initial number of maxChidlren. Defaults to 10
@@ -230,7 +230,7 @@ chesterGL.BlockGroup.prototype.visit = function () {
 	this._inVisit = false;
 
 	var b;
-	while (b = this._scheduledRemove.shift()) {
+	while ((b = this._scheduledRemove.shift())) {
 		this.removeChild(b);
 	}
 };
