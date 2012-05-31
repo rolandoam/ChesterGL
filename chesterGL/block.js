@@ -423,6 +423,14 @@ chesterGL.Block.prototype.setPosition = function (p) {
 };
 
 /**
+ * gets the position of the block (x, y, z)
+ * @returns {Float32Array}
+ */
+chesterGL.Block.prototype.getPosition = function () {
+	return this.position;
+};
+
+/**
  * returns the current bounding box as an Array [bottom, left, width, height]
  * @returns {Array}
  */
@@ -760,6 +768,8 @@ goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.proto
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
 goog.exportProperty(chesterGL.Block.prototype, 'getColor', chesterGL.Block.prototype.getColor);
