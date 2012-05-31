@@ -812,7 +812,7 @@ chesterGL.setupPerspective = function () {
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.enable(gl.BLEND);
 	// disable depth test
-	gl.disable(gl.DEPTH_TEST)
+	gl.disable(gl.DEPTH_TEST);
 
 	var width = gl.viewportWidth;
 	var height = gl.viewportHeight;
@@ -855,7 +855,7 @@ chesterGL.setRunningScene = function (block) {
  * @ignore
  */
 chesterGL.drawScene = function () {
-	var gl = undefined;
+	var gl;
 	if (chesterGL.webglMode) {
 		gl = chesterGL.gl;
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -880,7 +880,7 @@ chesterGL.drawScene = function () {
 	// for actions and other stuff
 	var current = Date.now(); // milliseconds
 	chesterGL.delta = current - chesterGL.lastTime;
-	chesterGL.lastTime = current;	
+	chesterGL.lastTime = current;
 };
 
 /**
@@ -1046,7 +1046,7 @@ chesterGL.mouseLeaveHandler = function (event) {
  * 		stPoint = new Float32Array(pt);
  * 	} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
  * 		var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
- * 		tmx.setPosition([tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]]);
+ * 		tmx.setPosition(tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]);
  * 		stPoint.set(pt);
  * 	} else {
  * 		stPoint = null;
