@@ -15,7 +15,7 @@ OUTPUT_DIR ?= ${PWD}/html
 # default name for library
 OUTPUT_FILE = chester.js
 EXTERNAL_SOURCES = 
-SOURCES = ${EXTERNAL_SOURCES} chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js chesterGL/tmxBlock.js chesterGL/particleSystem.js chesterGL/primitivesBlock.js chesterGL/labelBlock.js
+SOURCES = ${EXTERNAL_SOURCES} chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js chesterGL/tmxBlock.js chesterGL/GPUParticleSystem.js chesterGL/particleSystem.js chesterGL/primitivesBlock.js chesterGL/labelBlock.js
 
 # externs should live in the same dir as the compiler.jar
 EXTERNS = jquery-1.5.js webkit_console.js google_analytics_api.js

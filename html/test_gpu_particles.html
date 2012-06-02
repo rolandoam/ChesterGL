@@ -31,7 +31,7 @@ $(document).ready(function () {
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
 		
-		chesterGL.ParticleSystem.loadShaders();
+		chesterGL.GPUParticleSystem.loadShaders();
 		chesterGL.loadAsset("texture", particle_properties[currentExample]['texture']);
 		chesterGL.assetsLoaded('texture', function () {
 			// finish with the setup and run the game
@@ -41,7 +41,7 @@ $(document).ready(function () {
 			sceneBlock.title = "Test::Particles";
 			chesterGL.setRunningScene(sceneBlock);
 
-			emitter = new chesterGL.ParticleSystem(particle_properties[currentExample]);
+			emitter = new chesterGL.GPUParticleSystem(particle_properties[currentExample]);
 			emitter.setPosition([size.width / 2, 10, 0]);
 
 			sceneBlock.addChild(emitter);
