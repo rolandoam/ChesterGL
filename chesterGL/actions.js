@@ -135,6 +135,7 @@ chesterGL.MoveAction = function (delta, totalTime, relative, block) {
 	} else {
 		this.isRelative = true;
 	}
+	this.startPosition = goog.vec.Vec3.createFloat32();
 	this.finalPosition = goog.vec.Vec3.createFloat32();
 };
 goog.inherits(chesterGL.MoveAction, chesterGL.Action);
@@ -171,11 +172,12 @@ chesterGL.MoveAction.__tmp_pos = goog.vec.Vec3.createFloat32();
  */
 chesterGL.MoveAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
-	var block = this.block;
-	var t = Math.min(1, this.elapsed / this.totalTime);
-	// console.log("t: " + t + "\t(" + dx + ")");
-	goog.vec.Vec3.lerp(this.startPosition, this.finalPosition, t, chesterGL.MoveAction.__tmp_pos);
-	block.setPosition(chesterGL.MoveAction.__tmp_pos);
+	var block = this.block,
+		t = Math.min(1, this.elapsed / this.totalTime),
+		pos = chesterGL.MoveAction.__tmp_pos;
+	goog.vec.Vec3.lerp(this.startPosition, this.finalPosition, t, pos);
+	// console.log([this.startPosition[2], pos[2], t, this.elapsed, this.totalTime].join('\t'));
+	block.setPosition(pos[0], pos[1], pos[2]);
 };
 
 /**
@@ -190,9 +192,9 @@ chesterGL.MoveAction.prototype.begin = function () {
 	if (this.isRelative) {
 		goog.vec.Vec3.add(this.delta, this.block.position, this.finalPosition);
 	} else {
-		this.finalPosition = this.delta;
+		goog.vec.Vec3.setFromArray(this.finalPosition, this.delta);
 	}
-	this.startPosition = this.block.position;
+	goog.vec.Vec3.setFromArray(this.startPosition, this.block.position);
 };
 
 /**
