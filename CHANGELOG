@@ -1,4 +1,22 @@
-v0.3 - 2012-04-XX
+v0.3 - 2012-06-XX
+	[FIX] fixes MoveAction
+	[NEW] adds support for inline images
+	[NEW] renaming particles to GPU particles
+	[NEW] setPosition now accepts values
+	[FIX] adds getPosition
+	[FIX] adds several missing getters
+	[FIX] updates perf test, adds support for canvas mode
+	[FIX] updates settings when on canvas mode
+	[NEW] adds new CallbackAction
+	[NEW] adds preserveDrawingBuffer to the webglContext
+	[NEW] adds getContentSize
+	[FIX] fixes bug in rendering
+	[NEW] adds support for default asset handler
+	[NEW] adds Block.boundingBox
+	[NEW] adds wiggle action
+	[FIX] fixes bug when that prevented removing an action
+	[NEW] makefile includes developer.mk to define paths
+	[NEW] adds CORS support for textures
 	[NEW] test for label blocks
 	[NEW] somewhat working labelBlock
 	[FIX] better support for NPOT
