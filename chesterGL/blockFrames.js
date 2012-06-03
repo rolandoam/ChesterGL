@@ -30,7 +30,7 @@ goog.require("chesterGL.Block");
 
 /**
  * The namespace for BlockFrame related functions
- * 
+ *
  * @const
  */
 chesterGL.BlockFrames = {};
@@ -42,14 +42,14 @@ chesterGL.BlockFrames.frames = {};
 
 /**
  * loads the json data (callback for the ajax call)
- * 
+ *
  * @param {Object} data
  */
 chesterGL.BlockFrames.loadJSON = function (data) {
 	// first, get the meta data
 	if (data['meta'] && data['meta']['version'] == '1.0') {
 		var texName = data['meta']['image'];
-		chesterGL.loadAsset('texture', texName, function (img) {
+		chesterGL.loadAsset('texture', texName, null, function (img) {
 			var imgHeight = img.height;
 			var frames = data['frames'];
 			for (var frameName in frames) {
@@ -71,13 +71,13 @@ chesterGL.BlockFrames.loadJSON = function (data) {
 };
 
 /**
- * @param {string} path
+ * @param {Object} params
  * @param {string|Object} data
  * @return {boolean}
  * @ignore
  */
-chesterGL.BlockFrames.framesLoadHandler = function (path, data) {
-	var frameset = chesterGL.assets['frameset'][path];
+chesterGL.BlockFrames.framesLoadHandler = function (params, data) {
+	var frameset = chesterGL.assets['frameset'][params.name];
 	frameset.data = data;
 	return true;
 };
@@ -98,7 +98,7 @@ chesterGL.BlockFrames.getFrame = function (frameName) {
  */
 chesterGL.BlockFrames.loadFrames = function (path, callback) {
 	console.log("loadFrames: will fetch " + path);
-	chesterGL.loadAsset("frameset", {path: path, dataType: 'json'}, function (data) {
+	chesterGL.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (data) {
 		chesterGL.BlockFrames.loadJSON(data);
 	});
 };

@@ -69,7 +69,7 @@ var randomVec3 = function (original, variance) {
 chesterGL.GPUParticleSystem = function (properties) {
 	chesterGL.Block.call(this, null, chesterGL.Block.TYPE.PARTICLE);
 	var _this = this;
-	chesterGL.loadAsset('texture', properties['texture'], function () {
+	chesterGL.loadAsset('texture', properties['texture'], null, function () {
 		_this.loadProperties(properties);
 	});
 };

@@ -158,7 +158,7 @@ chesterGL.basePath = "";
 
 /**
  * This is the WebGL context
- * 
+ *
  * @type {?WebGLRenderingContext}
  * @ignore
  */
@@ -509,10 +509,10 @@ chesterGL.createShader = function (prefix, fragmentData, vertexData) {
  * registers an asset loader (which is basically a function).
  * By convention, every handler must set the <code>data</code> property of the asset. It should not
  * modify the status property.
- * 
+ *
  * @param {string} type the type of the asset
  * @param {Function} handler the handler that will be called every time an asset is loaded
- * 
+ *
  * @example
  * chesterGL.defaultTextureHandler = function (path, data, callback) {
  *		// create the image
@@ -553,43 +553,55 @@ chesterGL.registerAssetLoader = function (type, loader) {
  * (to be called to actually do the request) and asset handlers (to be called after the asset is loaded).
  *
  * @param {string} type the type of asset being loaded, it could be "texture" or "default"
- * @param {string|Object} assetPath the path for the asset
- * @param {function(Object)=} cb the callback that will be executed as soon as the asset is loaded
+ * @param {string|Object} url the url for the asset
+ * @param {(string|null)=} name the name of the asset. If none is provided, then the name is the path
+ * @param {function(Object)=} callback the callback that will be executed as soon as the asset is loaded
  */
-chesterGL.loadAsset = function (type, assetPath, cb) {
-	var dataType_ = undefined;
-	if (typeof(assetPath) == 'object') {
-		dataType_ = assetPath.dataType;
-		assetPath = assetPath.path;
+chesterGL.loadAsset = function (type, url, name, callback) {
+	var params;
+	if (typeof(url) == 'object') {
+		params = {
+			dataType: url.dataType,
+			url: url.url,
+			name: url.name
+		};
+	} else {
+		params = {
+			url: url,
+			name: name
+		};
 	}
 
 	if (!chesterGL.assets[type]) {
 		chesterGL.assets[type] = {};
 	}
 
-	var assets = chesterGL.assets[type];
-	if (!assets[assetPath]) {
+	var assets = chesterGL.assets[type],
+		rname = params.name || url;
+	params.name = rname;
+	if (!assets[rname]) {
 		// not in our records
-		assets[assetPath] = {
+		assets[rname] = {
 			data: null,
+			name: rname,
 			status: 'try',
 			listeners: []
 		};
-		cb && assets[assetPath].listeners.push(cb);
-		chesterGL.loadAsset(type, {path: assetPath, dataType: dataType_});
-	} else if (assets[assetPath].status == 'loading') {
+		if (callback) assets[rname].listeners.push(callback);
+		chesterGL.loadAsset(type, params);
+	} else if (assets[rname].status == 'loading') {
 		// created but not yet loaded
-		cb && assets[assetPath].listeners.push(cb);
-	} else if (assets[assetPath].status == 'loaded') {
+		if (callback) assets[rname].listeners.push(callback);
+	} else if (assets[rname].status == 'loaded') {
 		// created and loaded, just call the callback
-		cb && cb(assets[assetPath].data);
-	} else if (assets[assetPath].status == 'try') {
-		assets[assetPath].status = 'loading';
+		if (callback) callback(assets[rname].data);
+	} else if (assets[rname].status == 'try') {
+		assets[rname].status = 'loading';
 		if (chesterGL.assetsLoaders[type])
-			chesterGL.assetsLoaders[type](type, {url: assetPath, dataType: dataType_});
+			chesterGL.assetsLoaders[type](type, params);
 		else
-			chesterGL.assetsLoaders['default'](type, {url: assetPath, dataType: dataType_});
-		cb && assets[assetPath].listeners.push(cb);
+			chesterGL.assetsLoaders['default'](type, params);
+		if (callback) assets[rname].listeners.push(callback);
 	}
 };
 
@@ -600,7 +612,9 @@ chesterGL.loadAsset = function (type, assetPath, cb) {
  * @param {function()=} callback The callback to be executed when all assets of that type are loaded
  */
 chesterGL.assetsLoaded = function (type, callback) {
-	var listeners = chesterGL.assetsLoadedListeners[type];
+	var listeners = chesterGL.assetsLoadedListeners[type],
+		assets,
+		i;
 	if (!listeners) {
 		chesterGL.assetsLoadedListeners[type] = [];
 		listeners = chesterGL.assetsLoadedListeners[type];
@@ -611,8 +625,8 @@ chesterGL.assetsLoaded = function (type, callback) {
 	var allLoaded = true;
 	if (type == 'all') {
 		for (var t in chesterGL.assets) {
-			var assets = chesterGL.assets[t];
-			for (var i in assets) {
+			assets = chesterGL.assets[t];
+			for (i in assets) {
 				if (assets[i].status != 'loaded') {
 					allLoaded = false;
 					break;
@@ -623,8 +637,8 @@ chesterGL.assetsLoaded = function (type, callback) {
 			}
 		}
 	} else {
-		var assets = chesterGL.assets[type];
-		for (var i in assets) {
+		assets = chesterGL.assets[type];
+		for (i in assets) {
 			if (assets[i].status != 'loaded') {
 				allLoaded = false;
 				break;
@@ -686,14 +700,14 @@ chesterGL.prepareWebGLTexture = function (texture) {
 /**
  * The default asset handler, just sets the 'data' property
  * of the asset.
- * @param {string} path
+ * @param {Object} params
  * @param {Object} data
  * @param {string} type
  * @return {boolean}
  * @ignore
  */
-chesterGL.defaultAssetHandler = function (path, data, type) {
-	var asset = chesterGL.assets[type][path];
+chesterGL.defaultAssetHandler = function (params, data, type) {
+	var asset = chesterGL.assets[type][params.name];
 	asset.data = data;
 	return true;
 };
@@ -701,17 +715,17 @@ chesterGL.defaultAssetHandler = function (path, data, type) {
 /**
  * The default texture handler
  *
- * @param {string} path
+ * @param {Object} params
  * @param {Object|HTMLImageElement} img
  * @param {string=} type
  * @return {boolean}
  * @ignore
  */
-chesterGL.defaultTextureHandler = function (path, img, type) {
+chesterGL.defaultTextureHandler = function (params, img, type) {
 	if (chesterGL.webglMode && !img.tex) {
 		img.tex = chesterGL.gl.createTexture();
 	}
-	var texture = chesterGL.assets['texture'][path];
+	var texture = chesterGL.assets['texture'][params.name];
 	texture.data = img;
 	if (chesterGL.webglMode) {
 		return chesterGL.prepareWebGLTexture(/** @type {HTMLImageElement} */(img));
@@ -725,11 +739,12 @@ chesterGL.defaultTextureHandler = function (path, img, type) {
  * @ignore
  */
 chesterGL.defaultTextureLoader = function (type, params) {
-	var img = new Image();
-	var path = params.url;
+	var img = new Image(),
+		path = params.url,
+		name = params.name;
 	img.addEventListener("load", function () {
-		var texture = chesterGL.assets['texture'][path];
-		if (chesterGL.assetsHandlers[type](path, img)) {
+		var texture = chesterGL.assets['texture'][name];
+		if (chesterGL.assetsHandlers[type](params, img)) {
 			// call all listeners
 			texture.status = 'loaded';
 			var l;
@@ -740,15 +755,16 @@ chesterGL.defaultTextureLoader = function (type, params) {
 		} else {
 			// requeue
 			texture.status = 'try';
-			chesterGL.loadAsset(type, path);
+			chesterGL.loadAsset(type, params);
 		}
 	}, false);
-	// append the basePath if it's not an absolute url
-	if (path.match(/^http(s)?:\/\//)) {
+	// append the basePath if it's not an absolute url or a data:image url
+	if (path.match(/^http(s)?:/)) {
 		img.crossOrigin = 'anonymous';
 		img.src = path;
+	} else if (path.match(/^data:/)) {
+		img.src = path;
 	} else {
-		img.crossOrigin = 'anonymous';
 		img.src = chesterGL.basePath + path;
 	}
 };
@@ -759,8 +775,9 @@ chesterGL.defaultTextureLoader = function (type, params) {
  * @ignore
  */
 chesterGL.defaultAssetLoader = function (type, params) {
-	var path = params.url;
-	var realPath = path;
+	var path = params.url,
+		realPath = path,
+		name = params.name;
 	if (!path.match(/^http(s)?:\/\//)) {
 		realPath = chesterGL.basePath + path;
 	}
@@ -771,10 +788,10 @@ chesterGL.defaultAssetLoader = function (type, params) {
 			xhr.withCredentials = true;
 		},
 		success: function (data, textStatus) {
-			var asset = chesterGL.assets[type][path];
+			var asset = chesterGL.assets[type][name];
 			if (textStatus == "success") {
 				var handler = chesterGL.assetsHandlers[type] || chesterGL.assetsHandlers['default'];
-				if (handler(path, data, type)) {
+				if (handler(params, data, type)) {
 					asset.status = 'loaded';
 					// call all listeners
 					var l;
@@ -785,7 +802,7 @@ chesterGL.defaultAssetLoader = function (type, params) {
 				} else {
 					// requeue
 					asset.status = 'try';
-					chesterGL.loadAsset(type, path);
+					chesterGL.loadAsset(type, params);
 				}
 			} else {
 				console.log("Error loading asset " + path);
@@ -1042,15 +1059,15 @@ chesterGL.mouseLeaveHandler = function (event) {
  * @example
  * var stPoint = null;
  * chesterGL.addMouseHandler(function (pt, type) {
- * 	if (type == chesterGL.mouseEvents.DOWN) {
- * 		stPoint = new Float32Array(pt);
- * 	} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
- * 		var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
- * 		tmx.setPosition(tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]);
- * 		stPoint.set(pt);
- * 	} else {
- * 		stPoint = null;
- * 	}
+ *	if (type == chesterGL.mouseEvents.DOWN) {
+ *		stPoint = new Float32Array(pt);
+ *	} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
+ *		var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
+ *		tmx.setPosition(tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]);
+ *		stPoint.set(pt);
+ *	} else {
+ *		stPoint = null;
+ *	}
  * });
  */
 chesterGL.addMouseHandler = function (callback) {

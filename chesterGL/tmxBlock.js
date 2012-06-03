@@ -33,7 +33,7 @@ goog.require("chesterGL.Block");
 /**
  * Creates a new TMXBlock (from a TMX file)
  * The first line of children are the layers of the tmx map and they're all BlockGroups
- * 
+ *
  * @constructor
  * @param {string} tmxFile
  * @extends chesterGL.Block
@@ -59,7 +59,7 @@ chesterGL.TMXBlock = function (tmxFile) {
 				tileset = chesterGL.TMXBlock.findTilesetForGid(map['tilesets'], mblock['gid']);
 				l.setTexture(tileset['texture']);
 			}
-			var b = undefined;
+			var b;
 			if (chesterGL.webglMode) {
 				b = l.createBlock(mblock['frame']);
 			} else {
@@ -82,7 +82,7 @@ chesterGL.TMXBlock.prototype.render = function () {};
 	
 /**
  * The size (in pixels) of the tiles (in the texture)
- * 
+ *
  * @type {?goog.math.Size}
  * @ignore
  */
@@ -133,12 +133,12 @@ chesterGL.TMXBlock.unpackUInt32 = function (buffer, offset) {
 };
 
 /**
- * @param {string} path
+ * @param {Object} params
  * @param {string} data
  * @ignore
  */
-chesterGL.TMXBlock.handleLoadTMX = function (path, data) {
-	var map = chesterGL.assets['tmx'][path];
+chesterGL.TMXBlock.handleLoadTMX = function (params, data) {
+	var map = chesterGL.assets['tmx'][params.name];
 	map.data = data;
 	return true;
 };
@@ -163,11 +163,11 @@ chesterGL.TMXBlock.findTilesetForGid = function (tilesets, gid) {
 /**
  * Will load a TMX file, parse it when loaded and add the metadata to create
  * the TMX block later
- * 
+ *
  * @param {string} path
  */
 chesterGL.TMXBlock.loadTMX = function (path) {
-	chesterGL.loadAsset('tmx', {path:path, dataType: 'xml'}, function (data) {
+	chesterGL.loadAsset('tmx', {url:path, dataType: 'xml'}, null, function (data) {
 		var tmx = {};
 		
 		var map = $(data).find("map");
@@ -225,7 +225,7 @@ chesterGL.TMXBlock.loadTMX = function (path) {
 					for (var row = 0; row < layerSize.height; row++) {
 						for (var col = 0; col < layerSize.width; col++) {
 							var gid = chesterGL.TMXBlock.unpackUInt32(decodedData, offset);
-							if (gid == 0) {
+							if (gid === 0) {
 								offset += 4;
 								continue;
 							}
@@ -266,7 +266,7 @@ chesterGL.TMXBlock.loadTMX = function (path) {
 						}
 					}
 				} else {
-					throw "No data for layer!"
+					throw "No data for layer!";
 				}
 				tmx['layers'].push(blockLayer);
 			}

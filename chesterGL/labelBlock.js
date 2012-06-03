@@ -131,7 +131,7 @@ chesterGL.LabelBlock.prototype.drawText = function () {
 	var canvas = this.canvas;
 	cx.clearRect(0, 0, canvas.width, canvas.height);
 	cx.fillText(this.text, 0, canvas.height * 0.8);
-	chesterGL.defaultTextureHandler(/** @type {string} */(this.texture), canvas);
+	chesterGL.defaultTextureHandler({name: this.texture}, canvas);
 	this.needsTextUpdate = false;
 };
 

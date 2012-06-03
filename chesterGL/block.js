@@ -474,7 +474,7 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
 	if (chesterGL.debugSprite) { this.addDebugNode(); }
 	var block = this;
-	chesterGL.loadAsset("texture", texturePath, function (t) {
+	chesterGL.loadAsset("texture", texturePath, null, function (t) {
 		// set the default frame for all our blocks (if it's not set)
 		if (!block.contentSize) {
 			block.setContentSize(t.width, t.height);
