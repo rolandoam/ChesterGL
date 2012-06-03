@@ -33,8 +33,9 @@ $(document).ready(function () {
 			sceneBlock.addChild(someBlock);
 			
 			// add some action
-			var move = new chesterGL.MoveAction([0, 0, 150], 2000);
-			var seq = chesterGL.SequenceAction.createSequence(move, move.reverse());
+			var moveUp = new chesterGL.MoveAction([0, 0, 100], 2000);
+			var moveDown = new chesterGL.MoveAction([0, 0, -100], 2000);
+			var seq = chesterGL.SequenceAction.createSequence(moveUp, moveUp.reverse(), moveDown, moveDown.reverse());
 			var repeat = new chesterGL.RepeatAction(seq, -1); // repeat for ever
 			someBlock.runAction(repeat);
 			someBlock.setUpdate(function () {
