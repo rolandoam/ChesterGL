@@ -271,7 +271,6 @@ chesterGL.BlockGroup.prototype.render = function () {
 	// set the matrix uniform (the multiplied model view projection matrix)
 	goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
 	gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
-	// gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4 * this.children.length);
 	gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
 };
 
