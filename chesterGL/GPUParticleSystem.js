@@ -27,6 +27,7 @@ goog.provide("chesterGL.GPUParticleSystem");
 
 goog.require("goog.vec.Vec4");
 goog.require("chesterGL.Block");
+goog.require("chesterGL.ParticleSystem");
 
 /**
  * @const {number}
@@ -40,26 +41,6 @@ var BUFFER_ELEMENTS = 10;
  * @ignore
  */
 var PARTICLE_SIZE = 40;
-
-/**
- * @param {goog.vec.Vec3.Type} original The original vector
- * @param {goog.vec.Vec3.Type} variance the variance for every coordinate in the original vector
- * @return {goog.vec.Vec3.Type}
- * @ignore
- */
-var randomVec3 = function (original, variance) {
-	var vec = goog.vec.Vec3.createFloat32();
-	if (variance) {
-		vec[0] = original[0] + (variance[0] * 2 * Math.random());
-		vec[1] = original[1] + (variance[1] * 2 * Math.random());
-		vec[2] = original[2] + (variance[2] * 2 * Math.random());
-	} else {
-		vec[0] = original[0];
-		vec[1] = original[1];
-		vec[2] = original[2];
-	}
-	return vec;
-};
 
 /**
  * @constructor

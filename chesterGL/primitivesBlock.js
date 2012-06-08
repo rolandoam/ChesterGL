@@ -39,8 +39,8 @@ goog.require("chesterGL.Block");
  * @example
  * var block = new PrimitiveBlock();
  * block.setUpdate(function () {
- * 	var sz = this.contentSize;
- * 	this.drawPoint(sz.width * 0.5, sz.height * 0.5);
+ *	var sz = this.contentSize;
+ *	this.drawPoint(sz.width * 0.5, sz.height * 0.5);
  * });
  */
 chesterGL.PrimitiveBlock = function (maxPoints, maxLines) {
@@ -226,7 +226,7 @@ chesterGL.PrimitiveBlock.prototype.recreateLineBuffer = function () {
 	var endIndex = (this.currentIndexLine) * 14;
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.glBufferLines);
 	gl.bufferData(gl.ARRAY_BUFFER, this.glBufferLinesData.subarray(0, endIndex), gl.STATIC_DRAW);
-}
+};
 
 /**
  * @ignore
