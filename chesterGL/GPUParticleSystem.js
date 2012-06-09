@@ -402,6 +402,9 @@ chesterGL.GPUParticleSystem.prototype.render = function () {
 	}
 	gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 	gl.drawArrays(gl.POINTS, 0, this.maxParticles);
+
+	// revert the default blend func
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 };
 
 goog.exportSymbol('chesterGL.GPUParticleSystem', chesterGL.GPUParticleSystem);
