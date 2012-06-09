@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<link rel="stylesheet" media="screen" type="text/css" href="externals/colorpicker.css" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="externals/colorpicker.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script type="text/javascript" src="chester.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	var particle_properties = [
+	{"texture":"images/fire.png","maxParticles":1500,"duration":-1,"lifetime":1.15,"lifetimeVariance":2.82,"startColor":[1,0.18,0,0.62],"startColorVariance":[0,0,0,0],"endColor":[1,0.46,0,0],"endColorVariance":[0,0,0,0],"positionVariance":[160,0,0],"speed":[0,90,0],"speedVariance":[5,0,0],"startSize":60,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE"],"gravity":[0,0,0]},
+	{"texture":"images/fire.png","maxParticles":200,"duration":0.01,"lifetime":0,"lifetimeVariance":0.58,"startColor":[1,1,1,0.5],"startColorVariance":[0,0,0,0],"endColor":[0.7019607843137254,0.22745098039215686,0.22745098039215686,0],"endColorVariance":[0,0,0,0],"positionVariance":[0,0,0],"speed":[0,0,0],"speedVariance":[500,500,0],"startSize":25,"startSizeVariance":3,"endSize":0,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE"],"gravity":[0,0,0]},
+	{"texture":"images/fire.png","maxParticles":2000,"duration":-1,"lifetime":2.5,"lifetimeVariance":0,"startColor":[0.1607843137254902,0.1607843137254902,0.1607843137254902,0.5],"startColorVariance":[0,0,0,0],"endColor":[0.9411764705882353,0.9411764705882353,0.9411764705882353,0],"endColorVariance":[0,0,0,0],"positionVariance":[10,0,0],"speed":[0,30,0],"speedVariance":[10,15,0],"startSize":10,"startSizeVariance":0,"endSize":60,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE_MINUS_SRC_ALPHA"],"gravity":[0,0,0]}
+	];
+	var examples_names = [
+		"fire",
+		"explosion",
+		"smoke"
+	];
+	var currentExample = 0;
+	
+	var emitter = null;
+	
+	setupGame();
+	
+	function setupGame() {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+
+		chesterGL.loadAsset('texture', 'images/test_particle1.png');
+		chesterGL.loadAsset('json', 'images/test_particle1.json');
+		chesterGL.assetsLoaded('all', function () {
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::Particles";
+			chesterGL.setRunningScene(sceneBlock);
+
+			emitter = new chesterGL.ParticleSystem(chesterGL.getAsset('json', 'images/test_particle1.json'));
+			emitter.setPosition([size.width / 2, 10, 0]);
+
+			sceneBlock.addChild(emitter);
+
+			chesterGL.addMouseHandler(function (pt, type) {
+				if (type == chesterGL.mouseEvents.UP) {
+					emitter.setPosition(pt);
+					emitter.loadProperties(particle_properties[currentExample]);
+				}
+			});
+			showData();
+
+			chesterGL.run();
+			// draw a single frame (for debug purposes)
+			// chesterGL.drawScene();
+		});
+	} // setupGame()
+	
+	function floatToHex(f) {
+		var str = Math.floor(f * 255).toString(16);
+		str = str.length < 2 ? "0" + str : str;
+		return str;
+	}
+	
+	function hexToFloat(hex) {
+		var f = parseInt(hex, 16) / 255.0;
+		return f;
+	}
+	
+	function showData() {
+		var pp = particle_properties[currentExample];
+		$("#max_particles").val(pp['maxParticles']);
+		$("#duration").val(pp['duration']);
+		$("#lifetime").val(pp['lifetime']);
+		$("#lifetime_var").val(pp['lifetimeVariance']);
+		var ic = pp['startColor'];
+		var ed = pp['endColor'];
+		$("#initial_color").val("#" + floatToHex(ic[0]) + floatToHex(ic[1]) + floatToHex(ic[2]));
+		$("#initial_color_a").val(ic[3]);
+		$("#end_color").val("#" + floatToHex(ed[0]) + floatToHex(ed[1]) + floatToHex(ed[2]));
+		$("#end_color_a").val(ed[3]);
+		$("#vpos_x").val(pp['positionVariance'][0]);
+		$("#vpos_y").val(pp['positionVariance'][1]);
+		$("#speed-x").val(pp['speed'][0]);
+		$("#speed-y").val(pp['speed'][1]);
+		$("#speed-z").val(pp['speed'][2]);
+		$("#vspeed-x").val(pp['speedVariance'][0]);
+		$("#vspeed-y").val(pp['speedVariance'][1]);
+		$("#vspeed-z").val(pp['speedVariance'][2]);
+		$("#startsize").val(pp['startSize']);
+		$("#vstartsize").val(pp['startSizeVariance']);
+		$("#endsize").val(pp['endSize']);
+		$("#vendsize").val(pp['endSizeVariance']);
+		$("#src_blend option[value=" + pp['blendOptions'][0] + "]").attr('selected', 'selected');
+		$("#dst_blend option[value=" + pp['blendOptions'][1] + "]").attr('selected', 'selected');
+		
+		$("#jsondata").val(JSON.stringify(pp));
+		$("#example_name").html("Particle Properties (" + examples_names[currentExample] + ")");
+	}
+	
+	function reloadData() {
+		var pp = particle_properties[currentExample];
+		pp['maxParticles'] = parseInt($("#max_particles").val());
+		pp['duration'] = parseFloat($("#duration").val());
+		pp['lifetime'] = parseFloat($("#lifetime").val());
+		pp['lifetimeVariance'] = parseFloat($("#lifetime_var").val());
+		var str_ic = $("#initial_color").val();
+		var str_ed = $("#end_color").val();
+		var ic_a = $("#initial_color_a").val();
+		var ec_a = $("#end_color_a").val();
+		pp['startColor'] = [hexToFloat(str_ic.substr(1, 2)), hexToFloat(str_ic.substr(3, 2)), hexToFloat(str_ic.substr(5, 2)), parseFloat(ic_a)];
+		pp['endColor']   = [hexToFloat(str_ed.substr(1, 2)), hexToFloat(str_ed.substr(3, 2)), hexToFloat(str_ed.substr(5, 2)), parseFloat(ec_a)];
+		pp['positionVariance'][0] = parseFloat($("#vpos_x").val());
+		pp['positionVariance'][1] = parseFloat($("#vpos_y").val());
+		pp['speed'][0] = parseFloat($("#speed-x").val());
+		pp['speed'][1] = parseFloat($("#speed-y").val());
+		pp['speed'][2] = parseFloat($("#speed-z").val());
+		pp['speedVariance'][0] = parseFloat($("#vspeed-x").val());
+		pp['speedVariance'][1] = parseFloat($("#vspeed-y").val());
+		pp['speedVariance'][2] = parseFloat($("#vspeed-z").val());
+		pp['startSize'] = parseFloat($("#startsize").val());
+		pp['startSizeVariance'] = parseFloat($("#vstartsize").val());
+		pp['endSize'] = parseFloat($("#endsize").val());
+		pp['endSizeVariance'] = parseFloat($("#vendsize").val());
+		pp['blendOptions'][0] = $("#src_blend").val();
+		pp['blendOptions'][1] = $("#dst_blend").val();
+		
+		emitter.loadProperties(pp);
+		showData();
+	}
+	
+	$("#initial_color").ColorPicker({
+		onSubmit: function(hsb, hex, rgb, el) {
+			$(el).val("#" + hex);
+			$(el).ColorPickerHide();
+		},
+		onBeforeShow: function () {
+			$(this).ColorPickerSetColor(this.value);
+		}
+	});
+	$("#end_color").ColorPicker({
+		onSubmit: function(hsb, hex, rgb, el) {
+			$(el).val("#" + hex);
+			$(el).ColorPickerHide();
+		},
+		onBeforeShow: function () {
+			$(this).ColorPickerSetColor(this.value);
+		}
+	});
+	
+	$("#reload-button").click(function () {
+		reloadData();
+	});
+	
+	$("#next").click(function () {
+		currentExample = (currentExample + 1) % particle_properties.length;
+		showData();
+		emitter.loadProperties(particle_properties[currentExample]);
+	});
+	
+	$("#pause").click(function () {
+		chesterGL.togglePause();
+	});
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<input style="margin-left: auto; margin-right: auto;" type="button" value="Toggle Pause" id="pause"/>
+			<span id="debug-info">00</span> ms per frame
+		</div>
+	</div>
+	<div style="margin-left: auto; margin-right: auto; width: 640px;">
+		<fieldset>
+			<legend id="example_name">Loading...</legend>
+			(click on canvas to reposition/restart the system)<br/>
+			<input type="button" value="Next example" id="next"/>
+			<div>Max Particles: <input type="text" value="" id="max_particles"/></div>
+			<div>Duration: <input type="text" value="" id="duration"/></div>
+			<div>Lifetime: <input type="text" value="" id="lifetime"/></div>
+			<div>Lifetime Var: <input type="text" value="" id="lifetime_var"/></div>
+			<div>Initial Color: <input type="text" id="initial_color"/><input type="text" id="initial_color_a" size="2"/></div>
+			<div>End Color: <input type="text" id="end_color"/><input type="text" id="end_color_a" size="2"/></div>
+			<div>Position Variance: <input type="text" id="vpos_x" size="2"/><input type="text" id="vpos_y" size="2"/>
+			<div>Speed: <input type="text" id="speed-x" size="2"/><input type="text" id="speed-y" size="2"/><input type="text" id="speed-z" size="2"/></div>
+			<div>Speed Var: <input type="text" id="vspeed-x" size="2"/><input type="text" id="vspeed-y" size="2"/><input type="text" id="vspeed-z" size="2"/></div>
+			<div>Start Size: <input type="text" size="2" id="startsize"/> - var: <input type="text" id="vstartsize" size="2"/></div>
+			<div>End Size: <input type="text" size="2" id="endsize"/> - var: <input type="text" id="vendsize" size="2"/></div>
+			<div>Blend Function:
+				<select id="src_blend">
+					<option value="ZERO">ZERO</option>
+					<option value="ONE">ONE</option>
+					<option value="DST_COLOR">DST_COLOR</option>
+					<option value="ONE_MINUS_DST_COLOR">ONE_MINUS_DST_COLOR</option>
+					<option value="SRC_ALPHA">SRC_ALPHA</option>
+					<option value="ONE_MINUS_SRC_ALPHA">ONE_MINUS_SRC_ALPHA</option>
+					<option value="DST_ALPHA">DST_ALPHA</option>
+					<option value="ONE_MINUS_DST_ALPHA">ONE_MINUS_DST_ALPHA</option>
+					<option value="SRC_ALPHA_SATURATE">SRC_ALPHA_SATURATE</option>
+				</select> ~>
+				<select id="dst_blend">
+					<option value="ZERO">ZERO</option>
+					<option value="ONE">ONE</option>
+					<option value="DST_COLOR">DST_COLOR</option>
+					<option value="ONE_MINUS_DST_COLOR">ONE_MINUS_DST_COLOR</option>
+					<option value="SRC_ALPHA">SRC_ALPHA</option>
+					<option value="ONE_MINUS_SRC_ALPHA">ONE_MINUS_SRC_ALPHA</option>
+					<option value="DST_ALPHA">DST_ALPHA</option>
+					<option value="ONE_MINUS_DST_ALPHA">ONE_MINUS_DST_ALPHA</option>
+					<option value="SRC_ALPHA_SATURATE">SRC_ALPHA_SATURATE</option>
+				</select>
+			<div>
+				<input type="button" value="Reload" id="reload-button"/><br/>
+				JSON Data:<br/>
+				<textarea id="jsondata" cols="70" rows="10">
+				</textarea>
+			</div>
+		</fieldset>
+	</div>
+</body>
+</html>
