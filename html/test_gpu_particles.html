@@ -2,16 +2,19 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
-	<link rel="stylesheet" media="screen" type="text/css" href="externals/colorpicker.css" />
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-	<script type="text/javascript" src="externals/colorpicker.js"></script>
+	<style type="text/css">
+fieldset div {
+	height: 2em;
+}
+	</style>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script type="text/javascript" src="chester.js"></script>
     <script type="text/javascript">
 
 $(document).ready(function () {
 	var particle_properties = [
-	{"texture":"images/fire.png","maxParticles":1500,"duration":-1,"lifetime":1.15,"lifetimeVariance":2.82,"startColor":[1,0.18,0,0.62],"startColorVariance":[0,0,0,0],"endColor":[1,0.46,0,0],"endColorVariance":[0,0,0,0],"positionVariance":[160,0,0],"speed":[0,90,0],"speedVariance":[5,0,0],"startSize":60,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE"],"gravity":[0,0,0]},
+	{"texture":"images/fire.png","maxParticles":1500,"duration":-1,"lifetime":1.15,"lifetimeVariance":1,"startColor":[1,0.17647058823529413,0,0.62],"startColorVariance":[0.1,0.3,0.1,0],"endColor":[1,0.4588235294117647,0,0],"endColorVariance":[0.2,0.2,0.4,1],"positionVariance":[160,0,0],"speed":[0,110,0],"speedVariance":[10,0,0],"startSize":60,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE"],"gravity":[0,0,0]},
 	{"texture":"images/fire.png","maxParticles":200,"duration":0.01,"lifetime":0,"lifetimeVariance":0.58,"startColor":[1,1,1,0.5],"startColorVariance":[0,0,0,0],"endColor":[0.7019607843137254,0.22745098039215686,0.22745098039215686,0],"endColorVariance":[0,0,0,0],"positionVariance":[0,0,0],"speed":[0,0,0],"speedVariance":[500,500,0],"startSize":25,"startSizeVariance":3,"endSize":0,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE"],"gravity":[0,0,0]},
 	{"texture":"images/fire.png","maxParticles":2000,"duration":-1,"lifetime":2.5,"lifetimeVariance":0,"startColor":[0.1607843137254902,0.1607843137254902,0.1607843137254902,0.5],"startColorVariance":[0,0,0,0],"endColor":[0.9411764705882353,0.9411764705882353,0.9411764705882353,0],"endColorVariance":[0,0,0,0],"positionVariance":[10,0,0],"speed":[0,30,0],"speedVariance":[10,15,0],"startSize":10,"startSizeVariance":0,"endSize":60,"endSizeVariance":0,"blendOptions":["SRC_ALPHA","ONE_MINUS_SRC_ALPHA"],"gravity":[0,0,0]}
 	];
@@ -59,30 +62,48 @@ $(document).ready(function () {
 			// chesterGL.drawScene();
 		});
 	} // setupGame()
-	
-	function floatToHex(f) {
+
+	var floatToHex = function (f) {
 		var str = Math.floor(f * 255).toString(16);
 		str = str.length < 2 ? "0" + str : str;
 		return str;
-	}
-	
-	function hexToFloat(hex) {
+	};
+
+	var hexToFloat = function (hex) {
 		var f = parseInt(hex, 16) / 255.0;
 		return f;
-	}
-	
-	function showData() {
+	};
+
+	var RGBcompToFloat = function (c) {
+		return Math.min(parseFloat(c), 255) / 255.0;
+	};
+
+	var floatToRGBcomp = function (f) {
+		return Math.min(Math.round(parseFloat(f) * 255.0), 255);
+	};
+
+	var showData = function () {
 		var pp = particle_properties[currentExample];
 		$("#max_particles").val(pp['maxParticles']);
 		$("#duration").val(pp['duration']);
 		$("#lifetime").val(pp['lifetime']);
 		$("#lifetime_var").val(pp['lifetimeVariance']);
-		var ic = pp['startColor'];
-		var ed = pp['endColor'];
+		var ic = pp['startColor'],
+			icv = pp['startColorVariance'];
+		var ec = pp['endColor'],
+			ecv = pp['endColorVariance'];
 		$("#initial_color").val("#" + floatToHex(ic[0]) + floatToHex(ic[1]) + floatToHex(ic[2]));
-		$("#initial_color_a").val(ic[3]);
-		$("#end_color").val("#" + floatToHex(ed[0]) + floatToHex(ed[1]) + floatToHex(ed[2]));
-		$("#end_color_a").val(ed[3]);
+		$("#initial_color_a").val(parseFloat(ic[3]));
+		$("#initial_color_var_r").val(icv[0]);
+		$("#initial_color_var_g").val(icv[1]);
+		$("#initial_color_var_b").val(icv[2]);
+		$("#initial_color_var_a").val(icv[3]);
+		$("#end_color").val("#" + floatToHex(ec[0]) + floatToHex(ec[1]) + floatToHex(ec[2]));
+		$("#end_color_a").val(parseFloat(ec[3]));
+		$("#end_color_var_r").val(ecv[0]);
+		$("#end_color_var_g").val(ecv[1]);
+		$("#end_color_var_b").val(ecv[2]);
+		$("#end_color_var_a").val(ecv[3]);
 		$("#vpos_x").val(pp['positionVariance'][0]);
 		$("#vpos_y").val(pp['positionVariance'][1]);
 		$("#speed-x").val(pp['speed'][0]);
@@ -108,12 +129,27 @@ $(document).ready(function () {
 		pp['duration'] = parseFloat($("#duration").val());
 		pp['lifetime'] = parseFloat($("#lifetime").val());
 		pp['lifetimeVariance'] = parseFloat($("#lifetime_var").val());
-		var str_ic = $("#initial_color").val();
-		var str_ed = $("#end_color").val();
-		var ic_a = $("#initial_color_a").val();
-		var ec_a = $("#end_color_a").val();
-		pp['startColor'] = [hexToFloat(str_ic.substr(1, 2)), hexToFloat(str_ic.substr(3, 2)), hexToFloat(str_ic.substr(5, 2)), parseFloat(ic_a)];
-		pp['endColor']   = [hexToFloat(str_ed.substr(1, 2)), hexToFloat(str_ed.substr(3, 2)), hexToFloat(str_ed.substr(5, 2)), parseFloat(ec_a)];
+		var ic = $("#initial_color").val(),
+			ic_a = $("#initial_color_a").val(),
+			icv_r = $("#initial_color_var_r").val(),
+			icv_g = $("#initial_color_var_g").val(),
+			icv_b = $("#initial_color_var_b").val(),
+			icv_a = $("#initial_color_var_a").val(),
+			icv = [parseFloat(icv_r), parseFloat(icv_g), parseFloat(icv_b), parseFloat(icv_a)];
+
+		var ec = $("#end_color").val(),
+			ec_a = $("#end_color_a").val(),
+			ecv_r = $("#end_color_var_r").val(),
+			ecv_g = $("#end_color_var_g").val(),
+			ecv_b = $("#end_color_var_b").val(),
+			ecv_a = $("#end_color_var_a").val(),
+			ecv = [parseFloat(ecv_r), parseFloat(ecv_g), parseFloat(ecv_b), parseFloat(ecv_a)];
+		ic = [hexToFloat(ic.substr(1, 2)), hexToFloat(ic.substr(3, 2)), hexToFloat(ic.substr(5, 2)), parseFloat(ic_a)];
+		ec = [hexToFloat(ec.substr(1, 2)), hexToFloat(ec.substr(3, 2)), hexToFloat(ec.substr(5, 2)), parseFloat(ec_a)];
+		pp['startColor'] = ic;
+		pp['startColorVariance'] = icv;
+		pp['endColor'] = ec;
+		pp['endColorVariance'] = ecv;
 		pp['positionVariance'][0] = parseFloat($("#vpos_x").val());
 		pp['positionVariance'][1] = parseFloat($("#vpos_y").val());
 		pp['speed'][0] = parseFloat($("#speed-x").val());
@@ -128,40 +164,21 @@ $(document).ready(function () {
 		pp['endSizeVariance'] = parseFloat($("#vendsize").val());
 		pp['blendOptions'][0] = $("#src_blend").val();
 		pp['blendOptions'][1] = $("#dst_blend").val();
-		
+
 		emitter.loadProperties(pp);
 		showData();
 	}
-	
-	$("#initial_color").ColorPicker({
-		onSubmit: function(hsb, hex, rgb, el) {
-			$(el).val("#" + hex);
-			$(el).ColorPickerHide();
-		},
-		onBeforeShow: function () {
-			$(this).ColorPickerSetColor(this.value);
-		}
-	});
-	$("#end_color").ColorPicker({
-		onSubmit: function(hsb, hex, rgb, el) {
-			$(el).val("#" + hex);
-			$(el).ColorPickerHide();
-		},
-		onBeforeShow: function () {
-			$(this).ColorPickerSetColor(this.value);
-		}
-	});
-	
+
 	$("#reload-button").click(function () {
 		reloadData();
 	});
-	
+
 	$("#next").click(function () {
 		currentExample = (currentExample + 1) % particle_properties.length;
 		showData();
 		emitter.loadProperties(particle_properties[currentExample]);
 	});
-	
+
 	$("#pause").click(function () {
 		chesterGL.togglePause();
 	});
@@ -196,9 +213,23 @@ _gaq.push(['_trackPageview']);
 			<div>Duration: <input type="text" value="" id="duration"/></div>
 			<div>Lifetime: <input type="text" value="" id="lifetime"/></div>
 			<div>Lifetime Var: <input type="text" value="" id="lifetime_var"/></div>
-			<div>Initial Color: <input type="text" id="initial_color"/><input type="text" id="initial_color_a" size="2"/></div>
-			<div>End Color: <input type="text" id="end_color"/><input type="text" id="end_color_a" size="2"/></div>
-			<div>Position Variance: <input type="text" id="vpos_x" size="2"/><input type="text" id="vpos_y" size="2"/>
+			<div>Initial Color: <input type="color" id="initial_color"/>
+								opacity (0..1): <input type="text" size="2" id="initial_color_a"/>
+			</div>
+			<div>Initial Color Var: r: <input type="text" size="2" id="initial_color_var_r"/>
+									g: <input type="text" size="2" id="initial_color_var_b"/>
+									b: <input type="text" size="2" id="initial_color_var_g"/> 
+									a: <input type="text" size="2" id="initial_color_var_a"/>
+			</div>
+			<div>End Color: <input type="color" id="end_color"/>
+							opacity (0..1): <input type="text" id="end_color_a" size="2"/>
+			</div>
+			<div>End Color Var: r: <input type="text" size="2" id="end_color_var_r"/>
+								g: <input type="text" size="2" id="end_color_var_g"/>
+								b: <input type="text" size="2" id="end_color_var_b"/>
+								a: <input type="text" size="2" id="end_color_var_a"/>
+			</div>
+			<div>Position Variance: <input type="text" id="vpos_x" size="2"/><input type="text" id="vpos_y" size="2"/></div>
 			<div>Speed: <input type="text" id="speed-x" size="2"/><input type="text" id="speed-y" size="2"/><input type="text" id="speed-z" size="2"/></div>
 			<div>Speed Var: <input type="text" id="vspeed-x" size="2"/><input type="text" id="vspeed-y" size="2"/><input type="text" id="vspeed-z" size="2"/></div>
 			<div>Start Size: <input type="text" size="2" id="startsize"/> - var: <input type="text" id="vstartsize" size="2"/></div>
@@ -226,6 +257,7 @@ _gaq.push(['_trackPageview']);
 					<option value="ONE_MINUS_DST_ALPHA">ONE_MINUS_DST_ALPHA</option>
 					<option value="SRC_ALPHA_SATURATE">SRC_ALPHA_SATURATE</option>
 				</select>
+			</div>
 			<div>
 				<input type="button" value="Reload" id="reload-button"/><br/>
 				JSON Data:<br/>
