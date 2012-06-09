@@ -568,7 +568,7 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 	} else {
 		params = {
 			url: url,
-			name: name
+			name: name || url
 		};
 	}
 
@@ -577,8 +577,7 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 	}
 
 	var assets = chesterGL.assets[type],
-		rname = params.name || url;
-	params.name = rname;
+		rname = params.name;
 	if (!assets[rname]) {
 		// not in our records
 		assets[rname] = {
@@ -742,6 +741,7 @@ chesterGL.defaultTextureLoader = function (type, params) {
 	var img = new Image(),
 		path = params.url,
 		name = params.name;
+	img.src = "";
 	img.addEventListener("load", function () {
 		var texture = chesterGL.assets['texture'][name];
 		if (chesterGL.assetsHandlers[type](params, img)) {
