@@ -176,10 +176,11 @@ chesterGL.BlockGroup.prototype.removeChild = function (b) {
 /**
  * when the block list changes, the indices array must be recreated
  * @param {number} startIdx
+ * @param {number=} total
  */
-chesterGL.BlockGroup.prototype.recreateIndices = function (startIdx) {
+chesterGL.BlockGroup.prototype.recreateIndices = function (startIdx, total) {
 	var lastIdx = (this.indexBufferData[startIdx*6 - 1] || -1) + 1;
-	var total = Math.max(this.children.length, 1);
+	total = total || Math.max(this.children.length, 1);
 	for (var i = startIdx; i < total; i ++) {
 		var idx = i*6;
 		this.indexBufferData[idx + 0] = lastIdx    ; this.indexBufferData[idx + 1] = lastIdx + 1; this.indexBufferData[idx + 2] = lastIdx + 2;
@@ -237,14 +238,15 @@ chesterGL.BlockGroup.prototype.visit = function () {
 
 /**
  * actually render the block group
+ * @param {number=} totalChildren Optional. The number of children to render
  * @ignore
  */
-chesterGL.BlockGroup.prototype.render = function () {
+chesterGL.BlockGroup.prototype.render = function (totalChildren) {
 	var gl = chesterGL.gl;
 	
 	// select current shader
 	var program = chesterGL.selectProgram(chesterGL.Block.PROGRAM_NAME[this.program]);
-	var totalChildren = this.children.length;
+	totalChildren = totalChildren || this.children.length;
 	var texOff = 3 * 4,
 		colorOff = texOff + 2 * 4,
 		stride = chesterGL.Block.QUAD_SIZE;
@@ -269,7 +271,9 @@ chesterGL.BlockGroup.prototype.render = function () {
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 	
 	// set the matrix uniform (the multiplied model view projection matrix)
-	goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
+	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
+	if (transformDirty)
+		goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
 	gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 	gl.drawElements(gl.TRIANGLES, totalChildren * 6, gl.UNSIGNED_SHORT, 0);
 };
