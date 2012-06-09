@@ -1,4 +1,11 @@
 v0.3 - 2012-06-XX
+	[FIX] small improvement to the gpu particle system
+	[FIX] removes color picker on gpu particle test
+	[NEW] first attempt on new particle systems
+	[FIX] fixes blending on the gpu particle system
+	[FIX] small improvement on labelBlock
+	[FIX] more interesting base64 texture test
+	[FIX] changes tex mag function to GL_LINEAR
 	[FIX] fixes MoveAction
 	[NEW] adds support for inline images
 	[NEW] renaming particles to GPU particles
