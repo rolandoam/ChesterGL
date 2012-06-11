@@ -45,9 +45,15 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
 		this.__offset = $(this).offset();
 		this.__height = $(this).height();
 	}
+	if (evt.changedTouches) {
+		var t = evt.changedTouches[0];
+		pt.x = (t.pageX - this.__offset.left);
+		pt.y = (this.__height - (t.pageY - this.__offset.top));
+	} else {
+		pt.x = (evt.pageX - this.__offset.left);
+		pt.y = (this.__height - (evt.pageY - this.__offset.top));
+	}
 
-	pt.x = (evt.pageX - this.__offset.left);
-	pt.y = (this.__height - (evt.pageY - this.__offset.top));
 	return pt;
 };
 
@@ -975,11 +981,21 @@ chesterGL.updateDebugTime = function () {
  * @ignore
  */
 chesterGL.installMouseHandlers = function () {
-	$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
-	$(chesterGL.canvas).mousemove(chesterGL.mouseMoveHandler);
-	$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
-	$(chesterGL.canvas).mouseenter(chesterGL.mouseEnterHandler);
-	$(chesterGL.canvas).mouseleave(chesterGL.mouseLeaveHandler);
+	if (window.navigator.platform.match(/iPhone|iPad/)) {
+		document.addEventListener('touchstart', chesterGL.mouseDownHandler, false);
+		document.addEventListener('touchmove', function (event) {
+			chesterGL.mouseMoveHandler(event);
+			// prevent scrolling
+			event.preventDefault();
+		}, false);
+		document.addEventListener('touchend', chesterGL.mouseUpHandler, false);
+	} else {
+		$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
+		$(chesterGL.canvas).mousemove(chesterGL.mouseMoveHandler);
+		$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
+		$(chesterGL.canvas).mouseenter(chesterGL.mouseEnterHandler);
+		$(chesterGL.canvas).mouseleave(chesterGL.mouseLeaveHandler);
+	}
 };
 
 /**
