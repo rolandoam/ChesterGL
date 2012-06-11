@@ -226,19 +226,20 @@ chesterGL.MoveAction.prototype.reverse = function () {
  * @constructor
  * @extends {chesterGL.Action}
  * @param {function (Object=)} callback the callback to be executed
+ * @param {number=} delay Do not call inmediately, but after delay milliseconds. Pass zero for calling immediately.
  * @param {Object=} arg the object to be passed as argument to the
  * callback.
  * @example
  * // move 100 points up in 0.5 seconds (500 milliseconds)
- * var move = new chesterGL.MoveAction([0, 100, 0], 250);
+ * var move = new chesterGL.MoveAction([0, 100, 0], 500);
  * var remove = new chesterGL.CallbackAction(function () {
- *   this.remove();
- * }, someBlock);
+ *	this.remove();
+ * }, 0, someBlock);
  */
-chesterGL.CallbackAction = function (callback, arg) {
+chesterGL.CallbackAction = function (callback, delay, arg) {
 	this.callback = callback;
 	this.arg = arg;
-	chesterGL.Action.call(this, 1);
+	chesterGL.Action.call(this, delay || 1);
 };
 goog.inherits(chesterGL.CallbackAction, chesterGL.Action);
 
@@ -255,8 +256,10 @@ chesterGL.CallbackAction.prototype.callback = null;
 chesterGL.CallbackAction.prototype.arg = null;
 
 chesterGL.CallbackAction.prototype.update = function (delta) {
-	this.callback.call(null, this.arg);
 	chesterGL.Action.prototype.update.call(this, delta);
+	if (this.finished) {
+		this.callback.call(null, this.arg);
+	}
 };
 
 /**
