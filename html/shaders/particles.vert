@@ -12,12 +12,18 @@ attribute float a_startSize;
 attribute float a_endSize;
 attribute vec3  a_speed;
 attribute vec3  a_startPosition;
+attribute vec4  a_startColor;
+attribute vec4  a_endColor;
 
 varying float   v_lifetime;
+varying vec4    v_startColor;
+varying vec4    v_endColor;
 
 void main(void) {
 	float ptime = (u_time - a_startTime);
 	v_lifetime = clamp(ptime / (a_startTime + a_lifetime), 0.0, 1.0);
+	v_startColor = a_startColor;
+	v_endColor = a_endColor;
 	if (u_time <= a_lifetime + a_startTime)
 	{
 		float vel = (u_time / 100.0);

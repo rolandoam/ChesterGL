@@ -14,43 +14,36 @@ $(document).ready(function () {
 		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
-		var oneDeg = Math.PI / 180.0;
 
-		chesterGL.loadAsset("texture", "images/test.png");
-		chesterGL.loadAsset("texture", "images/star.png");
-		chesterGL.assetsLoaded("texture", function () {
+		chesterGL.loadAsset('texture', 'images/TileA1.png');
+		chesterGL.loadAsset('texture', 'images/TileA4.png');
+		chesterGL.loadAsset('texture', 'images/TileD.png');
+		chesterGL.TMXBlock.loadTMX("images/test_dungeon.tmx");
+		chesterGL.assetsLoaded("all", function () {
 			// $("#loading").html("Test Single Block");        	
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
-			
-			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
-			sceneBlock.title = "Test::Single Block";
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
+			sceneBlock.title = "Test::TMXLayers";
 			chesterGL.setRunningScene(sceneBlock);
 
-			// create a block
-			var someBlock = new chesterGL.Block();
-			someBlock.setTexture("images/test.png")
-			// someBlock.rotateBy(-45);
-			someBlock.setPosition([size.width/2, size.height/2, 0]);
-			
-			var someBlock2 = new chesterGL.Block();
-			someBlock2.setTexture("images/star.png");
-			someBlock2.opacity = 0.5;
-			someBlock2.setPosition([60, 0, 0]);
-			someBlock.addChild(someBlock2);
-			
-			sceneBlock.addChild(someBlock);
-			
-			// add some action
-			var dz = 10;
-			someBlock.setUpdate(function () {
-				this.setRotation(this.rotation + oneDeg);
-				this.setPosition([this.position[0], this.position[1], this.position[2] + dz]);
-				if (this.position[2] >=  200) { dz = -dz; }
-				if (this.position[2] <= -200) { dz = -dz; }
-			});
-			someBlock2.setUpdate(function () {
-				this.setRotation(this.rotation - oneDeg);
+			/** @type {chesterGL.TMXBlock} */
+			var tmx = new chesterGL.TMXBlock('images/test_dungeon.tmx');
+			sceneBlock.addChild(tmx);
+
+			/** @type {?Float32Array} */
+			var stPoint = null;
+			chesterGL.addMouseHandler(function (pt, type) {
+				if (type == chesterGL.mouseEvents.DOWN) {
+					stPoint = new Float32Array(pt);
+				} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
+					var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
+					tmx.setPosition([tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]]);
+					stPoint.set(pt);
+				} else {
+					stPoint = null;
+				}
 			});
 
 			chesterGL.run();
@@ -58,6 +51,10 @@ $(document).ready(function () {
 			// chesterGL.drawScene();
 		});
 	} // setupGame()
+
+	$("#pause").click(function () {
+		chesterGL.togglePause();
+	});
 });
     </script>
 	<script type="text/javascript">
@@ -77,7 +74,7 @@ _gaq.push(['_trackPageview']);
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<span id="debug-info">00</span> ms per frame
+			<span id="debug-info">00</span> ms per frame - <input type="button" id="pause" value="pause"/>
 		</div>
 	</div>
 </body>

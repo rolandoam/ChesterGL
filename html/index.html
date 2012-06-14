@@ -28,21 +28,13 @@ _gaq.push(['_trackPageview']);
 		<li><a href="test_single_block.html">Single Block &amp; child</a>: test block graph (one block and a child rotating)</li>
 		<li><a href="test_tmx_loader.html">TMX</a>: tests simple TMX scene</li>
 		<li><a href="test_tmx_iso_loader.html">TMX iso</a>: tests simple TMX iso scene</li>
+		<li><a href="test_tmx_layers.html">TMX layers</a>: tests several layers on a TMX file</li>
 		<li><a href="test_actions.html">Actions</a>: simple action test (right now move is the only action working)</li>
 		<li><a href="test_perf.html">Performance</a>: simple fill-rate test (comparing block groups vs regular blocks)</li>
 		<li><a href="test_add_remove.html">Add/Remove</a>: tests add/remove while in the update method</li>
-		<li><a href="test_particles.html">Particles</a>: particles system using a special shader</li>
+		<li><a href="test_gpu_particles.html">GPU Particles</a>: particles system using a special vertex shader</li>
 		<li><a href="test_primitives.html">Primitives</a>: primitive drawing blocks (points, lines, polygons)</li>
-	</ul>
-	
-	<div>
-		<strong>Test results from Nov. 1st - Nov 20th (Total registered events: 3234)</strong>
-		<script type="text/javascript" src="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js"> {"dataSourceUrl":"//docs.google.com/spreadsheet/tq?key=0AmPDe97JrQ-DdGwwdnZZNklBZXY1dEcwclFqZURJRUE&transpose=0&headers=0&range=H2%3AI8&gid=0&pub=1","options":{"vAxes":[{"title":"ms per frame","minValue":null,"viewWindowMode":"pretty","viewWindow":{"min":null,"max":null},"maxValue":null},{"viewWindowMode":"pretty","viewWindow":{}}],"series":{"0":{"color":"#9fc5e8"}},"reverseCategories":false,"title":"Test Results Nov. 1st - Nov. 20th","backgroundColor":"#FFFFFF","legend":"right","logScale":false,"reverseAxis":false,"hAxis":{"maxAlternations":1},"hasLabelsColumn":true,"isStacked":false,"width":600,"height":371},"state":{},"chartType":"ColumnChart","chartName":"Results 01112011-20112011"} </script>
-		<p>
-			<strong>Notes about the results</strong><br/>
-			As always, take the results with a grain of salt (you can always look at the <a href="http://goo.gl/yaOws">raw data</a> for more granular info). These results are the averages between all OS, all browsers, including canvas fallback (except for Block Groups, where there's no canvas fallback support for that). The iOS test is the only one that is separated between mobile and combined (desktop + mobile). From here on, I will try to also include the version of ChesterGL on these test.<br/>
-			Link to raw data: <a href="http://goo.gl/yaOws">http://goo.gl/yaOws</a>.
-		</p>
-	</div>
+		<li><a href="test_base64_texture.html">Textures as Base64</a>: tests textures encoded inline in base64</li>
+	</ul>	
 </body>
 </html>

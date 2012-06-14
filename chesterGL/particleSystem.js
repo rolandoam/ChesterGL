@@ -23,436 +23,459 @@
  *
  */
 
+
 goog.provide("chesterGL.ParticleSystem");
 
-goog.require("goog.vec.Vec4");
 goog.require("chesterGL.Block");
-
-/**
- * @const {number}
- * @ignore
- */
-var BUFFER_ELEMENTS = 10;
-
-/**
- * BUFFER_ELEMENTS * 4 (bytes) ~> BUFFER_ELEMENTS floats == 1 (lifetime) + 1 (start time) + 1 (start size) + 1 (end size) + 3 (start pos) + 3 (end pos)
- * @const {number}
- * @ignore
- */
-var PARTICLE_SIZE = 40;
+goog.require("chesterGL.BlockGroup");
 
 /**
  * @param {goog.vec.Vec3.Type} original The original vector
  * @param {goog.vec.Vec3.Type} variance the variance for every coordinate in the original vector
  * @return {goog.vec.Vec3.Type}
- * @ignore
  */
-function randomVec3(original, variance) {
+chesterGL.randomVec3 = function (original, variance) {
 	var vec = goog.vec.Vec3.createFloat32();
 	if (variance) {
-		vec[0] = original[0] + (variance[0] * 2 * Math.random());
-		vec[1] = original[1] + (variance[1] * 2 * Math.random());
-		vec[2] = original[2] + (variance[2] * 2 * Math.random());
+		vec[0] = original[0] + variance[0] * chesterGL.randMin1Plus1();
+		vec[1] = original[1] + variance[1] * chesterGL.randMin1Plus1();
+		vec[2] = original[2] + variance[2] * chesterGL.randMin1Plus1();
 	} else {
 		vec[0] = original[0];
 		vec[1] = original[1];
 		vec[2] = original[2];
 	}
 	return vec;
-}
+};
+
+/**
+ * @param {goog.vec.Vec4.Type} original The original vector
+ * @param {goog.vec.Vec4.Type} variance the variance for every coordinate in the original vector
+ * @return {goog.vec.Vec4.Type}
+ */
+chesterGL.randomVec4 = function (original, variance) {
+	var vec = goog.vec.Vec4.createFloat32();
+	if (variance) {
+		vec[0] = original[0] + variance[0] * chesterGL.randMin1Plus1();
+		vec[1] = original[1] + variance[1] * chesterGL.randMin1Plus1();
+		vec[2] = original[2] + variance[2] * chesterGL.randMin1Plus1();
+		vec[3] = original[3] + variance[3] * chesterGL.randMin1Plus1();
+	} else {
+		vec[0] = original[0];
+		vec[1] = original[1];
+		vec[2] = original[2];
+		vec[3] = original[3];
+	}
+	return vec;
+};
+
+/**
+ * @returns {number} a random number between -1 and 1
+ */
+chesterGL.randMin1Plus1 = function () {
+	return Math.random() * 2 - 1;
+};
 
 /**
  * @constructor
- * @param {Object} properties
- * @extends chesterGL.Block
+ * @param {Object} properties the JSON object with the properties for this particle system
+ * @extends {chesterGL.BlockGroup}
  */
 chesterGL.ParticleSystem = function (properties) {
-	chesterGL.Block.call(this, null, chesterGL.Block.TYPE.PARTICLE);
-	var _this = this;
-	chesterGL.loadAsset('texture', properties['texture'], function () {
-		_this.loadProperties(properties);
-	});
+	this.parseProperties(properties);
+	if (this.textureImageData) {
+		chesterGL.loadAsset('texture', "data:image/png;base64," + this.textureImageData, this.textureFileName);
+	} else {
+		chesterGL.loadAsset('texture', this.textureFileName);
+	}
+	var tex = chesterGL.getAsset("texture", this.textureFileName);
+	chesterGL.BlockGroup.call(this, this.textureFileName, this.maxParticles);
+	this.recreateIndices(0, this.maxParticles);
+	// assume square particle
+	this.emissionRate = this.maxParticles / this.lifeSpan;
+	this.texOriginalSize = tex.width;
+	this.particles = [];
+	this.resetSystem();
 };
-goog.inherits(chesterGL.ParticleSystem, chesterGL.Block);
+goog.inherits(chesterGL.ParticleSystem, chesterGL.BlockGroup);
 
 /**
- * @ignore
- * @type {boolean}
- */
-chesterGL.ParticleSystem._shadersLoaded = false;
-
-/**
- * Load the shaders for the particle system
- */
-chesterGL.ParticleSystem.loadShaders = function () {
-	chesterGL.initShader("particles", function (program) {
-		var gl = chesterGL.gl;
-		program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
-		program.uSampler         = gl.getUniformLocation(program, "uSampler");
-		program.u_time           = gl.getUniformLocation(program, "u_time");
-		program.u_startColor     = gl.getUniformLocation(program, "u_startColor");
-		program.u_endColor       = gl.getUniformLocation(program, "u_endColor");
-		program.attribs = {
-			'a_startPosition': gl.getAttribLocation(program, 'a_startPosition'),
-			'a_lifetime'  : gl.getAttribLocation(program, 'a_lifetime'),
-			'a_startTime'  : gl.getAttribLocation(program, 'a_startTime'),
-			'a_startSize'  : gl.getAttribLocation(program, 'a_startSize'),
-			'a_endSize'  : gl.getAttribLocation(program, 'a_endSize'),
-			'a_speed'        : gl.getAttribLocation(program, 'a_speed')
-		};
-					
-		// test for errors on gl
-		var error = gl.getError();
-		if (error != 0) {
-			console.log("gl error: " + error);
-		}
-	});
-	chesterGL.ParticleSystem._shadersLoaded = true;
-}
-
-/**
- * Is the system running? (set to false to stop it)
- * @type {boolean}
- */
-chesterGL.ParticleSystem.prototype.running = true;
-	
-/**
- * particle texture
- * @type {?string}
- */
-chesterGL.ParticleSystem.prototype.particleTexture = null;
-
-/**
- * The rate of the emission (it is calculated as totalParticles / lifetime)
- * @type {number}
- */
-chesterGL.ParticleSystem.prototype.emissionRate = 0;
-
-/**
- * The timer that counts for the next emission
- * @type {number}
- */
-chesterGL.ParticleSystem.prototype.emissionCounter = 0;
-
-/**
- * The current number of living particles
- * @type {number}
- */
-chesterGL.ParticleSystem.prototype.particleCount = 0;
-
-/**
- * The current number of living particles
  * @type {number}
  */
 chesterGL.ParticleSystem.prototype.maxParticles = 0;
 
 /**
- * The duration of the whole system in seconds. Set it to < 0 to be infinte
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.duration = 0;
+chesterGL.ParticleSystem.prototype.lifeSpan = 0;
 
 /**
- * The lifetime of the particle (in seconds)
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.lifetime = 0;
+chesterGL.ParticleSystem.prototype.lifeSpanVariance = 0;
 
 /**
- * The lifetime variance of the particle (in seconds)
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.lifetimeVariance = 0;
+chesterGL.ParticleSystem.prototype.startSize = 0;
 
 /**
- * The starting color
- * @type {?goog.vec.Vec4.Type}
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.startSizeVariance = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.finishSize = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.finishSizeVariance = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.emitterAngle = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.emitterAngleVariance = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.rotationStart = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.rotationStartVariance = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.rotationEnd = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.rotationEndVariance = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.emitterType = 0;
+
+/**
+ * @type {goog.vec.Vec3.Type}
+ */
+chesterGL.ParticleSystem.prototype.sourcePosition = null;
+
+/**
+ * @type {goog.vec.Vec3.Type}
+ */
+chesterGL.ParticleSystem.prototype.sourcePositionVariance = null;
+
+/**
+ * @type {goog.vec.Vec4.Type}
  */
 chesterGL.ParticleSystem.prototype.startColor = null;
 
 /**
- * The starting position variance
- * @type {?goog.vec.Vec3.Type}
+ * @type {goog.vec.Vec4.Type}
  */
-chesterGL.ParticleSystem.prototype.positionVariance = null;
+chesterGL.ParticleSystem.prototype.startColorVariance = null;
 
 /**
- * The end color
- * @type {?goog.vec.Vec4.Type}
+ * @type {goog.vec.Vec4.Type}
  */
 chesterGL.ParticleSystem.prototype.endColor = null;
 
 /**
- * The particle speed
- * @type {?goog.vec.Vec3.Type}
+ * @type {goog.vec.Vec4.Type}
  */
-chesterGL.ParticleSystem.prototype.particleSpeed = null;
+chesterGL.ParticleSystem.prototype.endColorVariance = null;
 
 /**
- * The particle speed variance
- * @type {?goog.vec.Vec3.Type}
- */
-chesterGL.ParticleSystem.prototype.particleSpeedVariance = null;
-
-/**
- * The starting size
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.startSize = 0.0;
+chesterGL.ParticleSystem.prototype.blendFuncSource = 0;
 
 /**
- * The starting size variance
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.startSizeVariance = 0.0;
+chesterGL.ParticleSystem.prototype.blendFuncDest = 0;
 
 /**
- * The end size
+ * @type {?string}
+ */
+chesterGL.ParticleSystem.prototype.textureFileName = null;
+
+/**
+ * @type {?string}
+ */
+chesterGL.ParticleSystem.prototype.textureImageData = null;
+
+// gravity type
+
+/**
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.endSize = 0.0;
+chesterGL.ParticleSystem.prototype.speed = 0;
 
 /**
- * The end size variance
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.endSizeVariance = 0.0;
+chesterGL.ParticleSystem.prototype.speedVariance = 0;
 
 /**
- * @type {boolean}
+ * @type {goog.vec.Vec3.Type}
  */
-chesterGL.ParticleSystem.prototype.particleAdded = false;
+chesterGL.ParticleSystem.prototype.gravity = null;
 
 /**
- * The current time of the system
  * @type {number}
  */
-chesterGL.ParticleSystem.prototype.elapsedTime = 0;
+chesterGL.ParticleSystem.prototype.radialAcceleration = 0;
 
 /**
- * The blending options [src, dest]
- * @type {Array.<string>}
+ * @type {number}
  */
-chesterGL.ParticleSystem.prototype.blendOptions = ["SRC_ALPHA", "ONE_MINUS_SRC_ALPHA"];
+chesterGL.ParticleSystem.prototype.radialAccelerationVariance = 0;
 
 /**
- * @param {Object} properties
+ * @type {number}
  */
-chesterGL.ParticleSystem.prototype.loadProperties = function (properties) {
-	this.program = -1;
-	if (!chesterGL.ParticleSystem._shadersLoaded) {
-		chesterGL.ParticleSystem.loadShaders();
-	}
-	this.particleTexture = properties['texture'];
-	this.maxParticles = properties['maxParticles'];
-	this.duration = parseFloat(properties['duration']) * 1000.0;
-	this.lifetime = parseFloat(properties['lifetime']) * 1000.0;
-	this.lifetimeVariance = parseFloat(properties['lifetimeVariance']) * 1000.0;
-	this.startColor = goog.vec.Vec4.createFloat32FromArray(properties['startColor']);
-	this.positionVariance = goog.vec.Vec3.createFloat32FromArray(properties['positionVariance']);
-	this.endColor = goog.vec.Vec4.createFloat32FromArray(properties['endColor']);
-	this.particleSpeed = goog.vec.Vec3.createFloat32FromArray(properties['speed']);
-	this.particleSpeedVariance = goog.vec.Vec3.createFloat32FromArray(properties['speedVariance']);
-	this.startSize = parseFloat(properties['startSize']);
-	this.startSizeVariance = parseFloat(properties['startSizeVariance']);
-	this.endSize = parseFloat(properties['endSize']);
-	this.endSizeVariance = parseFloat(properties['endSizeVariance']);
-	this.elapsedTime = 0;
-	this.blendOptions = properties['blendOptions'].slice(0); // copy the array
-	this.running = true;
-	
-	this.glBuffer = chesterGL.gl.createBuffer();
-	this.glBufferData = new Float32Array(this.maxParticles * BUFFER_ELEMENTS);
-	this.resetParticles();
-}
+chesterGL.ParticleSystem.prototype.tangentialAcceleration = 0;
 
 /**
- * adds a new particle (sets the lifetime in the data sent to the shader)
+ * @type {number}
  */
-chesterGL.ParticleSystem.prototype.addParticle = function () {
-	var lifespan = Math.abs(this.lifetime + this.lifetimeVariance * (Math.random() * 2 - 1));
-	this.initParticle(this.particleCount, lifespan, this.elapsedTime);
-	this.particleCount++;
-	this.particleAdded = true;
-}
+chesterGL.ParticleSystem.prototype.tangentialAccelerationVariance = 0;
+
+// radial type
 
 /**
- * @param {number} idx
- * @param {number=} lifetime
- * @param {number=} startTime
+ * @type {number}
  */
-chesterGL.ParticleSystem.prototype.initParticle = function (idx, lifetime, startTime) {
-	var d = this.glBufferData;
-	lifetime = lifetime || -1.0;
-	startTime = startTime || 0.0;
-	
-	// lifetime, start time, start size, end size
-	d[idx * BUFFER_ELEMENTS + 0] = lifetime;
-	d[idx * BUFFER_ELEMENTS + 1] = startTime;
-	d[idx * BUFFER_ELEMENTS + 2] = this.startSize + this.startSizeVariance * (Math.random() * 2 - 1);
-	d[idx * BUFFER_ELEMENTS + 3] = this.endSize + this.endSizeVariance * (Math.random() * 2 - 1);
-	
-	// speed
-	d[idx * BUFFER_ELEMENTS + 4] = this.particleSpeed[0] + this.particleSpeedVariance[0] * (Math.random() * 2 - 1);
-	d[idx * BUFFER_ELEMENTS + 5] = this.particleSpeed[1] + this.particleSpeedVariance[1] * (Math.random() * 2 - 1);
-	d[idx * BUFFER_ELEMENTS + 6] = this.particleSpeed[2] + this.particleSpeedVariance[2] * (Math.random() * 2 - 1);
-	
-	// start position
-	d[idx * BUFFER_ELEMENTS + 7] = (Math.random() * 2 - 1) * this.positionVariance[0];
-	d[idx * BUFFER_ELEMENTS + 8] = (Math.random() * 2 - 1) * this.positionVariance[1];
-	d[idx * BUFFER_ELEMENTS + 9] = (Math.random() * 2 - 1) * this.positionVariance[2];
-}
+chesterGL.ParticleSystem.prototype.maxRadius = 0;
 
 /**
- * reset particle data - this is slow!
+ * @type {number}
  */
-chesterGL.ParticleSystem.prototype.resetParticles = function () {
-	var program = chesterGL.selectProgram("particles");
-	var gl = chesterGL.gl;
-	for (var i = 0; i < this.maxParticles; i++) {
-		this.initParticle(i);
-	}
-	gl.uniform4fv(program.u_startColor, /** @type {Float32Array} */(this.startColor));
-	gl.uniform4fv(program.u_endColor  , /** @type {Float32Array} */(this.endColor));
-	gl.uniform1i(program.uSampler, 0);
-
-	this.sendParticleData(program);
-	
-	this.particleCount = this.emissionCounter = 0;
-	// how many particles are emitted per second
-	this.emissionRate = this.maxParticles / Math.abs(this.lifetime);
-}
+chesterGL.ParticleSystem.prototype.maxRadiusVariance = 0;
 
 /**
- * will send the particle data to the gpu
- * @param {WebGLProgram} program
+ * @type {number}
  */
-chesterGL.ParticleSystem.prototype.sendParticleData = function (program) {
-	var gl = chesterGL.gl;
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
-}
+chesterGL.ParticleSystem.prototype.minRadius = 0;
 
 /**
- * @type {Float32Array}
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.minRadiusVariance = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.degPerSecond = 0;
+
+/**
+ * @type {number}
+ */
+chesterGL.ParticleSystem.prototype.degPerSecondVariance = 0;
+
+// internal properties
+
+/**
+ * @type {number}
  * @ignore
  */
-var _ps_tmp = new Float32Array(BUFFER_ELEMENTS);
+chesterGL.ParticleSystem.prototype.texOriginalSize = 0;
 
 /**
- * The update loop for the particle system
+ * @type {Array}
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.particles = null;
+
+/**
+ * @type {number}
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.particleCount = 0;
+
+/**
+ * @type {number}
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.particleIdx = 0;
+
+/**
+ * @type {number}
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.emissionRate = 0;
+
+/**
+ * @type {number}
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.emitCounter = 0;
+
+/**
+ * will parse and validate the properties
+ * @param {Object.<*>} properties
+ */
+chesterGL.ParticleSystem.prototype.parseProperties = function (properties) {
+	/*jshint sub:true */
+	if (typeof(properties) === 'string')
+		properties = /** @type {Object.<*>} */(JSON.parse(/** @type {string} */(properties)));
+	if (typeof(properties) === "object") {
+		this.maxParticles = properties['maxParticles'];
+		this.lifeSpan = properties['particleLifespan'] * 1000;
+		this.lifeSpanVariance = properties['lifeSpanVariance'] * 1000;
+		this.startSize = properties['startSize'];
+		this.startSizeVariance = properties['startSizeVariance'];
+		this.finishSize = properties['finishSize'];
+		this.finishSizeVariance = properties['finishSizeVariance'];
+		this.startColor = goog.vec.Vec4.createFloat32FromValues(properties['startColorRed'], properties['startColorGreen'], properties['startColorBlue'], properties['startColorAlpha']);
+		this.startColorVariance = goog.vec.Vec4.createFloat32FromValues(properties['startColorVarianceRed'], properties['startColorVarianceGreen'], properties['startColorVarianceBlue'], properties['startColorVarianceAlpha']);
+		this.endColor = goog.vec.Vec4.createFloat32FromValues(properties['endColorRed'], properties['endColorGreen'], properties['endColorBlue'], properties['endColorAlpha']);
+		this.endColorVariance = goog.vec.Vec4.createFloat32FromValues(properties['endColorVarianceRed'], properties['endColorVarianceGreen'], properties['endColorVarianceBlue'], properties['endColorVarianceAlpha']);
+		this.emitterAngle = properties['angle'];
+		this.emitterAngleVariance = properties['angleVariance'];
+		this.textureFileName = properties['textureFileName'];
+		this.textureImageData = properties['textureImageData'];
+		this.speed = properties['speed'];
+		this.speedVariance = properties['speedVariance'];
+		this.radialAcceleration = properties['radialAcceleration'];
+		this.radialAccelerationVariance = properties['radialAccelVariance'];
+		this.tangentialAcceleration = properties['tangentialAcceleration'];
+		this.tangentialAccelerationVariance = properties['tangAccelVariance'];
+	}
+};
+
+/**
+ * resets the system
+ */
+chesterGL.ParticleSystem.prototype.resetSystem = function () {
+	this.elapsed = 0;
+	// set the lifespan of each particle to 0
+	for (var i=0; i < this.particleCount; i++) {
+		this.particles[i].lifeSpan = 0;
+	}
+};
+
+/**
+ * @returns {Object} The newly created particle
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.createParticle = function () {
+	var endColor = chesterGL.randomVec4(this.endColor, this.endColorVariance),
+		startColor = chesterGL.randomVec4(this.startColor, this.startColorVariance),
+		deltaColor = goog.vec.Vec4.subtract(endColor, startColor, []),
+		startSize = Math.max(0, this.startSize + this.startSizeVariance * chesterGL.randMin1Plus1()),
+		finishSize = Math.max(0, this.finishSize + this.finishSizeVariance * chesterGL.randMin1Plus1()),
+		lifeSpan = Math.max(0, this.lifeSpan + this.lifeSpanVariance * chesterGL.randMin1Plus1()),
+		angle = chesterGL.Block.DEG_TO_RAD * (this.emitterAngle + this.emitterAngleVariance * chesterGL.randMin1Plus1()),
+		vel = [Math.cos(angle), Math.sin(angle)],
+		speed = this.speed + this.speedVariance * chesterGL.randMin1Plus1(),
+		particle = {
+			lifeSpan: lifeSpan,
+			position: [0, 0, 0],
+			color: startColor,
+			deltaColor: goog.vec.Vec4.scale(deltaColor, 1/lifeSpan, deltaColor),
+			size: startSize,
+			deltaSize: (finishSize - startSize) / lifeSpan,
+			dir: [vel[0] * speed, vel[1] * speed],
+			radialAccel: this.radialAcceleration + this.radialAccelerationVariance * chesterGL.randMin1Plus1(),
+			tangAccel: this.tangentialAcceleration + this.tangentialAccelerationVariance * chesterGL.randMin1Plus1()
+		};
+	return particle;
+};
+
+/**
+ * @param {number} idx the index of the quad to update
+ * @param {Object} particle the particle object to update the quad with
+ * @ignore
+ */
+chesterGL.ParticleSystem.prototype.updateQuad = function (idx, particle) {
+	// we're sharing the same buffers already created by the BlockGroup, so we have 1 quad per particle
+	// we just need to update it like if it was a block updating the quad
+	var buffIdx = idx * chesterGL.Block.BUFFER_SIZE,
+		colorOff = buffIdx + 5,
+		offset = 9,
+		hw = particle.size / 2,
+		pos = particle.position;
+	for (var i=0; i < 4; i++) {
+		this.glBufferData[idx     + i*offset] = particle.color[0];
+		this.glBufferData[idx + 1 + i*offset] = particle.color[1];
+		this.glBufferData[idx + 2 + i*offset] = particle.color[2];
+		this.glBufferData[idx + 3 + i*offset] = particle.color[3];
+	}
+	if (particle.rotation) {
+	} else {
+		this.glBufferData[idx               ] = pos[0] - hw; // bl.x
+		this.glBufferData[idx + 1           ] = pos[1] - hw; // bl.y
+		this.glBufferData[idx + 2           ] = pos[2];      // bl.z
+
+		this.glBufferData[idx     +   offset] = pos[0] - hw; // tl.x
+		this.glBufferData[idx + 1 +   offset] = pos[1] + hw; // tl.y
+		this.glBufferData[idx + 2 +   offset] = pos[2];      // tl.z
+
+		this.glBufferData[idx     + 2*offset] = pos[0] + hw; // br.x
+		this.glBufferData[idx + 1 + 2*offset] = pos[1] - hw; // br.y
+		this.glBufferData[idx + 2 + 2*offset] = pos[2];      // br.z
+
+		this.glBufferData[idx     + 3*offset] = pos[0] + hw; // tr.x
+		this.glBufferData[idx + 1 + 3*offset] = pos[1] + hw; // tr.y
+		this.glBufferData[idx + 2 + 3*offset] = pos[2];      // tr.z
+	}
+};
+
+chesterGL.ParticleSystem.prototype.addParticle = function () {
+	console.log("emitting a particle " + this.particleCount);
+	var p = this.createParticle();
+	this.updateQuad(this.particleCount, p);
+	this.particles[this.particleCount++] = p;
+};
+
+/**
+ * the regular update function, create more particles if we're not
+ * in the limit
  * @param {number} delta
+ * @ignore
  */
 chesterGL.ParticleSystem.prototype.update = function (delta) {
-	var program = chesterGL.selectProgram("particles");
-	if (!program) {
-		return;
-	}
-	this.elapsedTime += delta;
-
-	// how many seconds until the next particle
-	var rate = 1.0 / this.emissionRate;
-	this.emissionCounter += delta;
-	while (this.particleCount < this.maxParticles && this.emissionCounter > rate && this.running) {
-		this.addParticle();
-		this.emissionCounter -= rate;
-	}
-
-	for (var i = 0; i < this.maxParticles; i++) {
-		var buffer = this.glBufferData;
-		var idx = i * BUFFER_ELEMENTS;
-		// if expired, move the (buffer) particle ahead
-		if (buffer[idx] > 0 && (buffer[idx] + buffer[idx+1]) <= this.elapsedTime && i != this.particleCount - 1) {
-			// copy the particle into the tmp buffer and invalidate
-			var tmp = buffer.subarray(idx, idx + BUFFER_ELEMENTS);
-			_ps_tmp.set(tmp);
-			_ps_tmp[0] = -1.0;
-			// shift the array from idx to particleCount
-			tmp = buffer.subarray(idx + BUFFER_ELEMENTS, this.particleCount * BUFFER_ELEMENTS);
-			buffer.set(tmp, idx);
-			// copy the old particle in the last spot
-			buffer.set(_ps_tmp, (this.particleCount-1) * BUFFER_ELEMENTS);
-			// decrease the particle count
-			this.particleCount --;
+	if (this.emissionRate) {
+		delta = delta || 1;
+		// var rate = 1.0 / this.emissionRate;
+		this.emitCounter += delta;
+		while (this.particleCount < this.maxParticles && this.emitCounter > this.emissionRate) {
+			this.addParticle();
+			this.emitCounter -= this.emissionRate;
 		}
+		this.elapsed += delta;
 	}
-
-	if (this.duration > 0 && this.elapsedTime > this.duration) {
-		this.running = false;
+	var particleIdx = 0;
+	while (particleIdx < this.particleCount) {
+		var p = this.particles[particleIdx++];
+		p.lifeSpan -= delta;
 	}
-}
+};
 
+/**
+ *
+ */
 chesterGL.ParticleSystem.prototype.render = function () {
-	var program = chesterGL.selectProgram("particles");
-	if (!program) {
-		return;
-	}
-	var gl = chesterGL.gl;
-	var texture = chesterGL.getAsset('texture', this.particleTexture);
-	
-	gl.enable(gl.BLEND);
-	gl.blendFunc(gl[this.blendOptions[0]], gl[this.blendOptions[1]]);
-	
-	if (this.particleAdded) {
-		this.sendParticleData(program);
-		this.particleAdded = false;
-	}
-	
-	// send the elapsed time
-	gl.uniform1f(program.u_time, this.elapsedTime);
-	
-	// activate the texture
-	gl.activeTexture(gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, texture.tex);
-	
-	// bind buffer
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-	gl.vertexAttribPointer(program.attribs['a_lifetime']     , 3, gl.FLOAT, false, PARTICLE_SIZE, 0);
-	gl.vertexAttribPointer(program.attribs['a_startTime']    , 3, gl.FLOAT, false, PARTICLE_SIZE, 4);
-	gl.vertexAttribPointer(program.attribs['a_startSize']    , 3, gl.FLOAT, false, PARTICLE_SIZE, 8);
-	gl.vertexAttribPointer(program.attribs['a_endSize']      , 3, gl.FLOAT, false, PARTICLE_SIZE, 12);
-	gl.vertexAttribPointer(program.attribs['a_speed']        , 3, gl.FLOAT, false, PARTICLE_SIZE, 16);
-	gl.vertexAttribPointer(program.attribs['a_startPosition'], 3, gl.FLOAT, false, PARTICLE_SIZE, 28);
-	
-	// and draw:
-	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
-	if (transformDirty) {
-		goog.vec.Mat4.multMat(chesterGL.pMatrix, this.mvMatrix, this.mvpMatrix);
-	}
-	gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
-	gl.drawArrays(gl.POINTS, 0, this.maxParticles);
-}
+	chesterGL.BlockGroup.prototype.render.call(this, this.particleCount);
+};
 
+// export the symbol
 goog.exportSymbol('chesterGL.ParticleSystem', chesterGL.ParticleSystem);
-// properties
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'visible', chesterGL.ParticleSystem.prototype.visible);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'position', chesterGL.ParticleSystem.prototype.position);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'contentSize', chesterGL.ParticleSystem.prototype.contentSize);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'color', chesterGL.ParticleSystem.prototype.color);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'texture', chesterGL.ParticleSystem.prototype.texture);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'opacity', chesterGL.ParticleSystem.prototype.opacity);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'rotation', chesterGL.ParticleSystem.prototype.rotation);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'scale', chesterGL.ParticleSystem.prototype.scale);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'update', chesterGL.ParticleSystem.prototype.update);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'frame', chesterGL.ParticleSystem.prototype.frame);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'parent', chesterGL.ParticleSystem.prototype.parent);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'children', chesterGL.ParticleSystem.prototype.children);
-// // class methods
-goog.exportProperty(chesterGL.ParticleSystem, 'loadShaders', chesterGL.ParticleSystem.loadShaders);
-// // instance methods
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'setFrame', chesterGL.ParticleSystem.prototype.setFrame);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'setContentSize', chesterGL.ParticleSystem.prototype.setContentSize);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'setScale', chesterGL.ParticleSystem.prototype.setScale);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'setColor', chesterGL.ParticleSystem.prototype.setColor);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'setTexture', chesterGL.ParticleSystem.prototype.setTexture);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'moveTo', chesterGL.ParticleSystem.prototype.moveTo);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'moveBy', chesterGL.ParticleSystem.prototype.moveBy);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'rotateTo', chesterGL.ParticleSystem.prototype.rotateTo);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'rotateBy', chesterGL.ParticleSystem.prototype.rotateBy);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'addChild', chesterGL.ParticleSystem.prototype.addChild);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'removeChild', chesterGL.ParticleSystem.prototype.removeChild);
-goog.exportProperty(chesterGL.ParticleSystem.prototype, 'loadProperties', chesterGL.ParticleSystem.prototype.loadProperties);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'addParticle', chesterGL.ParticleSystem.prototype.addParticle);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'initParticle', chesterGL.ParticleSystem.prototype.initParticle);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'resetParticles', chesterGL.ParticleSystem.prototype.resetParticles);
-// chesterGL.exportProperty(chesterGL.ParticleSystem.prototype, 'sendParticleData', chesterGL.ParticleSystem.prototype.sendParticleData);
+// instance methods
+goog.exportProperty(chesterGL.ParticleSystem.prototype, 'resetSystem', chesterGL.ParticleSystem.prototype.resetSystem);

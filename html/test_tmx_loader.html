@@ -9,8 +9,7 @@
     <script type="text/javascript">
 
 $(document).ready(function () {
-	setupGame();
-	function setupGame() {
+	var setupGame = function () {
 		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
@@ -48,14 +47,18 @@ $(document).ready(function () {
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();
 		});
-	} // setupGame()
+	}; // setupGame()
+
+	$("#pause").click(function () {
+		chesterGL.togglePause();
+	});
+
+	setupGame();
 });
     </script>
 	<script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-77863-9']);
-_gaq.push(['_setDomainName', 'github.com']);
-_gaq.push(['_setAllowLinker', true]);
 _gaq.push(['_trackPageview']);
 
 (function() {
@@ -66,11 +69,10 @@ _gaq.push(['_trackPageview']);
 	</script>
 </head>
 <body>
-	<div id="loading" style="position: absolute; z-index: 100;"></div>
 	<div id="game-container">
 		<canvas id="demo-canvas" width="640" height="480"></canvas>
 		<div>
-			<span id="debug-info">00</span> ms per frame
+			<span id="debug-info">00</span> ms per frame - <input type="button" id="pause" value="pause"/>
 		</div>
 	</div>
 </body>

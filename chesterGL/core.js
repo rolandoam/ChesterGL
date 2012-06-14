@@ -41,28 +41,49 @@ HTMLCanvasElement._canvas_tmp_mouse = new goog.math.Vec2(0, 0);
 HTMLCanvasElement.prototype.relativePosition = function (evt) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
 	pt.x = 0; pt.y = 0;
+	if (this.__offset === undefined) {
+		this.__offset = $(this).offset();
+		this.__height = $(this).height();
+	}
+	if (evt.changedTouches) {
+		var t = evt.changedTouches[0];
+		pt.x = (t.pageX - this.__offset.left);
+		pt.y = (this.__height - (t.pageY - this.__offset.top));
+	} else {
+		pt.x = (evt.pageX - this.__offset.left);
+		pt.y = (this.__height - (evt.pageY - this.__offset.top));
+	}
 
-	var off = $(this).offset(), height = $(this).height();
-	pt.x = (evt.pageX - off.left);
-	pt.y = (height - (evt.pageY - off.top));
 	return pt;
 };
 
-/**
- * @ignore
- * @type {function(function(), Element)}
- */
-window.requestAnimFrame = (function(){
-	return  window.requestAnimationFrame       ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame    ||
-			window.oRequestAnimationFrame      ||
-			window.msRequestAnimationFrame     ||
-			function(/* function */ callback, /* DOMElement */ element){
-				window.setTimeout(callback, 1000 / 60);
-			};
-})();
-goog.exportSymbol('requestAnimationFrame', window.requestAnimationFrame);
+// requestAnimationFrame polyfill by Erik Möller
+// fixes from Paul Irish and Tino Zijdel
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame) {
+		console.log("using setTimeout");
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = Date.now();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
 
 /**
  * @define {boolean}
@@ -85,7 +106,7 @@ function throwOnGLError(err, funcName, args) {
  * @const
  * @type {string}
  */
-chesterGL.version = '0.2.1';
+chesterGL.version = '0.3';
 
 /**
  * Basic settings for chesterGL
@@ -104,9 +125,10 @@ chesterGL.version = '0.2.1';
  */
 chesterGL.settings = {
 	'useGoogleAnalytics': false,
-	'projection': "3d",
+	'projection': '3d',
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
+	'basePath': '',
 	'debugSpanId': 'debug-info'
 };
 
@@ -135,8 +157,14 @@ chesterGL.usesOffscreenBuffer = false;
 chesterGL.useGoogleAnalytics = false;
 
 /**
+ * @type {string}
+ * @ignore
+ */
+chesterGL.basePath = "";
+
+/**
  * This is the WebGL context
- * 
+ *
  * @type {?WebGLRenderingContext}
  * @ignore
  */
@@ -187,7 +215,7 @@ chesterGL.debugSprite = false;
 /**
  * @type {Object.<string,Object>}
  * @ignore
- */ 
+ */
 chesterGL.assets = {};
 
 /**
@@ -227,13 +255,6 @@ chesterGL.lastTime = Date.now();
 chesterGL.delta = 0;
 
 /**
- * the current number of frames per second
- * @type {number}
- * @ignore
- */
-chesterGL.fps = 0;
-
-/**
  * the span that will hold the debug info
  * @type {?Element}
  * @ignore
@@ -246,8 +267,10 @@ chesterGL.debugSpan = null;
 chesterGL.mouseEvents = {
 	DOWN: 0,
 	MOVE: 1,
-	UP: 2
-}
+	UP: 2,
+	ENTER: 3,
+	LEAVE: 4
+};
 
 /**
  * the global list of mouse down handlers
@@ -258,7 +281,7 @@ chesterGL.mouseHandlers = [];
 
 /**
  * sets the current program, also sets the uniforms for that shader
- * 
+ *
  * @param {string} program
  * @return {WebGLProgram}
  * @ignore
@@ -293,6 +316,7 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.webglMode = /** @type {boolean} */(settings['webglMode']);
 	chesterGL.useGoogleAnalytics = /** @type {boolean} */(settings['useGoogleAnalytics']);
 	chesterGL.usesOffscreenBuffer = /** @type {boolean} */(settings['usesOffscreenBuffer']);
+	chesterGL.basePath = /** @type {string} */(settings['basePath']);
 
 	chesterGL.initGraphics(canvas);
 	if (chesterGL.webglMode) {
@@ -311,6 +335,7 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.debugSpan = document.getElementById("debug-info");
 	// register the default handler for textures
 	chesterGL.registerAssetHandler('texture', chesterGL.defaultTextureHandler);
+	chesterGL.registerAssetHandler('default', chesterGL.defaultAssetHandler);
 	chesterGL.registerAssetLoader('texture', chesterGL.defaultTextureLoader);
 	chesterGL.registerAssetLoader('default', chesterGL.defaultAssetLoader);
 };
@@ -319,14 +344,14 @@ chesterGL.setup = function (canvasId) {
  * tryies to init the graphics stuff:
  * 1st attempt: webgl
  * fallback: canvas
- * 
+ *
  * @param {Element} canvas
  */
 chesterGL.initGraphics = function (canvas) {
 	try {
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
-			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false});
+			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false, preserveDrawingBuffer: true});
 			if (chesterGL.gl && window['WebGLDebugUtils']) {
 				console.log("installing debug context");
 				chesterGL.gl = WebGLDebugUtils.makeDebugContext(chesterGL.gl, throwOnGLError);
@@ -351,7 +376,7 @@ chesterGL.initGraphics = function (canvas) {
 		if (!chesterGL.gl || !chesterGL.offContext) {
 			throw "Error initializing graphic context!";
 		}
-		chesterGL.webglMode = false;
+		chesterGL.webglMode = chesterGL.settings['webglMode'] = false;
 	}
 	// first resize of the canvas
 	chesterGL.canvasResized();
@@ -391,7 +416,7 @@ chesterGL.initDefaultShaders = function () {
 		program.attribs = {
 			'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
 			'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
-		}
+		};
 		goog.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
 		goog.exportProperty(program, 'attribs', program.attribs);
 	});
@@ -450,7 +475,7 @@ chesterGL.initShader = function (prefix, callback) {
 chesterGL.loadShader = function (prefix, type) {
 	var shaderData = "";
 	$.ajax({
-		url: "shaders/" + prefix + "." + type,
+		url: chesterGL.basePath + "shaders/" + prefix + "." + type,
 		async: false,
 		type: 'GET',
 		success: function (data, textStatus) {
@@ -490,10 +515,10 @@ chesterGL.createShader = function (prefix, fragmentData, vertexData) {
  * registers an asset loader (which is basically a function).
  * By convention, every handler must set the <code>data</code> property of the asset. It should not
  * modify the status property.
- * 
+ *
  * @param {string} type the type of the asset
  * @param {Function} handler the handler that will be called every time an asset is loaded
- * 
+ *
  * @example
  * chesterGL.defaultTextureHandler = function (path, data, callback) {
  *		// create the image
@@ -521,7 +546,7 @@ chesterGL.registerAssetHandler = function (type, handler) {
 
 /**
  * Register a way to load an asset
- * 
+ *
  * @param {string} type
  * @param {Function} loader
  */
@@ -532,56 +557,69 @@ chesterGL.registerAssetLoader = function (type, loader) {
 /**
  * Loads and asset using the registered method to download it. You can register different loaders
  * (to be called to actually do the request) and asset handlers (to be called after the asset is loaded).
- * 
+ *
  * @param {string} type the type of asset being loaded, it could be "texture" or "default"
- * @param {string|Object} assetPath the path for the asset
- * @param {function(Object)=} cb the callback that will be executed as soon as the asset is loaded
+ * @param {string|Object} url the url for the asset
+ * @param {(string|null)=} name the name of the asset. If none is provided, then the name is the path
+ * @param {function(Object)=} callback the callback that will be executed as soon as the asset is loaded
  */
-chesterGL.loadAsset = function (type, assetPath, cb) {
-	var dataType_ = undefined;
-	if (typeof(assetPath) == 'object') {
-		dataType_ = assetPath.dataType;
-		assetPath = assetPath.path;
+chesterGL.loadAsset = function (type, url, name, callback) {
+	var params;
+	if (typeof(url) == 'object') {
+		params = {
+			dataType: url.dataType,
+			url: url.url,
+			name: url.name
+		};
+	} else {
+		params = {
+			url: url,
+			name: name || url
+		};
 	}
 
 	if (!chesterGL.assets[type]) {
 		chesterGL.assets[type] = {};
 	}
 
-	var assets = chesterGL.assets[type];
-	if (!assets[assetPath]) {
+	var assets = chesterGL.assets[type],
+		rname = params.name;
+	if (!assets[rname]) {
 		// not in our records
-		assets[assetPath] = {
+		assets[rname] = {
 			data: null,
+			name: rname,
 			status: 'try',
 			listeners: []
-		}
-		cb && assets[assetPath].listeners.push(cb);
-		chesterGL.loadAsset(type, {path: assetPath, dataType: dataType_});
-	} else if (assets[assetPath].status == 'loading') {
+		};
+		if (callback) assets[rname].listeners.push(callback);
+		chesterGL.loadAsset(type, params);
+	} else if (assets[rname].status == 'loading') {
 		// created but not yet loaded
-		cb && assets[assetPath].listeners.push(cb);
-	} else if (assets[assetPath].status == 'loaded') {
+		if (callback) assets[rname].listeners.push(callback);
+	} else if (assets[rname].status == 'loaded') {
 		// created and loaded, just call the callback
-		cb && cb(assets[assetPath].data);
-	} else if (assets[assetPath].status == 'try') {
-		assets[assetPath].status = 'loading';
+		if (callback) callback(assets[rname].data);
+	} else if (assets[rname].status == 'try') {
+		assets[rname].status = 'loading';
 		if (chesterGL.assetsLoaders[type])
-			chesterGL.assetsLoaders[type](type, {url: assetPath, dataType: dataType_});
+			chesterGL.assetsLoaders[type](type, params);
 		else
-			chesterGL.assetsLoaders['default'](type, {url: assetPath, dataType: dataType_});
-		cb && assets[assetPath].listeners.push(cb);
+			chesterGL.assetsLoaders['default'](type, params);
+		if (callback) assets[rname].listeners.push(callback);
 	}
 };
 
 /**
  * adds a listener/query for when all assets are loaded
- * 
+ *
  * @param {string} type You can query for all types if you pass "all" as type
  * @param {function()=} callback The callback to be executed when all assets of that type are loaded
  */
 chesterGL.assetsLoaded = function (type, callback) {
-	var listeners = chesterGL.assetsLoadedListeners[type];
+	var listeners = chesterGL.assetsLoadedListeners[type],
+		assets,
+		i;
 	if (!listeners) {
 		chesterGL.assetsLoadedListeners[type] = [];
 		listeners = chesterGL.assetsLoadedListeners[type];
@@ -592,8 +630,8 @@ chesterGL.assetsLoaded = function (type, callback) {
 	var allLoaded = true;
 	if (type == 'all') {
 		for (var t in chesterGL.assets) {
-			var assets = chesterGL.assets[t];
-			for (var i in assets) {
+			assets = chesterGL.assets[t];
+			for (i in assets) {
 				if (assets[i].status != 'loaded') {
 					allLoaded = false;
 					break;
@@ -604,8 +642,8 @@ chesterGL.assetsLoaded = function (type, callback) {
 			}
 		}
 	} else {
-		var assets = chesterGL.assets[type];
-		for (var i in assets) {
+		assets = chesterGL.assets[type];
+		for (i in assets) {
 			if (assets[i].status != 'loaded') {
 				allLoaded = false;
 				break;
@@ -614,7 +652,7 @@ chesterGL.assetsLoaded = function (type, callback) {
 	}
 	if (allLoaded) {
 		var l;
-		while (l = listeners.shift()) { l(); }
+		while ((l = listeners.shift())) { l(); }
 	}
 };
 
@@ -648,12 +686,14 @@ chesterGL.prepareWebGLTexture = function (texture) {
 		gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 		error = gl.getError();
-		if (error != 0) {
+		if (error !== 0) {
 			console.log("gl error " + error);
 			result = false;
 		}
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	} catch (e) {
 		console.log("got some error: " + e);
@@ -663,18 +703,34 @@ chesterGL.prepareWebGLTexture = function (texture) {
 };
 
 /**
- * The default texture handler
- * 
- * @param {string} path
- * @param {Object|HTMLImageElement} img
+ * The default asset handler, just sets the 'data' property
+ * of the asset.
+ * @param {Object} params
+ * @param {Object} data
+ * @param {string} type
  * @return {boolean}
  * @ignore
  */
-chesterGL.defaultTextureHandler = function (path, img) {
-	if (chesterGL.webglMode) {
+chesterGL.defaultAssetHandler = function (params, data, type) {
+	var asset = chesterGL.assets[type][params.name];
+	asset.data = data;
+	return true;
+};
+
+/**
+ * The default texture handler
+ *
+ * @param {Object} params
+ * @param {Object|HTMLImageElement} img
+ * @param {string=} type
+ * @return {boolean}
+ * @ignore
+ */
+chesterGL.defaultTextureHandler = function (params, img, type) {
+	if (chesterGL.webglMode && !img.tex) {
 		img.tex = chesterGL.gl.createTexture();
 	}
-	var texture = chesterGL.assets['texture'][path];
+	var texture = chesterGL.assets['texture'][params.name];
 	texture.data = img;
 	if (chesterGL.webglMode) {
 		return chesterGL.prepareWebGLTexture(/** @type {HTMLImageElement} */(img));
@@ -688,25 +744,35 @@ chesterGL.defaultTextureHandler = function (path, img) {
  * @ignore
  */
 chesterGL.defaultTextureLoader = function (type, params) {
-	var img = new Image();
-	var path = params.url;
+	var img = new Image(),
+		path = params.url,
+		name = params.name;
+	img.src = "";
 	img.addEventListener("load", function () {
-		var texture = chesterGL.assets['texture'][path];
-		if (chesterGL.assetsHandlers[type](path, img)) {
+		var texture = chesterGL.assets['texture'][name];
+		if (chesterGL.assetsHandlers[type](params, img)) {
 			// call all listeners
 			texture.status = 'loaded';
 			var l;
-			while (l = texture.listeners.shift()) { l(texture.data); }
+			while ((l = texture.listeners.shift())) { l(texture.data); }
 			// test for assets loaded
 			chesterGL.assetsLoaded(type);
 			chesterGL.assetsLoaded('all');
 		} else {
 			// requeue
 			texture.status = 'try';
-			chesterGL.loadAsset(type, path);
+			chesterGL.loadAsset(type, params);
 		}
 	}, false);
-	img.src = path;
+	// append the basePath if it's not an absolute url or a data:image url
+	if (path.match(/^http(s)?:/)) {
+		img.crossOrigin = 'anonymous';
+		img.src = path;
+	} else if (path.match(/^data:/)) {
+		img.src = path;
+	} else {
+		img.src = chesterGL.basePath + path;
+	}
 };
 
 /**
@@ -715,27 +781,34 @@ chesterGL.defaultTextureLoader = function (type, params) {
  * @ignore
  */
 chesterGL.defaultAssetLoader = function (type, params) {
-	var path = params.url;
+	var path = params.url,
+		realPath = path,
+		name = params.name;
+	if (!path.match(/^http(s)?:\/\//)) {
+		realPath = chesterGL.basePath + path;
+	}
 	$.ajax({
-		url: path,
+		url: realPath,
 		dataType: params.dataType,
+		beforeSend: function (xhr) {
+			xhr.withCredentials = true;
+		},
 		success: function (data, textStatus) {
-			var asset = chesterGL.assets[type][path];
+			var asset = chesterGL.assets[type][name];
 			if (textStatus == "success") {
-				var handler = chesterGL.assetsHandlers[type];
-				if (!handler) { throw "No handler for asset of type " + type; }
-				if (handler(path, data)) {
+				var handler = chesterGL.assetsHandlers[type] || chesterGL.assetsHandlers['default'];
+				if (handler(params, data, type)) {
 					asset.status = 'loaded';
 					// call all listeners
 					var l;
-					while (l = asset.listeners.shift()) { l(asset.data); }
+					while ((l = asset.listeners.shift())) { l(asset.data); }
 					// test for assets loaded
 					chesterGL.assetsLoaded(type);
 					chesterGL.assetsLoaded('all');
 				} else {
 					// requeue
 					asset.status = 'try';
-					chesterGL.loadAsset(type, path);
+					chesterGL.loadAsset(type, params);
 				}
 			} else {
 				console.log("Error loading asset " + path);
@@ -762,7 +835,7 @@ chesterGL.setupPerspective = function () {
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.enable(gl.BLEND);
 	// disable depth test
-	gl.disable(gl.DEPTH_TEST)
+	gl.disable(gl.DEPTH_TEST);
 
 	var width = gl.viewportWidth;
 	var height = gl.viewportHeight;
@@ -805,7 +878,7 @@ chesterGL.setRunningScene = function (block) {
  * @ignore
  */
 chesterGL.drawScene = function () {
-	var gl = undefined;
+	var gl;
 	if (chesterGL.webglMode) {
 		gl = chesterGL.gl;
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -830,7 +903,7 @@ chesterGL.drawScene = function () {
 	// for actions and other stuff
 	var current = Date.now(); // milliseconds
 	chesterGL.delta = current - chesterGL.lastTime;
-	chesterGL.lastTime = current;	
+	chesterGL.lastTime = current;
 };
 
 /**
@@ -859,6 +932,20 @@ chesterGL.sampledAvg = 0;
  */
 chesterGL.sumAvg = 0;
 
+/**
+ * the last milliseconds per frame calculated
+ * (updated every second)
+ * @type {number}
+ */
+chesterGL.lastSampledMpf = 0;
+
+/**
+ * @return {number}
+ */
+chesterGL.getSampledMpf = function () {
+	return chesterGL.lastSampledMpf;
+};
+
 /** @ignore */
 chesterGL.updateDebugTime = function () {
 	var now = Date.now();
@@ -866,6 +953,7 @@ chesterGL.updateDebugTime = function () {
 	chesterGL.frames_ ++;
 	if (now - chesterGL.lastDebugSecond_ > 1000) {
 		var avg = (chesterGL.elapsed_ / chesterGL.frames_);
+		chesterGL.lastSampledMpf = 1.0 * avg;
 		chesterGL.sumAvg += avg;
 		chesterGL.sampledAvg ++;
 		if (chesterGL.debugSpan) {
@@ -893,9 +981,21 @@ chesterGL.updateDebugTime = function () {
  * @ignore
  */
 chesterGL.installMouseHandlers = function () {
-	$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
-	$(chesterGL.canvas).mousemove(chesterGL.mouseMoveHandler);
-	$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
+	if (window.navigator.platform.match(/iPhone|iPad/)) {
+		document.addEventListener('touchstart', chesterGL.mouseDownHandler, false);
+		document.addEventListener('touchmove', function (event) {
+			chesterGL.mouseMoveHandler(event);
+			// prevent scrolling
+			event.preventDefault();
+		}, false);
+		document.addEventListener('touchend', chesterGL.mouseUpHandler, false);
+	} else {
+		$(chesterGL.canvas).mousedown(chesterGL.mouseDownHandler);
+		$(chesterGL.canvas).mousemove(chesterGL.mouseMoveHandler);
+		$(chesterGL.canvas).mouseup(chesterGL.mouseUpHandler);
+		$(chesterGL.canvas).mouseenter(chesterGL.mouseEnterHandler);
+		$(chesterGL.canvas).mouseleave(chesterGL.mouseLeaveHandler);
+	}
 };
 
 /**
@@ -944,20 +1044,46 @@ chesterGL.mouseUpHandler = function (event) {
 };
 
 /**
+ * @param {Event} event
+ * @ignore
+ */
+chesterGL.mouseEnterHandler = function (event) {
+	var pt = chesterGL.canvas.relativePosition(event);
+	var i = 0, len = chesterGL.mouseHandlers.length;
+	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	for (; i < len; i++) {
+		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER);
+	}
+};
+
+/**
+ * @param {Event} event
+ * @ignore
+ */
+chesterGL.mouseLeaveHandler = function (event) {
+	var pt = chesterGL.canvas.relativePosition(event);
+	var i = 0, len = chesterGL.mouseHandlers.length;
+	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	for (; i < len; i++) {
+		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE);
+	}
+};
+
+/**
  * Adds a mouse handler: the function will be called for every mouse event on the main canvas
  * @param {function((Array|Float32Array), chesterGL.mouseEvents)} callback
  * @example
  * var stPoint = null;
  * chesterGL.addMouseHandler(function (pt, type) {
- * 	if (type == chesterGL.mouseEvents.DOWN) {
- * 		stPoint = new Float32Array(pt);
- * 	} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
- * 		var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
- * 		tmx.setPosition([tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]]);
- * 		stPoint.set(pt);
- * 	} else {
- * 		stPoint = null;
- * 	}
+ *	if (type == chesterGL.mouseEvents.DOWN) {
+ *		stPoint = new Float32Array(pt);
+ *	} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
+ *		var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
+ *		tmx.setPosition(tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]);
+ *		stPoint.set(pt);
+ *	} else {
+ *		stPoint = null;
+ *	}
  * });
  */
 chesterGL.addMouseHandler = function (callback) {
@@ -983,7 +1109,7 @@ chesterGL.removeMouseHandler = function (callback) {
 chesterGL.run = function () {
 	if (!chesterGL._paused) {
 		// console.time("mainLoop");
-		window.requestAnimFrame(chesterGL.run, chesterGL.canvas);
+		window.requestAnimationFrame(chesterGL.run, chesterGL.canvas);
 		chesterGL.drawScene();
 		chesterGL.ActionManager.tick(chesterGL.delta);
 		// console.timeEnd("mainLoop");
@@ -999,18 +1125,29 @@ chesterGL.togglePause = function () {
 		chesterGL._paused = true;
 	} else {
 		chesterGL._paused = false;
+		chesterGL.lastTime = Date.now();
 		chesterGL.run();
 	}
+};
+
+/**
+ * @returns {boolean}
+ */
+chesterGL.isPaused = function () {
+	return chesterGL._paused;
 };
 
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
 goog.exportSymbol('chesterGL.mouseEvents', chesterGL.mouseEvents);
-goog.exportSymbol('chesterGL.mouseEvents.DOWN', chesterGL.mouseEvents.DOWN);
-goog.exportSymbol('chesterGL.mouseEvents.MOVE', chesterGL.mouseEvents.MOVE);
-goog.exportSymbol('chesterGL.mouseEvents.UP', chesterGL.mouseEvents.UP);
+goog.exportProperty(chesterGL.mouseEvents, 'UP', chesterGL.mouseEvents.UP);
+goog.exportProperty(chesterGL.mouseEvents, 'DOWN', chesterGL.mouseEvents.DOWN);
+goog.exportProperty(chesterGL.mouseEvents, 'MOVE', chesterGL.mouseEvents.MOVE);
+goog.exportProperty(chesterGL.mouseEvents, 'ENTER', chesterGL.mouseEvents.ENTER);
+goog.exportProperty(chesterGL.mouseEvents, 'LEAVE', chesterGL.mouseEvents.LEAVE);
 // methods
+goog.exportSymbol('chesterGL.getSampledMpf', chesterGL.getSampledMpf);
 goog.exportSymbol('chesterGL.viewportSize', chesterGL.viewportSize);
 goog.exportSymbol('chesterGL.setup', chesterGL.setup);
 goog.exportSymbol('chesterGL.canvasResized', chesterGL.canvasResized);
@@ -1024,5 +1161,6 @@ goog.exportSymbol('chesterGL.setRunningScene', chesterGL.setRunningScene);
 goog.exportSymbol('chesterGL.drawScene', chesterGL.drawScene);
 goog.exportSymbol('chesterGL.run', chesterGL.run);
 goog.exportSymbol('chesterGL.togglePause', chesterGL.togglePause);
+goog.exportSymbol('chesterGL.isPaused', chesterGL.isPaused);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);

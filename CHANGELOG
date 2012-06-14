@@ -1,0 +1,49 @@
+v0.3 - 2012-06-XX
+	[FIX] small improvement to the gpu particle system
+	[FIX] removes color picker on gpu particle test
+	[NEW] first attempt on new particle systems
+	[FIX] fixes blending on the gpu particle system
+	[FIX] small improvement on labelBlock
+	[FIX] more interesting base64 texture test
+	[FIX] changes tex mag function to GL_LINEAR
+	[FIX] fixes MoveAction
+	[NEW] adds support for inline images
+	[NEW] renaming particles to GPU particles
+	[NEW] setPosition now accepts values
+	[FIX] adds getPosition
+	[FIX] adds several missing getters
+	[FIX] updates perf test, adds support for canvas mode
+	[FIX] updates settings when on canvas mode
+	[NEW] adds new CallbackAction
+	[NEW] adds preserveDrawingBuffer to the webglContext
+	[NEW] adds getContentSize
+	[FIX] fixes bug in rendering
+	[NEW] adds support for default asset handler
+	[NEW] adds Block.boundingBox
+	[NEW] adds wiggle action
+	[FIX] fixes bug when that prevented removing an action
+	[NEW] makefile includes developer.mk to define paths
+	[NEW] adds CORS support for textures
+	[NEW] test for label blocks
+	[NEW] somewhat working labelBlock
+	[FIX] better support for NPOT
+	[NEW] changes version
+	[FIX] fixes analytics code in examples
+	[FIX] moves anonymous functions to TMXBlock
+	[FIX] updates read me
+	[NEW] adds isPaused
+	[FIX] adds Authors and Changelog
+	[FIX] fixes indentation
+	[FIX] Added a small fudge factor on texture edges so TMX tiles look right.
+	[NEW] tests for multiple layers on tmx files
+	[NEW] adds support for tmx layers
+	[FIX] forces ECMASCRIPT 5 strict
+	[NEW] adds enter and leave mouse events
+	[FIX] adds support for NPOT textures
+	[FIX] fixes pause
+	[FIX] fixes rotation for canvas mode
+	[NEW] adds getLastSampledMpf
+	[FIX] improves performance test
+	[FIX] improves blockGroup
+	[FIX] improved actions
+	[FIX] small performance improvement for mouse events

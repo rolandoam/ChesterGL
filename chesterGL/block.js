@@ -32,7 +32,7 @@ goog.require("chesterGL.core");
 /**
  * creates a new block. Pass the rect if you want to set the frame at
  * creation time.
- * 
+ *
  * @constructor
  * @param {goog.vec.Vec4.Vec4Like|string=} rect
  * @param {number=} type
@@ -54,8 +54,9 @@ chesterGL.Block = function (rect, type, parent) {
 	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
 		this.setColor([1, 1, 1, 1]);
 	}
+	this.setPosition(0, 0, 0);
 
-	if (chesterGL.webglMode && this.type == chesterGL.Block.TYPE['STANDALONE'] && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
+	if (chesterGL.webglMode && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
 		// just a single buffer for all data (a 4x"quad")
 		this.glBuffer = gl.createBuffer();
@@ -148,7 +149,7 @@ chesterGL.Block.ONE_DEG = 1 * chesterGL.Block.DEG_TO_RAD;
 
 /**
  * the full frame
- * 
+ *
  * @const
  * @type {goog.vec.Vec4.Type}
  */
@@ -156,7 +157,7 @@ chesterGL.Block.FullFrame = goog.vec.Vec4.createFloat32FromValues(0.0, 0.0, 1.0,
 
 /**
  * the size zero constant
- * 
+ *
  * @const
  * @type {goog.math.Size}
  */
@@ -233,7 +234,7 @@ chesterGL.Block.prototype.glBufferData = null;
  * the position of the center of the block. Use the setter to modify this property
  * @type {goog.vec.Vec3.Type}
  */
-chesterGL.Block.prototype.position = goog.vec.Vec3.createFloat32();
+chesterGL.Block.prototype.position = null;
 
 /**
  * the content size of the block. Use the setter to modify this property
@@ -245,7 +246,7 @@ chesterGL.Block.prototype.contentSize = null;
  * the color of the block. Use the setter to modify this property
  * @type {goog.vec.Vec4.Type}
  */
-chesterGL.Block.prototype.color = goog.vec.Vec4.createFloat32FromValues(1.0, 1.0, 1.0, 1.0);
+chesterGL.Block.prototype.color = null;
 
 /**
  * The name of the texture associated with this block. Use the setter to modify this property
@@ -333,7 +334,7 @@ chesterGL.Block.prototype.addDebugNode = function () {
 
 /**
  * sets the frame for this block
- * 
+ *
  * @param {Array|Float32Array|string} newFrame
  */
 chesterGL.Block.prototype.setFrame = function (newFrame) {
@@ -343,14 +344,27 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 		newFrame = tmpFrame.frame;
 		this.setTexture(tmpFrame.texture);
 	}
-	this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
+	if (!this.frame) {
+		this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
+	} else {
+		goog.vec.Vec4.setFromArray(this.frame, newFrame);
+	}
 	this.setContentSize(newFrame[2], newFrame[3]);
 	this.isFrameDirty = true;
 };
 
 /**
+ * gets the frame for this block
+ *
+ * @returns {Float32Array}
+ */
+chesterGL.Block.prototype.getFrame = function () {
+	return this.frame;
+};
+
+/**
  * sets the size of the block in pixels
- * 
+ *
  * @param {number} width
  * @param {number} height
  * @example
@@ -362,34 +376,92 @@ chesterGL.Block.prototype.setContentSize = function (width, height) {
 	this.isFrameDirty = true;
 };
 
+chesterGL.Block.prototype.getContentSize = function () {
+	return this.contentSize;
+};
+
 /**
  * sets the scale of the block
- * 
+ *
  * @param {number} newScale
  */
 chesterGL.Block.prototype.setScale = function (newScale) {
 	this.scale = newScale;
-	this.isTransformDirty = true;			
+	this.isTransformDirty = true;
+};
+
+/**
+ * gets the scale of the block
+ *
+ * @returns {number}
+ */
+chesterGL.Block.prototype.getScale = function () {
+	return this.scale;
 };
 
 /**
  * sets the color of the block
  * the array should be created in the order RGBA
- * 
+ *
  * @param {Array|Float32Array} color
  */
 chesterGL.Block.prototype.setColor = function (color) {
-	this.color = goog.vec.Vec4.createFloat32FromArray(color);
+	if (!this.color) {
+		this.color = goog.vec.Vec4.createFloat32FromArray(color);
+	} else {
+		goog.vec.Vec4.setFromArray(this.color, color);
+	}
 	this.isColorDirty = true;
 };
 
 /**
- * sets the position of the block (x, y, z)
- * @param {Array|Float32Array} p
+ * gets the color of the block
+ * @returns {Float32Array} an array with the color [r, g, b, a]
  */
-chesterGL.Block.prototype.setPosition = function (p) {
-	this.position = goog.vec.Vec3.createFloat32FromArray(p);
+chesterGL.Block.prototype.getColor = function () {
+	return this.color;
+};
+
+/**
+ * sets the position of the block (x, y, z). It accepts an array
+ * or three values (preferred in order to avoid GC)
+ *
+ * @param {Array|Float32Array|number} x
+ * @param {number=} y
+ * @param {number=} z
+ */
+chesterGL.Block.prototype.setPosition = function (x, y, z) {
+	if (!this.position) {
+		if (arguments.length == 1)
+			this.position = goog.vec.Vec3.createFloat32FromArray(/** @type {Array} */(x));
+		else
+			this.position = goog.vec.Vec3.createFloat32FromValues(/** @type {number} */(x), /** @type {number} */(y), /** @type {number} */(z));
+	} else {
+		if (arguments.length == 1)
+			goog.vec.Vec3.setFromArray(this.position, /** @type {Array} */(x));
+		else
+			goog.vec.Vec3.setFromValues(this.position, /** @type {number} */(x), /** @type {number} */(y), /** @type {number} */(z));
+	}
 	this.isTransformDirty = true;
+};
+
+/**
+ * gets the position of the block (x, y, z)
+ * @returns {Float32Array}
+ */
+chesterGL.Block.prototype.getPosition = function () {
+	return this.position;
+};
+
+/**
+ * returns the current bounding box as an Array [bottom, left, width, height]
+ * @returns {Array}
+ */
+chesterGL.Block.prototype.getBoundingBox = function () {
+	var p = this.position,
+		w = this.frame[2],
+		h = this.frame[3];
+	return [p[0] - w/2, p[1] - h/2, w, h];
 };
 
 /**
@@ -402,7 +474,7 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
 	if (chesterGL.debugSprite) { this.addDebugNode(); }
 	var block = this;
-	chesterGL.loadAsset("texture", texturePath, function (t) {
+	chesterGL.loadAsset("texture", texturePath, null, function (t) {
 		// set the default frame for all our blocks (if it's not set)
 		if (!block.contentSize) {
 			block.setContentSize(t.width, t.height);
@@ -411,6 +483,14 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 			block.setFrame([0, 0, t.width, t.height]);
 		}
 	});
+};
+
+/**
+ * gets the texture of the block
+ * @returns {string|null}
+ */
+chesterGL.Block.prototype.getTexture = function () {
+	return this.texture;
 };
 
 /**
@@ -423,6 +503,14 @@ chesterGL.Block.prototype.setRotation = function (angle) {
 };
 
 /**
+ * gets the rotation of the block
+ * @returns {number} then current rotation angle in radians, CW
+ */
+chesterGL.Block.prototype.getRotation = function () {
+	return this.rotation;
+};
+
+/**
  * sets the update function - to be called every frame for this block
  * @param {function (?number)} callback
  */
@@ -431,9 +519,25 @@ chesterGL.Block.prototype.setUpdate = function (callback) {
 };
 
 /**
+ * sets whether or not the block is visible
+ * @param {boolean} visible
+ */
+chesterGL.Block.prototype.setVisible = function (visible) {
+	this.visible = visible;
+};
+
+/**
+ * returns whether or not the block is visible
+ * @returns {boolean}
+ */
+chesterGL.Block.prototype.isVisible = function () {
+	return this.visible;
+};
+
+/**
  * Adds a block as a child. If you add the block while in a visit of the parent block,
  * the child will be scheduled to be added after the visit.
- * 
+ *
  * @param {chesterGL.Block} block
  */
 chesterGL.Block.prototype.addChild = function (block) {
@@ -451,7 +555,7 @@ chesterGL.Block.prototype.addChild = function (block) {
 /**
  * removes a block from the children list. If you remove the child while in a visit of the parent block,
  * the child will be scheduled to be removed after the visit.
- * 
+ *
  * @param {chesterGL.Block} block
  */
 chesterGL.Block.prototype.removeChild = function (block) {
@@ -466,7 +570,7 @@ chesterGL.Block.prototype.removeChild = function (block) {
 			this.children.splice(idx,1);
 		}
 	}
-}
+};
 
 /**
  * actually performs the transformation
@@ -476,9 +580,9 @@ chesterGL.Block.prototype.transform = function () {
 	var gl = chesterGL.gl;
 	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 	if (transformDirty) {
-		this.mvMatrix = /** @type {Float32Array} */(goog.vec.Mat4.makeIdentity(this.mvMatrix));
+		goog.vec.Mat4.makeIdentity(this.mvMatrix);
 		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
-		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * (chesterGL.webglMode ? -1 : 1), 0, 0, 1);
+		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
 		goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
 		// concat with parent's transform
 		var ptransform = (this.parent ? this.parent.mvMatrix : null);
@@ -496,16 +600,17 @@ chesterGL.Block.prototype.transform = function () {
 	var inBlockGroup = this.parent && this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP'];
 
 	if (chesterGL.webglMode) {
+		var _idx, offset = 9;
 		if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		}
 		if (this.isFrameDirty || (inBlockGroup && this.isTransformDirty)) {
 			// NOTE
 			// the tex coords and the frame coords need to match. Otherwise you get a distorted image
-			var offset = 9;
-			var hw = this.contentSize.width * 0.5, hh = this.contentSize.height * 0.5;
-			var _idx = this.baseBufferIndex * chesterGL.Block.BUFFER_SIZE;
-			var z = this.position[2];
+			var hw = this.contentSize.width * 0.5,
+				hh = this.contentSize.height * 0.5,
+				z = this.position[2];
+			_idx = this.baseBufferIndex * chesterGL.Block.BUFFER_SIZE;
 
 			// NOTE
 			// this is going to be slow :P
@@ -525,20 +630,22 @@ chesterGL.Block.prototype.transform = function () {
 				bufferData[_idx + 2*offset] =  br[0]; bufferData[_idx + 1 + 2*offset] =  br[1]; bufferData[_idx + 2 + 2*offset] = z;
 				bufferData[_idx + 3*offset] =  tr[0]; bufferData[_idx + 1 + 3*offset] =  tr[1]; bufferData[_idx + 2 + 3*offset] = z;
 			} else {
-				bufferData[_idx           ] = -hw; bufferData[_idx + 1           ] = -hh; bufferData[_idx + 2           ] = 0;
-				bufferData[_idx +   offset] = -hw; bufferData[_idx + 1 +   offset] =  hh; bufferData[_idx + 2 +   offset] = 0;
-				bufferData[_idx + 2*offset] =  hw; bufferData[_idx + 1 + 2*offset] = -hh; bufferData[_idx + 2 + 2*offset] = 0;
-				bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = 0;
+				bufferData[_idx           ] = -hw; bufferData[_idx + 1           ] = -hh; bufferData[_idx + 2           ] = z;
+				bufferData[_idx +   offset] = -hw; bufferData[_idx + 1 +   offset] =  hh; bufferData[_idx + 2 +   offset] = z;
+				bufferData[_idx + 2*offset] =  hw; bufferData[_idx + 1 + 2*offset] = -hh; bufferData[_idx + 2 + 2*offset] = z;
+				bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = z;
 			}
 
 			if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
 				var tex = chesterGL.getAsset("texture", this.texture);
 				var texW = tex.width,
 					texH = tex.height;
-				var l = this.frame[0] / texW,
-					b = this.frame[1] / texH,
-					w = this.frame[2] / texW,
-					h = this.frame[3] / texH;
+
+				var l = this.frame[0] / texW + 0.001,
+					b = this.frame[1] / texH + 0.001,
+					w = this.frame[2] / texW - 0.002,
+					h = this.frame[3] / texH - 0.002;
+
 				_idx += 3;
 				bufferData[_idx           ] = l  ; bufferData[_idx+1           ] = b;
 				bufferData[_idx +   offset] = l  ; bufferData[_idx+1 +   offset] = b+h;
@@ -561,7 +668,7 @@ chesterGL.Block.prototype.transform = function () {
 			gl.bufferData(gl.ARRAY_BUFFER, this.glBufferData, gl.STATIC_DRAW);
 		}
 	}
-}
+};
 
 /**
  * prepares the block for the rendering (transforms if necessary)
@@ -576,7 +683,16 @@ chesterGL.Block.prototype.visit = function () {
 		this._inVisit = false;
 		return;
 	}
+	// if (ENABLE_DEBUG) console.time("transform");
 	this.transform();
+	// if (ENABLE_DEBUG) console.timeEnd("transform");
+
+	// render this block if not in a block group
+	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
+		// if (ENABLE_DEBUG) console.time("render");
+		this.render();
+		// if (ENABLE_DEBUG) console.timeEnd("render");
+	}
 
 	var children = this.children;
 	var len = children.length;
@@ -584,23 +700,19 @@ chesterGL.Block.prototype.visit = function () {
 		children[i].visit();
 	}
 
-	// render this block if not in a block group
-	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
-		this.render();
-	}
 	// reset our dirty markers
 	this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
 	this._inVisit = false;
 
 	// do we have blocks scheduled to be removed/added?
 	var b;
-	while (b = this._scheduledAdd.shift()) {
+	while ((b = this._scheduledAdd.shift())) {
 		this.addChild(b);
 	}
-	while (b = this._scheduledRemove.shift()) {
+	while ((b = this._scheduledRemove.shift())) {
 		this.removeChild(b);
 	}
-}
+};
 
 /**
  * render (only will work for non-blockgroup blocks)
@@ -614,9 +726,10 @@ chesterGL.Block.prototype.render = function () {
 	if (this.type == chesterGL.Block.TYPE['SCENE']) {
 		return;
 	}
+	var gl, texture;
 
 	if (chesterGL.webglMode) {
-		var gl = chesterGL.gl;
+		gl = chesterGL.gl;
 		// select current shader
 		var program = chesterGL.selectProgram(chesterGL.Block.PROGRAM_NAME[this.program]);
 
@@ -631,7 +744,7 @@ chesterGL.Block.prototype.render = function () {
 		if (this.program == chesterGL.Block.PROGRAM['DEFAULT']) {
 			// no extra attributes for the shader
 		} else if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
-			var texture = chesterGL.getAsset('texture', this.texture);
+			texture = chesterGL.getAsset('texture', this.texture);
 
 			// pass the texture attributes
 			gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, stride, texOff);
@@ -639,7 +752,6 @@ chesterGL.Block.prototype.render = function () {
 			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 			gl.uniform1i(program.samplerUniform, 0);
-			gl.activatedTexture = true;
 		}
 
 		// set the matrix uniform (the multiplied model view projection matrix)
@@ -650,19 +762,19 @@ chesterGL.Block.prototype.render = function () {
 		gl.uniformMatrix4fv(program.mvpMatrixUniform, false, this.mvpMatrix);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	} else {
-		var gl = chesterGL.offContext;
+		gl = chesterGL.offContext;
 		// canvas drawing api - we only draw textures
 		if (this.program == chesterGL.Block.PROGRAM.TEXTURE) {
 			var m = this.mvMatrix;
-			var texture = chesterGL.getAsset('texture', this.texture);
+			texture = chesterGL.getAsset('texture', this.texture);
 			gl.globalAlpha = this.opacity;
-			gl.setTransform(m[0], m[1], m[4], m[5], m[12], gl.viewportHeight - m[13]);
+			gl.setTransform(m[0], m[4], m[1], m[5], m[12], gl.viewportHeight - m[13]);
 			var w = this.contentSize.width, h = this.contentSize.height;
 			var frame = this.frame;
 			gl.drawImage(texture, frame[0], texture.height - (frame[1] + h), frame[2], frame[3], -w/2, -h/2, w, h);
 		}
 	}
-}
+};
 
 // export symbols
 goog.exportSymbol('chesterGL.Block', chesterGL.Block);
@@ -678,13 +790,24 @@ goog.exportSymbol('chesterGL.Block.ONE_DEG', chesterGL.Block.ONE_DEG);
 // properties
 goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototype.title);
 // instance methods
-goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);	
+goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);
+goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
+goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
+goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
+goog.exportProperty(chesterGL.Block.prototype, 'getColor', chesterGL.Block.prototype.getColor);
 goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
+goog.exportProperty(chesterGL.Block.prototype, 'getFrame', chesterGL.Block.prototype.getFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
+goog.exportProperty(chesterGL.Block.prototype, 'getContentSize', chesterGL.Block.prototype.getContentSize);
 goog.exportProperty(chesterGL.Block.prototype, 'setTexture', chesterGL.Block.prototype.setTexture);
+goog.exportProperty(chesterGL.Block.prototype, 'getTexture', chesterGL.Block.prototype.getTexture);
 goog.exportProperty(chesterGL.Block.prototype, 'setScale', chesterGL.Block.prototype.setScale);
+goog.exportProperty(chesterGL.Block.prototype, 'getScale', chesterGL.Block.prototype.getScale);
 goog.exportProperty(chesterGL.Block.prototype, 'setUpdate', chesterGL.Block.prototype.setUpdate);
+goog.exportProperty(chesterGL.Block.prototype, 'setVisible', chesterGL.Block.prototype.setVisible);
+goog.exportProperty(chesterGL.Block.prototype, 'isVisible', chesterGL.Block.prototype.isVisible);

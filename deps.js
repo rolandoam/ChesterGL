@@ -32,36 +32,6 @@
 // external - request animation frame for different browsers and window.WebGLDebugUtils
 
 /**
- * @param {function()} callback
- * @param {Element=} element
- */
-window.requestAnimationFrame = function (callback, element) {};
-
-/**
- * @param {function()} callback
- * @param {Element=} element
- */
-window.webkitRequestAnimationFrame = function (callback, element) {};
-
-/**
- * @param {function()} callback
- * @param {Element=} element
- */
-window.mozRequestAnimationFrame = function (callback, element) {};
-
-/**
- * @param {function()} callback
- * @param {Element=} element
- */
-window.oRequestAnimationFrame = function (callback, element) {};
-
-/**
- * @param {function()} callback
- * @param {Element=} element
- */
-window.msRequestAnimationFrame = function (callback, element) {};
-
-/**
  * @namespace
  */
 var WebGLDebugUtils;
