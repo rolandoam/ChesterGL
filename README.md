@@ -8,26 +8,26 @@ ChesterGL (Chester Game Library) is a WebGL/canvas 2d game library that focuses 
 
 The easy way: play with the [official jsfiddle](http://jsfiddle.net/U8fCz/3/)
 
-If you want to play more, you can get the latest "stable" release from here:
-
-[http://funkaster.github.com/ChesterGL/chesterGL-latest.zip](http://funkaster.github.com/ChesterGL/chester-latest.zip)
-
-Unzip, create your html webpage, add chester.min.js to the scripts, have fun :)
-If you need help on how to do everything, the best idea would be to check the [online tests](http://funkaster.github.com/ChesterGL/test/)
+If you need help on how to do anything, the best idea would be to check the [online tests](http://funkaster.github.com/ChesterGL/test/)
 
 Or look at the (not always updated) [online documentation](http://funkaster.github.com/ChesterGL/)
 
 Sorry, the docs are not yet complete, but they will at some point :)
 Just look at the examples and figure your way out from there. It shouldn't be too hard
 
-Or wait until I write my "how to make an HTML5 game using chesterGL" (should be soon)
+Or wait until I write my "how to make an HTML5 game using chesterGL" (should be soon, although I keep saying that)
 
 ## How to join the fun
 
 	 # clone the repo
 	 git clone git://github.com/funkaster/ChesterGL.git
 	 cd ChesterGL
+	 cp developer.template.mk developer.mk
+	 # edit developer.mk and set the paths accordingly
+	 # look below for the requirements
      make debug
+
+If you really want to get into this, I wrote a [small page](https://github.com/funkaster/ChesterGL/wiki/How-To-Contribute) with some hints that might help you.
 
 ## How to just check this working
 
@@ -77,9 +77,13 @@ That's my dog's name. And I would like this library to have the same goals that 
 
 ## Roadmap
 
-### 0.1
+### 1.0
 
-* Initial version
+* Finish the WebGL shell for mobile devices (iOS and Android)
+* Make it a real game library:
+ * Add new interesting effects (light?)
+ * Add more actions
+* Add your ideas here
 
 ### 0.2
 
@@ -94,10 +98,6 @@ You can always look at the issues on the [github project](https://github.com/fun
 * Improve support for Texture Packer sprite sheets
 * <strike>Add time-based animations (shouldn't be too hard)</strike>
 
-### 1.0
+### 0.1
 
-* Finish the webgl binding for iOS (what!?)
-* Make it a real game library:
- * Add new interesting effects (light?)
- * Add more actions
-* Add your ideas here
+* Initial version
