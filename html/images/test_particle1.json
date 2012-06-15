@@ -41,7 +41,7 @@
 	"finishColorVarianceAlpha":0.0,
 	"startColorVarianceGreen":0.0,
 	"tangentialAccelVariance":0.0,
-	"maxParticles":1.0,
+	"maxParticles":300,
 	"particleLifespanVariance":0.855300009250641,
 	"radialAcceleration":-380.0,
 	"rotationEndVariance":0.0,
