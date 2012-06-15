@@ -58,7 +58,7 @@ chesterGL.Block = function (rect, type, parent) {
 
 	if (chesterGL.webglMode && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
-		// just a single buffer for all data (a 4x"quad")
+		// just a single buffer for all data (a "quad")
 		this.glBuffer = gl.createBuffer();
 		this.glBufferData = new Float32Array(chesterGL.Block.BUFFER_SIZE);
 	}
@@ -111,13 +111,13 @@ chesterGL.Block.TYPE = {
 };
 
 /**
- * This is the size of one quad, the buffer data length (in bytes) will be 4 * QUAD_SIZE
- * 12 (verts, 3 floats) + 8 (tex coords, 2 floats) + 16 (color, 4 floats)
+ * This is the size of one "interleaved" vertex, in bytes
+ * 3 (position) + 2 (tex coord) + 4 (color) = 9 floats = 36 bytes
  * @const
  * @type {number}
  * @ignore
  */
-chesterGL.Block.QUAD_SIZE = 36;
+chesterGL.Block.VERT_SIZE = 36;
 
 /**
  * This is how many items the buffer data must have.
@@ -736,7 +736,7 @@ chesterGL.Block.prototype.render = function () {
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		var texOff = 3 * 4,
 			colorOff = texOff + 2 * 4,
-			stride = chesterGL.Block.QUAD_SIZE;
+			stride = chesterGL.Block.VERT_SIZE;
 
 		gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 		gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);

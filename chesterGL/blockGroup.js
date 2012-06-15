@@ -93,7 +93,7 @@ chesterGL.BlockGroup.prototype.createBuffers = function (oldBufferData, oldIndex
 	if (!this.indexBuffer)
 		this.indexBuffer = gl.createBuffer();
 
-	var glBufferData    = new Float32Array(chesterGL.Block.QUAD_SIZE * this.maxChildren);
+	var glBufferData    = new Float32Array(chesterGL.Block.BUFFER_SIZE * this.maxChildren);
 	var indexBufferData = new Uint16Array(6 * this.maxChildren);
 	if (oldBufferData) {
 		glBufferData.set(oldBufferData);
@@ -249,7 +249,7 @@ chesterGL.BlockGroup.prototype.render = function (totalChildren) {
 	totalChildren = totalChildren || this.children.length;
 	var texOff = 3 * 4,
 		colorOff = texOff + 2 * 4,
-		stride = chesterGL.Block.QUAD_SIZE;
+		stride = chesterGL.Block.VERT_SIZE;
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 	
