@@ -361,6 +361,8 @@ chesterGL.ParticleSystem.prototype.parseProperties = function (properties) {
 		this.tangentialAcceleration = properties['tangentialAcceleration'];
 		this.tangentialAccelerationVariance = properties['tangentialAccelVariance'];
 		this.gravity = [properties['gravityx'], properties['gravityy'], 0];
+		this.blendFuncSource = properties['blendFuncSource'];
+		this.blendFuncDest = properties['blendFuncDestination'];
 	}
 };
 
@@ -538,7 +540,10 @@ chesterGL.ParticleSystem.prototype.update = function (delta) {
  *
  */
 chesterGL.ParticleSystem.prototype.render = function () {
+	var gl = chesterGL.gl;
+	gl.blendFunc(gl[this.blendFuncSource], gl[this.blendFuncDest]);
 	chesterGL.BlockGroup.prototype.render.call(this, this.particleCount);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 };
 
 // export the symbol
