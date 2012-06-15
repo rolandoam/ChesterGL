@@ -1,8 +1,9 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
 	<script type="text/javascript" src="chester.js"></script>
     <script type="text/javascript">
 
@@ -26,11 +27,11 @@ $(document).ready(function () {
 			sceneBlock.lastAdd = 0;
 			sceneBlock.setUpdate(function (delta) {
 				var now = Date.now();
-				var mpf = chesterGL.getSampledMpf();
-				if ((now - this.lastAdd) > 500 && mpf < 33.0) {
+				var fps = chesterGL.stats.getFPS();
+				if ((now - this.lastAdd) > 500 && fps > 33) {
 					addBlocks(100);
 					this.lastAdd = now;
-				} else if ((now - this.lastAdd) > 2000 && mpf > 35.0) {
+				} else if ((now - this.lastAdd) > 2000 && fps < 27) {
 					removeBlocks(50);
 					this.lastAdd = now;
 				}
