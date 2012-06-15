@@ -24,7 +24,6 @@
  */
 
 goog.provide("chesterGL.core");
-
 goog.require("goog.math.Vec2");
 
 /**
@@ -102,6 +101,12 @@ function throwOnGLError(err, funcName, args) {
 // var chesterGL = {};
 
 /**
+ * just to avoid compilation errors
+ * @ignore
+ */
+var Stats = window['Stats'] || null;
+
+/**
  * chesterGL version
  * @const
  * @type {string}
@@ -128,8 +133,7 @@ chesterGL.settings = {
 	'projection': '3d',
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
-	'basePath': '',
-	'debugSpanId': 'debug-info'
+	'basePath': ''
 };
 
 /**
@@ -255,13 +259,6 @@ chesterGL.lastTime = Date.now();
 chesterGL.delta = 0;
 
 /**
- * the span that will hold the debug info
- * @type {?Element}
- * @ignore
- */
-chesterGL.debugSpan = null;
-
-/**
  * @enum {number}
  */
 chesterGL.mouseEvents = {
@@ -271,6 +268,12 @@ chesterGL.mouseEvents = {
 	ENTER: 3,
 	LEAVE: 4
 };
+
+/**
+ * The stats object
+ * @type {Object}
+ */
+chesterGL.stats = null;
 
 /**
  * the global list of mouse down handlers
@@ -332,12 +335,24 @@ chesterGL.setup = function (canvasId) {
 		}
 	}
 
-	chesterGL.debugSpan = document.getElementById("debug-info");
 	// register the default handler for textures
 	chesterGL.registerAssetHandler('texture', chesterGL.defaultTextureHandler);
 	chesterGL.registerAssetHandler('default', chesterGL.defaultAssetHandler);
 	chesterGL.registerAssetLoader('texture', chesterGL.defaultTextureLoader);
 	chesterGL.registerAssetLoader('default', chesterGL.defaultAssetLoader);
+
+	// create the stats objects (if the Stats.js library is included)
+	if (Stats) {
+		console.log("chesterGL: adding stats");
+		chesterGL.stats = new Stats();
+		chesterGL.stats['setMode'](1);
+		chesterGL.stats['domElement']['style']['position'] = 'absolute';
+		chesterGL.stats['domElement']['style']['left'] = '0px';
+		chesterGL.stats['domElement']['style']['top'] = '0px';
+		goog.exportSymbol('chesterGL.stats', chesterGL.stats);
+
+		document.body.appendChild(chesterGL.stats['domElement']);
+	}
 };
 
 /**
@@ -907,76 +922,6 @@ chesterGL.drawScene = function () {
 };
 
 /**
- * @type {number}
- * @ignore
- */
-chesterGL.lastDebugSecond_ = Date.now();
-/**
- * @type {number}
- * @ignore
- */
-chesterGL.elapsed_ = 0;
-/**
- * @type {number}
- * @ignore
- */
-chesterGL.frames_ = 0;
-/**
- * @type {number}
- * @ignore
- */
-chesterGL.sampledAvg = 0;
-/**
- * @type {number}
- * @ignore
- */
-chesterGL.sumAvg = 0;
-
-/**
- * the last milliseconds per frame calculated
- * (updated every second)
- * @type {number}
- */
-chesterGL.lastSampledMpf = 0;
-
-/**
- * @return {number}
- */
-chesterGL.getSampledMpf = function () {
-	return chesterGL.lastSampledMpf;
-};
-
-/** @ignore */
-chesterGL.updateDebugTime = function () {
-	var now = Date.now();
-	chesterGL.elapsed_ += chesterGL.delta;
-	chesterGL.frames_ ++;
-	if (now - chesterGL.lastDebugSecond_ > 1000) {
-		var avg = (chesterGL.elapsed_ / chesterGL.frames_);
-		chesterGL.lastSampledMpf = 1.0 * avg;
-		chesterGL.sumAvg += avg;
-		chesterGL.sampledAvg ++;
-		if (chesterGL.debugSpan) {
-			chesterGL.debugSpan.textContent = avg.toFixed(2);
-		}
-		// track how well we're performing - every 5 seconds
-		if (chesterGL.runningScene && chesterGL.useGoogleAnalytics && chesterGL.sampledAvg > 5) {
-			_gaq.push([
-				'_trackEvent',
-				'chesterGL',
-				// Let us know if this is WebGL or canvas mode, and what version of chester
-				'renderTime-' + (chesterGL.webglMode) + '-' + chesterGL.version,
-				chesterGL.runningScene.title,
-				1.0 * (chesterGL.sumAvg/chesterGL.sampledAvg)
-			]);
-			chesterGL.sumAvg = chesterGL.sampledAvg = 0;
-		}
-		chesterGL.elapsed_ = chesterGL.frames_ = 0;
-		chesterGL.lastDebugSecond_ = now;
-	}
-};
-
-/**
  * install all handlers on the canvas element
  * @ignore
  */
@@ -1108,12 +1053,11 @@ chesterGL.removeMouseHandler = function (callback) {
  */
 chesterGL.run = function () {
 	if (!chesterGL._paused) {
-		// console.time("mainLoop");
 		window.requestAnimationFrame(chesterGL.run, chesterGL.canvas);
+		if (chesterGL.stats) chesterGL.stats['begin']();
 		chesterGL.drawScene();
 		chesterGL.ActionManager.tick(chesterGL.delta);
-		// console.timeEnd("mainLoop");
-		if (ENABLE_DEBUG) chesterGL.updateDebugTime();
+		if (chesterGL.stats) chesterGL.stats['end']();
 	}
 };
 
@@ -1147,7 +1091,6 @@ goog.exportProperty(chesterGL.mouseEvents, 'MOVE', chesterGL.mouseEvents.MOVE);
 goog.exportProperty(chesterGL.mouseEvents, 'ENTER', chesterGL.mouseEvents.ENTER);
 goog.exportProperty(chesterGL.mouseEvents, 'LEAVE', chesterGL.mouseEvents.LEAVE);
 // methods
-goog.exportSymbol('chesterGL.getSampledMpf', chesterGL.getSampledMpf);
 goog.exportSymbol('chesterGL.viewportSize', chesterGL.viewportSize);
 goog.exportSymbol('chesterGL.setup', chesterGL.setup);
 goog.exportSymbol('chesterGL.canvasResized', chesterGL.canvasResized);
