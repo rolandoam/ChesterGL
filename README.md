@@ -6,7 +6,7 @@ ChesterGL (Chester Game Library) is a WebGL/canvas 2d game library that focuses 
 
 ## How to have fun
 
-The easy way: play with the [official jsfiddle](http://jsfiddle.net/U8fCz/3/)
+The easy way: play with the [official jsfiddle](http://jsfiddle.net/U8fCz/54/)
 
 If you need help on how to do anything, the best idea would be to check the [online tests](http://funkaster.github.com/ChesterGL/test/)
 
