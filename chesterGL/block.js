@@ -266,10 +266,16 @@ chesterGL.Block.prototype.opacity = 1.0;
 chesterGL.Block.prototype.rotation = 0;
 
 /**
- * the scale of the box. Use the setter to modify this property
+ * the scale in the X axis of the box. Use the setter to modify this property
  * @type {number}
  */
-chesterGL.Block.prototype.scale = 1.0;
+chesterGL.Block.prototype.scaleX = 1.0;
+
+/**
+ * the scale in the Y axis of the box. Use the setter to modify this property
+ * @type {number}
+ */
+chesterGL.Block.prototype.scaleY = 1.0;
 
 /**
  * update function - called every frame with the delta in milliseconds since last frame
@@ -383,20 +389,26 @@ chesterGL.Block.prototype.getContentSize = function () {
 /**
  * sets the scale of the block
  *
- * @param {number} newScale
+ * @param {number} newScaleX
+ * @param {?number} newScaleY optional: pass only newScaleX to set both
  */
-chesterGL.Block.prototype.setScale = function (newScale) {
-	this.scale = newScale;
+chesterGL.Block.prototype.setScale = function (newScaleX, newScaleY) {
+	this.scaleX = newScaleX;
+	if (arguments.length == 2) {
+		this.scaleY = newScaleX;
+	} else {
+		this.scaleY = newScaleY;
+	}
 	this.isTransformDirty = true;
 };
 
 /**
  * gets the scale of the block
  *
- * @returns {number}
+ * @returns {number} the scaleX property
  */
 chesterGL.Block.prototype.getScale = function () {
-	return this.scale;
+	return this.scaleX;
 };
 
 /**
@@ -583,7 +595,7 @@ chesterGL.Block.prototype.transform = function () {
 		goog.vec.Mat4.makeIdentity(this.mvMatrix);
 		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
 		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
-		goog.vec.Mat4.scale(this.mvMatrix, this.scale, this.scale, 1);
+		goog.vec.Mat4.scale(this.mvMatrix, this.scaleX, this.scaleY, 1);
 		// concat with parent's transform
 		var ptransform = (this.parent ? this.parent.mvMatrix : null);
 		if (ptransform) {
