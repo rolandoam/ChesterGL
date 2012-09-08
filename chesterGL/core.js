@@ -1081,6 +1081,19 @@ chesterGL.isPaused = function () {
 	return chesterGL._paused;
 };
 
+/**
+ * @param {boolean} pause
+ */
+chesterGL.setPause = function (pause) {
+	if (chesterGL._paused && !pause) {
+		chesterGL._paused = pause;
+		chesterGL.lastTime = Date.now();
+		chesterGL.run();
+	} else {
+		chesterGL._paused = pause;
+	}
+};
+
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
@@ -1105,5 +1118,6 @@ goog.exportSymbol('chesterGL.drawScene', chesterGL.drawScene);
 goog.exportSymbol('chesterGL.run', chesterGL.run);
 goog.exportSymbol('chesterGL.togglePause', chesterGL.togglePause);
 goog.exportSymbol('chesterGL.isPaused', chesterGL.isPaused);
+goog.exportSymbol('chesterGL.setPause', chesterGL.setPause);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);
