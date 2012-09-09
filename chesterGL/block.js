@@ -466,6 +466,35 @@ chesterGL.Block.prototype.getPosition = function () {
 };
 
 /**
+ * returns the absolute position of the block, basically the position of the block applying the
+ * transformations from all its parents.
+ * @returns {Float32Array|Array}
+ */
+chesterGL.Block.prototype.getAbsolutePosition = function () {
+	var p = this.parent,
+		pos = goog.vec.Vec3.createFloat32FromArray(this.position);
+	while (p) {
+		goog.vec.Mat4.multVec3(p.mvMatrix, pos, pos);
+		p = p.parent;
+	}
+	return pos;
+};
+
+/**
+ * returns the concatenated matrix from all the block's parents
+ * @returns {Float32Array|Array}
+ */
+chesterGL.Block.prototype.getAbsoluteTransform = function () {
+	var m = goog.Mat4.createFloat32Identity(),
+		p = this.parent;
+	while (p) {
+		goog.vec.Mat4.multMat(p.mvMatrix, m, m);
+		p = p.parent;
+	}
+	return m;
+};
+
+/**
  * returns the current bounding box as an Array [bottom, left, width, height]
  * @returns {Array}
  */
@@ -808,6 +837,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'getAbsolutePosition', chesterGL.Block.prototype.getAbsolutePosition);
 goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
