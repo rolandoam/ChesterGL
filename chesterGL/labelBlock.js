@@ -114,9 +114,8 @@ chesterGL.LabelBlock.prototype.fillStyle = "";
  */
 chesterGL.LabelBlock.prototype.setText = function (text, onlyDraw) {
 	this.text = text;
-	if (onlyDraw) {
-		this.drawText();
-	} else {
+	this.drawText();
+	if (!onlyDraw) {
 		this.setFrame(this.resetCanvas());
 		this.needsTextUpdate = true;
 	}
@@ -157,11 +156,9 @@ chesterGL.LabelBlock.prototype.resetCanvas = function (text) {
 		this.text = text;
 	}
 
-	if (this.textHeight === 0) {
-		cx.save();
-		cx.rotate(90);
-		this.textHeight = cx.measureText("M").width * 1.25;
-		cx.restore();
+	if (!this.textHeight) {
+		// this is just an approximation
+		this.textHeight = cx.measureText("m").width * 1.25;
 	}
 	var width = cx.measureText(this.text).width;
 
