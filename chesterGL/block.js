@@ -395,9 +395,9 @@ chesterGL.Block.prototype.getContentSize = function () {
 chesterGL.Block.prototype.setScale = function (newScaleX, newScaleY) {
 	this.scaleX = newScaleX;
 	if (arguments.length == 2) {
-		this.scaleY = newScaleX;
+		this.scaleY = /** @type {number} */(newScaleY);
 	} else {
-		this.scaleY = newScaleY;
+		this.scaleY = this.scaleX;
 	}
 	this.isTransformDirty = true;
 };
