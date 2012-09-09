@@ -207,6 +207,27 @@ chesterGL.PrimitiveBlock.prototype.drawPolygon = function (points, color, closeP
 };
 
 /**
+ * draws a rectangle
+ * @param {number} x
+ * @param {number} y
+ * @param {number} width
+ * @param {number} height
+ * @param {Array=} color
+ * @param {boolean=} fill
+ */
+chesterGL.PrimitiveBlock.prototype.drawRectangle = function (x, y, width, height, color, fill) {
+	var hw = width / 2,
+		hh = height / 2;
+	var pts = [
+		[x - hw, y - hh, 0],
+		[x - hw, y + hh, 0],
+		[x + hw, y + hh, 0],
+		[x + hw, y - hh, 0]
+	];
+	this.drawPolygon(pts, color, true, fill);
+};
+
+/**
  * recreates the point buffer
  * @ignore
  */
@@ -301,3 +322,4 @@ goog.exportSymbol('chesterGL.PrimitiveBlock', chesterGL.PrimitiveBlock);
 goog.exportProperty(chesterGL.PrimitiveBlock.prototype, 'drawPoint', chesterGL.PrimitiveBlock.prototype.drawPoint);
 goog.exportProperty(chesterGL.PrimitiveBlock.prototype, 'drawLine', chesterGL.PrimitiveBlock.prototype.drawLine);
 goog.exportProperty(chesterGL.PrimitiveBlock.prototype, 'drawPolygon', chesterGL.PrimitiveBlock.prototype.drawPolygon);
+goog.exportProperty(chesterGL.PrimitiveBlock.prototype, 'drawRectangle', chesterGL.PrimitiveBlock.prototype.drawRectangle);
