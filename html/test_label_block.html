@@ -2,7 +2,7 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
-  <link href='http://fonts.googleapis.com/css?family=Della+Respira' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Skranji' rel='stylesheet' type='text/css'>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
@@ -33,50 +33,53 @@ $(document).ready(function () {
 		var size = chesterGL.viewportSize();
 		var oneDeg = Math.PI / 180.0;
 
-		chesterGL.assetsLoaded("texture", function () {
 		// $("#loading").html("Test Single Block");        	
 		// finish with the setup and run the game
 		chesterGL.setupPerspective();
-		var text = "Hello World!"
-		var font = "normal 400 30pt 'Della Respira'"
+		var text = "Hello World!";
+		var font = "400 30px 'Skranji'";
 
 		var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
 		sceneBlock.title = "Test::Label Block";
 		chesterGL.setRunningScene(sceneBlock);
 
-		// create a label block
-		var someBlock = new chesterGL.LabelBlock(text, font);
-		someBlock.setPosition([size.width/2, size.height/2, 0]);
-
-		sceneBlock.addChild(someBlock);
-
-		// add lots of label blocks
-		var total = 100;
-		var smallFont = "normal 400 20pt 'Della Respira'";
-		for (var i=0; i < total; i++) {
-			var b = new chesterGL.LabelBlock(randLetter(), smallFont, randColor());
-			b.setPosition([Math.random() * size.width, Math.random() * size.height, 0])
-			sceneBlock.addChild(b);
-		}
-
-		// add some action
-		var dz = 10;
-		time = 0.0;
-		someBlock.setUpdate(function (delta) {
-			time += delta;
-			this.setRotation(this.rotation + oneDeg);
-			// this.setPosition([this.position[0], this.position[1], this.position[2] + dz]);
-			// if (this.position[2] >=  200) { dz = -dz; }
-			// if (this.position[2] <= -200) { dz = -dz; }
-			if (time >= 1000) {
-				this.fillStyle = randColor();
-				this.setText(Date.now());
-				time = 0.0;
+		// create the labels with a delay, to allow for the font to load
+		var delay = new chesterGL.CallbackAction(function () {
+			console.log("adding blocks");
+			// add lots of label blocks
+			var total = 100;
+			var smallFont = "400 20px 'Skranji'";
+			for (var i=0; i < total; i++) {
+				var b = new chesterGL.LabelBlock(randLetter(), smallFont, randColor());
+				b.setRotation(Math.PI * 2 * Math.random());
+				b.setPosition(Math.random() * size.width, Math.random() * size.height, 0);
+				sceneBlock.addChild(b);
 			}
-		});
+
+			// create a label block
+			var someBlock = new chesterGL.LabelBlock(text, font);
+			someBlock.setPosition(size.width/2, size.height/2, 0);
+			// add some action to the label
+			var dz = 10;
+			time = 0.0;
+			
+			someBlock.setUpdate(function (delta) {
+				time += delta;
+				this.setRotation(this.rotation + oneDeg);
+				// this.setPosition([this.position[0], this.position[1], this.position[2] + dz]);
+				// if (this.position[2] >=  200) { dz = -dz; }
+				// if (this.position[2] <= -200) { dz = -dz; }
+				if (time >= 1000) {
+					this.fillStyle = randColor();
+					this.setText(Date.now());
+					time = 0.0;
+				}
+			});
+			sceneBlock.addChild(someBlock);
+		}, 500);
+		sceneBlock.runAction(delay);
 
 		chesterGL.run();
-		});
 	}; // setupGame()
 
 	$("#pause").click(function () {
@@ -106,7 +109,7 @@ _gaq.push(['_trackPageview']);
 			<input type="button" id="pause" value="pause"/>
 		</div>
 		<!-- need to add this in order to actually use the font in a canvas -->
-		<p style="font-family: 'Della Respira'"></p>
+		<p style="font-family: 'Skranji'">Sample of the font being used in the labels</p>
 	</div>
 </body>
 </html>

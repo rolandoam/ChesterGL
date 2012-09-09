@@ -55,7 +55,7 @@ chesterGL.LabelBlock = function (text, font, fillStyle) {
 	chesterGL.assets['texture'][this.texture] = canvas;
 
 	chesterGL.Block.call(this, this.resetCanvas(text));
-	this.setText(text, true);
+	this.setText(text, false);
 	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
 };
 goog.inherits(chesterGL.LabelBlock, chesterGL.Block);
