@@ -485,7 +485,7 @@ chesterGL.Block.prototype.getAbsolutePosition = function () {
  * @returns {Float32Array|Array}
  */
 chesterGL.Block.prototype.getAbsoluteTransform = function () {
-	var m = goog.Mat4.createFloat32Identity(),
+	var m = goog.vec.Mat4.createFloat32Identity(),
 		p = this.parent;
 	while (p) {
 		goog.vec.Mat4.multMat(p.mvMatrix, m, m);
