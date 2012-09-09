@@ -30,55 +30,6 @@ goog.require("chesterGL.Block");
 goog.require("chesterGL.BlockGroup");
 
 /**
- * @param {goog.vec.Vec3.Vec3Like} original The original vector
- * @param {goog.vec.Vec3.Vec3Like} variance the variance for every coordinate in
- * the original vector
- * @return {goog.vec.Vec3.Vec3Like}
- */
-chesterGL.randomVec3 = function (original, variance) {
-	var vec = [];
-	if (variance) {
-		vec[0] = original[0] + variance[0] * chesterGL.randMin1Plus1();
-		vec[1] = original[1] + variance[1] * chesterGL.randMin1Plus1();
-		vec[2] = original[2] + variance[2] * chesterGL.randMin1Plus1();
-	} else {
-		vec[0] = original[0];
-		vec[1] = original[1];
-		vec[2] = original[2];
-	}
-	return vec;
-};
-
-/**
- * @param {goog.vec.Vec4.Vec4Like} original The original vector
- * @param {goog.vec.Vec4.Vec4Like} variance the variance for every coordinate in
- * the original vector
- * @return {goog.vec.Vec4.Vec4Like}
- */
-chesterGL.randomVec4 = function (original, variance) {
-	var vec = [];
-	if (variance) {
-		vec[0] = original[0] + variance[0] * chesterGL.randMin1Plus1();
-		vec[1] = original[1] + variance[1] * chesterGL.randMin1Plus1();
-		vec[2] = original[2] + variance[2] * chesterGL.randMin1Plus1();
-		vec[3] = original[3] + variance[3] * chesterGL.randMin1Plus1();
-	} else {
-		vec[0] = original[0];
-		vec[1] = original[1];
-		vec[2] = original[2];
-		vec[3] = original[3];
-	}
-	return vec;
-};
-
-/**
- * @returns {number} a random number between -1 and 1
- */
-chesterGL.randMin1Plus1 = function () {
-	return Math.random() * 2 - 1;
-};
-
-/**
  * @constructor
  * @param {Object} properties the JSON object with the properties for this
  * particle system

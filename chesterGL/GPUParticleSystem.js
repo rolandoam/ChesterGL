@@ -27,7 +27,6 @@ goog.provide("chesterGL.GPUParticleSystem");
 
 goog.require("goog.vec.Vec4");
 goog.require("chesterGL.Block");
-goog.require("chesterGL.ParticleSystem");
 
 /**
  * BUFFER_ELEMENTS (18) :
