@@ -883,6 +883,9 @@ chesterGL.setupPerspective = function () {
  * @param {chesterGL.Block} block
  */
 chesterGL.setRunningScene = function (block) {
+	if (chesterGL.runningScene && chesterGL.runningScene != block) {
+		chesterGL.runningScene['onExitScene']();
+	}
 	if (block.type == chesterGL.Block.TYPE['SCENE']) {
 		chesterGL.runningScene = block;
 	}
@@ -906,6 +909,9 @@ chesterGL.drawScene = function () {
 	// start mayhem
 	if (chesterGL.runningScene) {
 		chesterGL.runningScene.visit();
+		if (!chesterGL.runningScene.isRunning) {
+			chesterGL.runningScene['onEnterScene']();
+		}
 	}
 	
 	if (!chesterGL.webglMode) {

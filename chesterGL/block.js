@@ -48,7 +48,11 @@ chesterGL.Block = function (rect, type, parent) {
 	this.program = chesterGL.Block.PROGRAM['DEFAULT'];
 
 	if (rect) {
-		this.setFrame(rect);
+		if (typeof rect === "string") {
+			this.setTexture(rect);
+		} else {
+			this.setFrame(rect);
+		}
 	}
 	// set default color
 	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
@@ -194,6 +198,12 @@ chesterGL.Block.prototype.mvpMatrix = null;
 chesterGL.Block.prototype.visible = true;
 
 /**
+ * True if the node/scene is running
+ * @type {boolean}
+ */
+chesterGL.Block.prototype.isRunning = false;
+
+/**
  * did the position, scale or rotation change?
  * @type {boolean}
  * @ignore
@@ -336,6 +346,28 @@ chesterGL.Block.prototype.addDebugNode = function () {
 		});
 	}
 	this.debugNodeAdded = true;
+};
+
+/**
+ * executed when the node/scene is activated for the first time
+ * or when adding a new child to a running scene.
+ */
+chesterGL.Block.prototype.onEnterScene = function () {
+	this.isRunning = true;
+	for (var i in this.children) {
+		this.children[i]['onEnterScene']();
+	}
+};
+
+/**
+ * executed when the node/scene is removed
+ */
+chesterGL.Block.prototype.onExitScene = function () {
+	console.log("onExit");
+	this.isRunning = false;
+	for (var i in this.children) {
+		this.children[i]['onExitScene']();
+	}
 };
 
 /**
@@ -591,6 +623,9 @@ chesterGL.Block.prototype.addChild = function (block) {
 		this.children.push(block);
 		block.parent = this;
 	}
+	if (this.isRunning) {
+		block['onEnterScene']();
+	}
 };
 
 /**
@@ -609,7 +644,11 @@ chesterGL.Block.prototype.removeChild = function (block) {
 		var idx = this.children.indexOf(block);
 		if (idx >= 0) {
 			this.children.splice(idx,1);
+			block.parent = null;
 		}
+	}
+	if (this.isRunning) {
+		block['onExitScene']();
 	}
 };
 
@@ -831,6 +870,8 @@ goog.exportSymbol('chesterGL.Block.ONE_DEG', chesterGL.Block.ONE_DEG);
 // properties
 goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototype.title);
 // instance methods
+goog.exportProperty(chesterGL.Block.prototype, 'onEnterScene', chesterGL.Block.prototype.onEnterScene);
+goog.exportProperty(chesterGL.Block.prototype, 'onExitScene', chesterGL.Block.prototype.onExitScene);
 goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);
 goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
