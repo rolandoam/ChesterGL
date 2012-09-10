@@ -391,7 +391,7 @@ chesterGL.RepeatAction.prototype.action = null;
  */
 chesterGL.RepeatAction.prototype.begin = function () {
 	chesterGL.Action.prototype.begin.call(this);
-	this.block.runAction(this.action);
+	chesterGL.ActionManager.scheduleAction(this.action);
 };
 
 /**
