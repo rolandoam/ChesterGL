@@ -277,7 +277,7 @@ chesterGL.stats = null;
 
 /**
  * the global list of mouse down handlers
- * @type {Array.<function(goog.vec.Vec3.Vec3Like, chesterGL.mouseEvents)>}
+ * @type {Array}
  * @ignore
  */
 chesterGL.mouseHandlers = [];
@@ -964,7 +964,8 @@ chesterGL.mouseDownHandler = function (event) {
 	var i = 0, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.DOWN);
+		var cb = chesterGL.mouseHandlers[i];
+		cb[0](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.DOWN, cb[1]);
 	}
 };
 
@@ -977,7 +978,8 @@ chesterGL.mouseMoveHandler = function (event) {
 	var i = 0, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.MOVE);
+		var cb = chesterGL.mouseHandlers[i];
+		cb[0](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.MOVE, cb[1]);
 	}
 };
 
@@ -990,7 +992,8 @@ chesterGL.mouseUpHandler = function (event) {
 	var i = 0, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP);
+		var cb = chesterGL.mouseHandlers[i];
+		cb[0](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP, cb[1]);
 	}
 };
 
@@ -1003,7 +1006,8 @@ chesterGL.mouseEnterHandler = function (event) {
 	var i = 0, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER);
+		var cb = chesterGL.mouseHandlers[i];
+		cb[0](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER, cb[1]);
 	}
 };
 
@@ -1016,19 +1020,22 @@ chesterGL.mouseLeaveHandler = function (event) {
 	var i = 0, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
 	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE);
+		var cb = chesterGL.mouseHandlers[i];
+		cb[0](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE, cb[1]);
 	}
 };
 
 /**
  * Adds a mouse handler: the function will be called for every mouse event on the main canvas
  * @param {function((Array|Float32Array), chesterGL.mouseEvents)} callback
+ * @param {Object=} arg An optional extra argument to be passed to the callback, this argument
+ * will be passed at the end, after the event type
  * @example
  * var stPoint = null;
- * chesterGL.addMouseHandler(function (pt, type) {
- *	if (type == chesterGL.mouseEvents.DOWN) {
+ * chesterGL.addMouseHandler(function (pt, evt) {
+ *	if (evt == chesterGL.mouseEvents.DOWN) {
  *		stPoint = new Float32Array(pt);
- *	} else if (type == chesterGL.mouseEvents.MOVE && stPoint) {
+ *	} else if (evt == chesterGL.mouseEvents.MOVE && stPoint) {
  *		var tmp = [pt[0] - stPoint[0], pt[1] - stPoint[1], pt[2] - stPoint[2]];
  *		tmx.setPosition(tmx.position[0] + tmp[0], tmx.position[1] + tmp[1], tmx.position[2] + tmp[2]);
  *		stPoint.set(pt);
@@ -1037,9 +1044,10 @@ chesterGL.mouseLeaveHandler = function (event) {
  *	}
  * });
  */
-chesterGL.addMouseHandler = function (callback) {
+chesterGL.addMouseHandler = function (callback, arg) {
 	if (chesterGL.mouseHandlers.indexOf(callback) == -1) {
-		chesterGL.mouseHandlers.push(callback);
+		callback.arg = arg;
+		chesterGL.mouseHandlers.push([callback, arg]);
 	}
 };
 
@@ -1048,9 +1056,12 @@ chesterGL.addMouseHandler = function (callback) {
  * @param {function((Array|Float32Array), chesterGL.mouseEvents)} callback
  */
 chesterGL.removeMouseHandler = function (callback) {
-	var idx = chesterGL.mouseHandlers.indexOf(callback);
-	if (idx > 0) {
-		chesterGL.mouseHandlers.splice(idx, 1);
+	for (var i in chesterGL.mouseHandlers) {
+		var cb = chesterGL.mouseHandlers[i];
+		if (cb[0] === callback) {
+			chesterGL.mouseHandlers.splice(i, 1);
+			return;
+		}
 	}
 };
 
