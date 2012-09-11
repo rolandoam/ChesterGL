@@ -220,6 +220,83 @@ chesterGL.MoveAction.prototype.reverse = function () {
 	return new chesterGL.MoveAction(revDelta, this.totalTime, true);
 };
 
+
+/**
+ * @constructor
+ * @param {number} scaleX The final scale in the X axis
+ * @param {number} scaleY The final scale in the Y axis
+ * @param {number} totalTime The total time in seconds that this action should take
+ * @param {boolean=} relative whether or not the scaling is relative (defaults: true)
+ * @param {chesterGL.Block=} block The block that will execute this action
+ * @extends {chesterGL.Action}
+ */
+chesterGL.ScaleAction = function (scaleX, scaleY, totalTime, relative, block) {
+	goog.base(this, totalTime, block);
+	this.isRelative = relative;
+	this.dx = scaleX;
+	this.dy = scaleY;
+	this.finalScaleX = 0;
+	this.finalScaleY = 0;
+	this.startScaleX = 0;
+	this.startScaleY = 0;
+};
+goog.inherits(chesterGL.ScaleAction, chesterGL.Action);
+
+/**
+ * @ignore
+ */
+chesterGL.ScaleAction.prototype.begin = function() {
+	goog.base(this, "begin");
+	if (!this.block) {
+		throw "invalid scale action - no block provided";
+	}
+	if (this.isRelative) {
+		this.finalScaleX = this.block.scaleX + this.dx;
+		this.finalScaleY = this.block.scaleY + this.dy;
+	} else {
+		this.finalScaleX = this.dx;
+		this.finalScaleY = this.dy;
+	}
+	this.startScaleX = this.block.scaleX;
+	this.startScaleY = this.block.scaleY;
+};
+
+/**
+ * @param {number} delta miliseconds from last time we updated
+ * @ignore
+ */
+chesterGL.ScaleAction.prototype.update = function (delta) {
+	goog.base(this, "update", delta);
+	var block = this.block,
+		t = Math.min(1, this.elapsed / this.totalTime),
+		scaleX = this.startScaleX + t * (this.finalScaleX - this.startScaleX),
+		scaleY = this.startScaleY + t * (this.finalScaleY - this.startScaleY);
+	// console.log([this.startPosition[2], pos[2], t, this.elapsed, this.totalTime].join('\t'));
+	block.setScale(scaleX, scaleY);
+};
+
+/**
+ * @ignore
+ */
+chesterGL.ScaleAction.prototype.stop = function () {
+	goog.base(this, "stop");
+	if (this.elapsed >= this.totalTime) {
+		this.block.setScale(this.finalScaleX, this.finalScaleY);
+	}
+};
+
+/**
+ * Return a new action with the reverse scale action
+ * @return {chesterGL.ScaleAction}
+ */
+chesterGL.ScaleAction.prototype.reverse = function () {
+	if (!this.isRelative) {
+		throw "This only works on relative movements";
+	}
+	return new chesterGL.ScaleAction(-this.dx, -this.dy, this.totalTime, true);
+};
+
+
 /**
  * A simple action that will execute the callback, useful for
  * sequences, e.g.: move, then execute some callback.
@@ -616,6 +693,7 @@ chesterGL.Block.prototype.runAction = function (action) {
 
 goog.exportSymbol('chesterGL.ActionManager', chesterGL.ActionManager);
 goog.exportSymbol('chesterGL.MoveAction', chesterGL.MoveAction);
+goog.exportSymbol('chesterGL.ScaleAction', chesterGL.ScaleAction);
 goog.exportSymbol('chesterGL.CallbackAction', chesterGL.CallbackAction);
 goog.exportSymbol('chesterGL.SequenceAction', chesterGL.SequenceAction);
 goog.exportSymbol('chesterGL.RepeatAction', chesterGL.RepeatAction);
@@ -627,6 +705,8 @@ goog.exportProperty(chesterGL.SequenceAction, 'createSequence', chesterGL.Sequen
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
 goog.exportProperty(chesterGL.MoveAction.prototype, 'stop', chesterGL.MoveAction.prototype.stop);
+goog.exportProperty(chesterGL.ScaleAction.prototype, 'stop', chesterGL.ScaleAction.prototype.stop);
 goog.exportProperty(chesterGL.SequenceAction.prototype, 'stop', chesterGL.SequenceAction.prototype.stop);
 goog.exportProperty(chesterGL.RepeatAction.prototype, 'stop', chesterGL.RepeatAction.prototype.stop);
 goog.exportProperty(chesterGL.MoveAction.prototype, 'reverse', chesterGL.MoveAction.prototype.reverse);
+goog.exportProperty(chesterGL.ScaleAction.prototype, 'reverse', chesterGL.ScaleAction.prototype.reverse);
