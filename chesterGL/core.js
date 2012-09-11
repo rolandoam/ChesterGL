@@ -685,6 +685,19 @@ chesterGL.getAsset = function (type, path) {
 };
 
 /**
+ * returns whether or not the object associated with the requested asset
+ * @param {string} type
+ * @param {string|null} path
+ * @return {boolean}
+ */
+chesterGL.hasAsset = function (type, path) {
+	if (path) {
+		return (path in chesterGL.assets[type]);
+	}
+	return false;
+};
+
+/**
  * handles a loaded texture - should only be called on a webGL mode
  * @param {HTMLImageElement} texture
  * @return {boolean}
@@ -1180,6 +1193,7 @@ goog.exportSymbol('chesterGL.registerAssetHandler', chesterGL.registerAssetHandl
 goog.exportSymbol('chesterGL.loadAsset', chesterGL.loadAsset);
 goog.exportSymbol('chesterGL.assetsLoaded', chesterGL.assetsLoaded);
 goog.exportSymbol('chesterGL.getAsset', chesterGL.getAsset);
+goog.exportSymbol('chesterGL.hasAsset', chesterGL.hasAsset);
 goog.exportSymbol('chesterGL.setupPerspective', chesterGL.setupPerspective);
 goog.exportSymbol('chesterGL.setRunningScene', chesterGL.setRunningScene);
 goog.exportSymbol('chesterGL.drawScene', chesterGL.drawScene);
