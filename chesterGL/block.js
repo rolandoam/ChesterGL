@@ -48,7 +48,7 @@ chesterGL.Block = function (rect, type, parent) {
 	this.program = chesterGL.Block.PROGRAM['DEFAULT'];
 
 	if (rect) {
-		if (typeof rect === "string") {
+		if (typeof rect === "string" && chesterGL.hasAsset("texture", rect)) {
 			this.setTexture(rect);
 		} else {
 			this.setFrame(rect);
@@ -363,7 +363,6 @@ chesterGL.Block.prototype.onEnterScene = function () {
  * executed when the node/scene is removed
  */
 chesterGL.Block.prototype.onExitScene = function () {
-	console.log("onExit");
 	this.isRunning = false;
 	for (var i in this.children) {
 		this.children[i]['onExitScene']();
@@ -379,6 +378,9 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 	if (typeof newFrame === "string") {
 		// just get the cached frame
 		var tmpFrame = chesterGL.BlockFrames.getFrame(newFrame);
+		if (!tmpFrame) {
+			throw "Invalid frame name: " + newFrame;
+		}
 		newFrame = tmpFrame.frame;
 		this.setTexture(tmpFrame.texture);
 	}
