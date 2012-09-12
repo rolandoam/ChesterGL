@@ -271,7 +271,6 @@ chesterGL.ScaleAction.prototype.update = function (delta) {
 		t = Math.min(1, this.elapsed / this.totalTime),
 		scaleX = this.startScaleX + t * (this.finalScaleX - this.startScaleX),
 		scaleY = this.startScaleY + t * (this.finalScaleY - this.startScaleY);
-	// console.log([this.startPosition[2], pos[2], t, this.elapsed, this.totalTime].join('\t'));
 	block.setScale(scaleX, scaleY);
 };
 
@@ -283,6 +282,10 @@ chesterGL.ScaleAction.prototype.stop = function () {
 	if (this.elapsed >= this.totalTime) {
 		this.block.setScale(this.finalScaleX, this.finalScaleY);
 	}
+};
+
+chesterGL.ScaleAction.prototype.reset = function() {
+	goog.base(this, "reset");
 };
 
 /**
@@ -468,6 +471,7 @@ chesterGL.RepeatAction.prototype.action = null;
  */
 chesterGL.RepeatAction.prototype.begin = function () {
 	chesterGL.Action.prototype.begin.call(this);
+	this.action.block = this.block;
 	chesterGL.ActionManager.scheduleAction(this.action);
 };
 
@@ -478,6 +482,9 @@ chesterGL.RepeatAction.prototype.begin = function () {
 chesterGL.RepeatAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
 	if (this.finished) {
+		// make sure the action ends
+		if (!this.action.finished)
+			this.action.update(1000);
 		// console.log("repeat finished");
 		if (this.maxTimes < 0 || this.times < this.maxTimes) {
 			// console.log("repeating action");
