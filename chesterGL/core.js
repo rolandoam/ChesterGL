@@ -1062,7 +1062,7 @@ chesterGL.addMouseHandler = function (callback) {
  */
 chesterGL.removeMouseHandler = function (callback) {
 	var idx = chesterGL.mouseHandlers.indexOf(callback);
-	if (idx > 0) {
+	if (idx >= 0) {
 		chesterGL.mouseHandlers.splice(idx, 1);
 	}
 };
