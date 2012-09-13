@@ -265,11 +265,6 @@ chesterGL.Block.prototype.color = null;
 chesterGL.Block.prototype.texture = null;
 
 /**
- * @type {number}
- */
-chesterGL.Block.prototype.opacity = 1.0;
-
-/**
  * rotation of the box - in radians. Use the setter to modify this property
  * @type {number}
  */
@@ -738,12 +733,11 @@ chesterGL.Block.prototype.transform = function () {
 		if (this.isColorDirty) {
 			_idx = 5 + this.baseBufferIndex * chesterGL.Block.BUFFER_SIZE;
 			var color = this.color;
-			var opacity = this.opacity;
 			for (var i=0; i < 4; i++) {
-				bufferData[_idx     + offset*i] = color[0] * opacity;
-				bufferData[_idx + 1 + offset*i] = color[1] * opacity;
-				bufferData[_idx + 2 + offset*i] = color[2] * opacity;
-				bufferData[_idx + 3 + offset*i] = color[3] * opacity;
+				bufferData[_idx     + offset*i] = color[0];
+				bufferData[_idx + 1 + offset*i] = color[1];
+				bufferData[_idx + 2 + offset*i] = color[2];
+				bufferData[_idx + 3 + offset*i] = color[3];
 			}
 		}
 		if (chesterGL.webglMode && !inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
