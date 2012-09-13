@@ -45,7 +45,7 @@ chesterGL.BlockFrames.frames = {};
  *
  * @param {Object} data
  */
-chesterGL.BlockFrames.loadJSON = function (data) {
+chesterGL.BlockFrames.parseFrameData = function (data) {
 	// first, get the meta data
 	if (data['meta'] && data['meta']['version'] == '1.0') {
 		var texName = data['meta']['image'];
@@ -99,7 +99,7 @@ chesterGL.BlockFrames.getFrame = function (frameName) {
 chesterGL.BlockFrames.loadFrames = function (path, callback) {
 	console.log("loadFrames: will fetch " + path);
 	chesterGL.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (data) {
-		chesterGL.BlockFrames.loadJSON(data);
+		chesterGL.BlockFrames.parseFrameData(data);
 	});
 };
 
