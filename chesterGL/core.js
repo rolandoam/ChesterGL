@@ -584,7 +584,7 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 		params = {
 			dataType: url.dataType,
 			url: url.url,
-			name: url.name
+			name: url.name || url.url
 		};
 	} else {
 		params = {
