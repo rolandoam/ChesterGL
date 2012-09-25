@@ -472,7 +472,6 @@ chesterGL.RepeatAction.prototype.action = null;
 chesterGL.RepeatAction.prototype.begin = function () {
 	chesterGL.Action.prototype.begin.call(this);
 	this.action.block = this.block;
-	chesterGL.ActionManager.scheduleAction(this.action);
 };
 
 /**
@@ -481,16 +480,12 @@ chesterGL.RepeatAction.prototype.begin = function () {
  */
 chesterGL.RepeatAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
+	this.action.update(delta);
 	if (this.finished) {
-		// make sure the action ends
-		if (!this.action.finished)
-			this.action.update(1000);
 		// console.log("repeat finished");
 		if (this.maxTimes < 0 || this.times < this.maxTimes) {
-			// console.log("repeating action");
 			this.times++;
 			this.reset();
-			chesterGL.ActionManager.unscheduleAction(this.action.actionId);
 			this.action.reset();
 			this.begin();
 		}
@@ -619,16 +614,10 @@ chesterGL.ActionManager = {};
 /**
  * the list of scheduled actions
  * @ignore
- * @type {Array.<chesterGL.Action>}
+ * @type {Object.<number, chesterGL.Action>}
  * @private
  */
-chesterGL.ActionManager.scheduledActions_ = [];
-
-/**
- * @type {Array.<chesterGL.Action>}
- * @ignore
- */
-chesterGL.ActionManager.scheduledActionsToBeRemoved_ = [];
+chesterGL.ActionManager.scheduledActions_ = {};
 
 /**
  * @type {number}
@@ -643,8 +632,10 @@ chesterGL.ActionManager.internalIdCounter_ = 0;
  * @return {number} the actionId of the recently scheduled action
  */
 chesterGL.ActionManager.scheduleAction = function (action) {
-	chesterGL.ActionManager.scheduledActions_.push(action);
-	action.actionId = chesterGL.ActionManager.internalIdCounter_++;
+	if (!action.actionId || !chesterGL.ActionManager.scheduledActions_.hasOwnProperty(action.actionId)) {
+		action.actionId = chesterGL.ActionManager.internalIdCounter_++;
+		chesterGL.ActionManager.scheduledActions_[action.actionId] = action;
+	}
 	action.begin();
 	return action.actionId;
 };
@@ -654,13 +645,8 @@ chesterGL.ActionManager.scheduleAction = function (action) {
  * @param {number} actionId
  */
 chesterGL.ActionManager.unscheduleAction = function (actionId) {
-	var len = chesterGL.ActionManager.scheduledActions_.length;
-	for (var i=0; i < len; i++) {
-		var a = chesterGL.ActionManager.scheduledActions_[i];
-		if (a.actionId == actionId) {
-			chesterGL.ActionManager.scheduledActionsToBeRemoved_.push(a);
-			return;
-		}
+	if (chesterGL.ActionManager.scheduledActions_.hasOwnProperty(actionId)) {
+		delete chesterGL.ActionManager.scheduledActions_[actionId];
 	}
 };
 
@@ -670,21 +656,11 @@ chesterGL.ActionManager.unscheduleAction = function (actionId) {
  * @ignore
  */
 chesterGL.ActionManager.tick = function (delta) {
-	var i = 0,
-		len = chesterGL.ActionManager.scheduledActions_.length,
-		a = null;
-	for (i=0; i < len; i++) {
-		a = chesterGL.ActionManager.scheduledActions_[i];
+	for (var i in chesterGL.ActionManager.scheduledActions_) {
+		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
 		if (a.running) a.update(delta);
 		if (a.finished) {
-			chesterGL.ActionManager.scheduledActionsToBeRemoved_.push(a);
-		}
-	}
-	// remove finished actions
-	while((a = chesterGL.ActionManager.scheduledActionsToBeRemoved_.pop())) {
-		var idx = chesterGL.ActionManager.scheduledActions_.indexOf(a);
-		if (idx >= 0) {
-			chesterGL.ActionManager.scheduledActions_.splice(idx, 1);
+			delete chesterGL.ActionManager.scheduledActions_[a.actionId];
 		}
 	}
 };
@@ -692,10 +668,11 @@ chesterGL.ActionManager.tick = function (delta) {
 /**
  * schedules an action to be run over this block
  * @param {chesterGL.Action} action
+ * @returns {number} the action id (to unschedule it if you want)
  */
 chesterGL.Block.prototype.runAction = function (action) {
 	action.block = this;
-	chesterGL.ActionManager.scheduleAction(action);
+	return chesterGL.ActionManager.scheduleAction(action);
 };
 
 goog.exportSymbol('chesterGL.ActionManager', chesterGL.ActionManager);
