@@ -13,7 +13,7 @@ $(document).ready(function () {
 	function createBlock(parent, updateFunc) {
 		var someBlock2 = new chesterGL.Block();
 		someBlock2.setTexture("images/star.png");
-		someBlock2.opacity = 0.5;
+		someBlock2.setColor([1, 1, 1, 0.5]);
 		someBlock2.setPosition([Math.random() * 100, Math.random() * 100, 0]);
 		someBlock2.setUpdate(updateFunc);
 		parent.addChild(someBlock2);
