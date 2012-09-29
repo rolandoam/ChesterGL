@@ -72,6 +72,7 @@ debug: debug_flags
 		${JS_SOURCES}
 	# adds source map support!
 	echo "//@ sourceMappingURL=chester.js.map" >> $(OUTPUT_DIR)/$(OUTPUT_FILE)
+	cp html/chester.js html/scripts/chester.js
 
 release: compile
 	mkdir -p release

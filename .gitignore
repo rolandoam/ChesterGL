@@ -1,4 +1,7 @@
 .DS_Store
+*.swp
+html/scripts/chester.js
+html/scripts/main-built.js
 html/chester.js
 html/chester.js.map
 html/test_lessons.html
