@@ -50,7 +50,7 @@ chesterGL.LabelBlock = function (text, font, fillStyle) {
 	this.font = font;
 	this.fillStyle = fillStyle;
 
-	this.texture = Date.now() + ".canvas";
+	this.texture = Math.random() + ".canvas";
 	if (!chesterGL.assets['texture']) chesterGL.assets['texture'] = {};
 	chesterGL.assets['texture'][this.texture] = canvas;
 
