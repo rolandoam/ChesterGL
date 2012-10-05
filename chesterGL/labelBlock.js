@@ -41,14 +41,23 @@ goog.require("chesterGL.Block");
  * @extends {chesterGL.Block}
  */
 chesterGL.LabelBlock = function (text, font, fillStyle) {
-	font = font || "20pt sans-serif";
+	font = font || "20px sans-serif";
 	fillStyle = fillStyle || "White";
 	var canvas = document.createElement("canvas");
 	this.canvas = canvas;
 	var context = canvas.getContext('2d');
 	this.context = context;
+	this.context.textBaseline = "bottom";
 	this.font = font;
 	this.fillStyle = fillStyle;
+
+	// get the text height
+	var md = font.match(/^(\d+)px/);
+	if (md) {
+		this.textHeight = parseInt(md[1], 10);
+	} else {
+		throw "Invalid text height - use the form NNpx";
+	}
 
 	this.texture = Math.random() + ".canvas";
 	if (!chesterGL.assets['texture']) chesterGL.assets['texture'] = {};
@@ -129,7 +138,7 @@ chesterGL.LabelBlock.prototype.drawText = function () {
 	var cx = this.context;
 	var canvas = this.canvas;
 	cx.clearRect(0, 0, canvas.width, canvas.height);
-	cx.fillText(this.text, 0, canvas.height * 0.8);
+	cx.fillText(this.text, 0, canvas.height);
 	if (!canvas.tex) {
 		canvas.tex = chesterGL.gl.createTexture();
 		var texture = chesterGL.assets['texture'][this.texture];
@@ -155,17 +164,13 @@ chesterGL.LabelBlock.prototype.resetCanvas = function (text) {
 	if (text) {
 		this.text = text;
 	}
-
-	if (!this.textHeight) {
-		// this is just an approximation
-		this.textHeight = cx.measureText("m").width * 1.25;
-	}
 	var width = cx.measureText(this.text).width;
 
 	canvas.width = width;
 	canvas.height = this.textHeight;
 	cx.font = this.font;
 	cx.fillStyle = this.fillStyle;
+	cx.textBaseline = "bottom";
 	return [0, 0, width, this.textHeight];
 };
 
