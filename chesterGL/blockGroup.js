@@ -119,32 +119,35 @@ chesterGL.BlockGroup.prototype.createBlock = function (rect) {
 
 /**
  * adds a child
- * @param {chesterGL.Block} block
+ * @param {...chesterGL.Block} blocks
  */
-chesterGL.BlockGroup.prototype.addChild = function (block) {
-	if (block.parent != this) {
-		throw "Invalid child: can only add children created with BlockGroup.create";
-	}
-	if (this.children.length >= this.maxChildren) {
-		// should resize the buffers
-		this.maxChildren *= 2;
-		this.createBuffers(this.glBufferData, this.indexBufferData);
-	}
-	if (!this.texture) {
-		this.texture = block.texture;
-	} else {
-		if (this.texture != block.texture) {
-			throw "Invalid child: only can add child with the same texture";
+chesterGL.BlockGroup.prototype.addChild = function (blocks) {
+	for (var i in arguments) {
+		var block = arguments[i];
+		if (block.parent != this) {
+			throw "Invalid child: can only add children created with BlockGroup.create";
 		}
-	}
-	this.children.push(block);
-	
-	var length = this.children.length;
+		if (this.children.length >= this.maxChildren) {
+			// should resize the buffers
+			this.maxChildren *= 2;
+			this.createBuffers(this.glBufferData, this.indexBufferData);
+		}
+		if (!this.texture) {
+			this.texture = block.texture;
+		} else {
+			if (this.texture != block.texture) {
+				throw "Invalid child: only can add child with the same texture";
+			}
+		}
+		this.children.push(block);
 
-	// just point the buffer data on the child and set the baseIndex
-	block.baseBufferIndex = length-1;
-	block.glBufferData    = this.glBufferData;
-	this.isChildDirty = true;
+		var length = this.children.length;
+
+		// just point the buffer data on the child and set the baseIndex
+		block.baseBufferIndex = length-1;
+		block.glBufferData    = this.glBufferData;
+		this.isChildDirty = true;
+	}
 };
 
 /**

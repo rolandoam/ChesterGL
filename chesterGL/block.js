@@ -47,16 +47,17 @@ chesterGL.Block = function (rect, type, parent) {
 	this.children = [];
 	this.program = chesterGL.Block.PROGRAM['DEFAULT'];
 
+	// set default color and content size
+	this.setContentSize(0, 0);
+	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
+		this.setColor([1, 1, 1, 1]);
+	}
 	if (rect) {
 		if (typeof rect === "string" && chesterGL.hasAsset("texture", rect)) {
 			this.setTexture(rect);
 		} else {
 			this.setFrame(rect);
 		}
-	}
-	// set default color
-	if (this.type == chesterGL.Block.TYPE['STANDALONE']) {
-		this.setColor([1, 1, 1, 1]);
 	}
 	this.setPosition(0, 0, 0);
 
@@ -608,20 +609,23 @@ chesterGL.Block.prototype.isVisible = function () {
  * Adds a block as a child. If you add the block while in a visit of the parent block,
  * the child will be scheduled to be added after the visit.
  *
- * @param {chesterGL.Block} block
+ * @param {...chesterGL.Block} blocks
  */
-chesterGL.Block.prototype.addChild = function (block) {
-	if (block.parent) {
-		throw "can't add a block twice!";
-	}
-	if (this._inVisit) {
-		this._scheduledAdd.push(block);
-	} else {
-		this.children.push(block);
-		block.parent = this;
-	}
-	if (this.isRunning) {
-		block['onEnterScene']();
+chesterGL.Block.prototype.addChild = function (blocks) {
+	for (var i in arguments) {
+		var block = arguments[i];
+		if (block.parent) {
+			throw "can't add a block twice!";
+		}
+		if (this._inVisit) {
+			this._scheduledAdd.push(block);
+		} else {
+			this.children.push(block);
+			block.parent = this;
+		}
+		if (this.isRunning) {
+			block['onEnterScene']();
+		}
 	}
 };
 
@@ -654,11 +658,16 @@ chesterGL.Block.prototype.removeChild = function (block) {
  * @ignore
  */
 chesterGL.Block.prototype.transform = function () {
-	var gl = chesterGL.gl;
-	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
+	var gl = chesterGL.gl,
+		transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty)),
+		_px, _py;
 	if (transformDirty) {
+		// flag this for our children
+		this.isTransformDirty = true;
+		_px = this.position[0];
+		_py = this.position[1];
 		goog.vec.Mat4.makeIdentity(this.mvMatrix);
-		goog.vec.Mat4.translate(this.mvMatrix, this.position[0], this.position[1], this.position[2]);
+		goog.vec.Mat4.translate(this.mvMatrix, _px, _py, this.position[2]);
 		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
 		goog.vec.Mat4.scale(this.mvMatrix, this.scaleX, this.scaleY, 1);
 		// concat with parent's transform
@@ -681,7 +690,7 @@ chesterGL.Block.prototype.transform = function () {
 		if (!inBlockGroup && (this.isFrameDirty || this.isColorDirty)) {
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		}
-		if (this.isFrameDirty || (inBlockGroup && this.isTransformDirty)) {
+		if (this.isFrameDirty || this.isTransformDirty) {
 			// NOTE
 			// the tex coords and the frame coords need to match. Otherwise you get a distorted image
 			var hw = this.contentSize.width * 0.5,
