@@ -60,6 +60,8 @@ chesterGL.Block = function (rect, type, parent) {
 		}
 	}
 	this.setPosition(0, 0, 0);
+	// default anchor point
+	this.setAnchorPoint(0.5, 0.5);
 
 	if (chesterGL.webglMode && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
@@ -242,10 +244,16 @@ chesterGL.Block.prototype.glBuffer = null;
 chesterGL.Block.prototype.glBufferData = null;
 
 /**
- * the position of the center of the block. Use the setter to modify this property
+ * the position of the anchor point of the block. Use the setter to modify this property
  * @type {goog.vec.Vec3.Type}
  */
 chesterGL.Block.prototype.position = null;
+
+/**
+ * the anchor point for the block. Use the setter to modify this property
+ * @type {goog.math.Vec2}
+ */
+chesterGL.Block.prototype.anchorPoint = null;
 
 /**
  * the content size of the block. Use the setter to modify this property
@@ -488,6 +496,24 @@ chesterGL.Block.prototype.setPosition = function (x, y, z) {
 };
 
 /**
+ * sets the anchor point for the block. By default it's (0.5, 0.5)
+ * That means it's in the center of the block. (0,0) is the bottom left, (1,1) is the top right.
+ * You can specify numbers bigger than 1 and smaller than 0 if you want.
+ * @param {number} x
+ * @param {number} y
+ */
+chesterGL.Block.prototype.setAnchorPoint = function(x, y) {
+	this.anchorPoint = new goog.math.Vec2(x, y);
+};
+
+/**
+ * @returns {goog.math.Vec2}
+ */
+chesterGL.Block.prototype.getAnchorPoint = function() {
+	return this.anchorPoint;
+};
+
+/**
  * gets the position of the block (x, y, z)
  * @returns {Float32Array}
  */
@@ -716,10 +742,12 @@ chesterGL.Block.prototype.transform = function () {
 				bufferData[_idx + 2*offset] =  br[0]; bufferData[_idx + 1 + 2*offset] =  br[1]; bufferData[_idx + 2 + 2*offset] = z;
 				bufferData[_idx + 3*offset] =  tr[0]; bufferData[_idx + 1 + 3*offset] =  tr[1]; bufferData[_idx + 2 + 3*offset] = z;
 			} else {
-				bufferData[_idx           ] = -hw; bufferData[_idx + 1           ] = -hh; bufferData[_idx + 2           ] = z;
-				bufferData[_idx +   offset] = -hw; bufferData[_idx + 1 +   offset] =  hh; bufferData[_idx + 2 +   offset] = z;
-				bufferData[_idx + 2*offset] =  hw; bufferData[_idx + 1 + 2*offset] = -hh; bufferData[_idx + 2 + 2*offset] = z;
-				bufferData[_idx + 3*offset] =  hw; bufferData[_idx + 1 + 3*offset] =  hh; bufferData[_idx + 2 + 3*offset] = z;
+				var anchorOffX = (this.contentSize ? (0.5 - this.anchorPoint.x) * this.contentSize.width : 0),
+					anchorOffY = (this.contentSize ? (0.5 - this.anchorPoint.y) * this.contentSize.height : 0);
+				bufferData[_idx           ] = -hw + anchorOffX; bufferData[_idx + 1           ] = -hh + anchorOffY; bufferData[_idx + 2           ] = z;
+				bufferData[_idx +   offset] = -hw + anchorOffX; bufferData[_idx + 1 +   offset] =  hh + anchorOffY; bufferData[_idx + 2 +   offset] = z;
+				bufferData[_idx + 2*offset] =  hw + anchorOffX; bufferData[_idx + 1 + 2*offset] = -hh + anchorOffY; bufferData[_idx + 2 + 2*offset] = z;
+				bufferData[_idx + 3*offset] =  hw + anchorOffX; bufferData[_idx + 1 + 3*offset] =  hh + anchorOffY; bufferData[_idx + 2 + 3*offset] = z;
 			}
 
 			if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
@@ -849,14 +877,29 @@ chesterGL.Block.prototype.render = function () {
 	} else {
 		gl = chesterGL.offContext;
 		// canvas drawing api - we only draw textures
+		var m = this.mvMatrix;
+		var w = 0,
+			h= 0;
+		if (this.contentSize) {
+			w = this.contentSize.width;
+			h = this.contentSize.height;
+		}
+		gl.globalAlpha = this.color[3];
+		gl.setTransform(m[0], m[4], m[1], m[5],
+			m[12] + (0.5 - this.anchorPoint.x) * w,
+			gl.viewportHeight - (m[13] + (0.5 - this.anchorPoint.y) * h));
 		if (this.program == chesterGL.Block.PROGRAM.TEXTURE) {
-			var m = this.mvMatrix;
 			texture = chesterGL.getAsset('texture', this.texture);
-			gl.globalAlpha = this.opacity;
-			gl.setTransform(m[0], m[4], m[1], m[5], m[12], gl.viewportHeight - m[13]);
-			var w = this.contentSize.width, h = this.contentSize.height;
 			var frame = this.frame;
 			gl.drawImage(texture, frame[0], texture.height - (frame[1] + h), frame[2], frame[3], -w/2, -h/2, w, h);
+		} else {
+			// draw a rectangle, to simulate the quad being drawn
+			var byteColor = [];
+			for (var i=0; i < 4; i++) {
+				byteColor[i] = this.color[i] * 255;
+			}
+			gl.fillStyle = "rgba(" + byteColor.join(",") + ")";
+			gl.fillRect(-w/2, -h/2, w, h);
 		}
 	}
 };
@@ -883,6 +926,8 @@ goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'setAnchorPoint', chesterGL.Block.prototype.setAnchorPoint);
+goog.exportProperty(chesterGL.Block.prototype, 'getAnchorPoint', chesterGL.Block.prototype.getAnchorPoint);
 goog.exportProperty(chesterGL.Block.prototype, 'getAbsolutePosition', chesterGL.Block.prototype.getAbsolutePosition);
 goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.prototype.setRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
