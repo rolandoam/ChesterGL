@@ -101,17 +101,21 @@ function throwOnGLError(err, funcName, args) {
 // var chesterGL = {};
 
 /**
- * just to avoid compilation errors
- * @ignore
- */
-var Stats = window['Stats'] || null;
-
-/**
  * chesterGL version
  * @const
  * @type {string}
  */
 chesterGL.version = '0.3';
+
+/**
+ * @type {boolean}
+ */
+chesterGL.onFakeWebGL = false;
+(function () {
+	if (typeof runScript !== 'undefined') {
+		chesterGL.onFakeWebGL = true;
+	}
+})();
 
 /**
  * Basic settings for chesterGL
@@ -311,7 +315,7 @@ chesterGL.selectProgram = function (program) {
  * @param {string} canvasId
  */
 chesterGL.setup = function (canvasId) {
-	var canvas = document.getElementById(canvasId); // get the DOM element
+	var canvas = chesterGL.onFakeWebGL ? new ChesterCanvas(innerWidth, innerHeight) : document.getElementById(canvasId); // get the DOM element
 	var settings = chesterGL.settings;
 
 	// copy values for future reference
@@ -325,13 +329,16 @@ chesterGL.setup = function (canvasId) {
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
 	}
-	var queryStr = window.location.search.substring(1);
-	var keyValues = queryStr.split('&');
-	for (var i in keyValues) {
-		var key = keyValues[i].split('=');
-		if (key[0] == '_cdbg' && key[1] == '1') {
-			chesterGL.debugSprite = true;
-			console.log("debug mode on");
+	// only test for debug query on browser
+	if (!chesterGL.onFakeWebGL) {
+		var queryStr = window.location.search.substring(1);
+		var keyValues = queryStr.split('&');
+		for (var i in keyValues) {
+			var key = keyValues[i].split('=');
+			if (key[0] == '_cdbg' && key[1] == '1') {
+				chesterGL.debugSprite = true;
+				console.log("debug mode on");
+			}
 		}
 	}
 
@@ -342,16 +349,17 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.registerAssetLoader('default', chesterGL.defaultAssetLoader);
 
 	// create the stats objects (if the Stats.js library is included)
-	if (Stats) {
+	if (typeof Stats !== 'undefined') {
 		console.log("chesterGL: adding stats");
 		chesterGL.stats = new Stats();
 		chesterGL.stats['setMode'](1);
-		chesterGL.stats['domElement']['style']['position'] = 'absolute';
-		chesterGL.stats['domElement']['style']['left'] = '0px';
-		chesterGL.stats['domElement']['style']['top'] = '0px';
+		if (!chesterGL.onFakeWebGL) {
+			chesterGL.stats['domElement']['style']['position'] = 'absolute';
+			chesterGL.stats['domElement']['style']['left'] = '0px';
+			chesterGL.stats['domElement']['style']['top'] = '0px';
+			document.body.appendChild(chesterGL.stats['domElement']);
+		}
 		goog.exportSymbol('chesterGL.stats', chesterGL.stats);
-
-		document.body.appendChild(chesterGL.stats['domElement']);
 	}
 };
 
@@ -367,7 +375,7 @@ chesterGL.initGraphics = function (canvas) {
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
 			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false, preserveDrawingBuffer: true});
-			if (chesterGL.gl && window['WebGLDebugUtils']) {
+			if (chesterGL.gl && typeof WebGLDebugUtils !== 'undefined') {
 				console.log("installing debug context");
 				chesterGL.gl = WebGLDebugUtils.makeDebugContext(chesterGL.gl, throwOnGLError);
 			}
@@ -489,18 +497,16 @@ chesterGL.initShader = function (prefix, callback) {
  */
 chesterGL.loadShader = function (prefix, type) {
 	var shaderData = "";
-	$.ajax({
-		url: chesterGL.basePath + "shaders/" + prefix + "." + type,
-		async: false,
-		type: 'GET',
-		success: function (data, textStatus) {
-			if (textStatus == "success") {
-				shaderData = data;
-			} else {
-				console.log("error getting the shader data");
-			}
+	var req = new XMLHttpRequest();
+	req.open("GET", chesterGL.basePath + "shaders/" + prefix + "." + type, false);
+	req.onreadystatechange = function () {
+		if (req.readyState == 4 && req.status == 200) {
+			shaderData = req.responseText;
+		} else if (req.readyState == 4) {
+			console.log("error getting the shader data");
 		}
-	});
+	};
+	req.send();
 	return shaderData;
 };
 
@@ -815,34 +821,31 @@ chesterGL.defaultAssetLoader = function (type, params) {
 	if (!path.match(/^http(s)?:\/\//)) {
 		realPath = chesterGL.basePath + path;
 	}
-	$.ajax({
-		url: realPath,
-		dataType: params.dataType,
-		beforeSend: function (xhr) {
-			xhr.withCredentials = true;
-		},
-		success: function (data, textStatus) {
+	var req = new XMLHttpRequest();
+	req.open("GET", realPath);
+	req.withCredentials = true;
+	req.onreadystatechange = function () {
+		if (req.readyState == 4 && req.status == 200) {
 			var asset = chesterGL.assets[type][name];
-			if (textStatus == "success") {
-				var handler = chesterGL.assetsHandlers[type] || chesterGL.assetsHandlers['default'];
-				if (handler(params, data, type)) {
-					asset.status = 'loaded';
-					// call all listeners
-					var l;
-					while ((l = asset.listeners.shift())) { l(asset.data); }
-					// test for assets loaded
-					chesterGL.assetsLoaded(type);
-					chesterGL.assetsLoaded('all');
-				} else {
-					// requeue
-					asset.status = 'try';
-					chesterGL.loadAsset(type, params);
-				}
+			var handler = chesterGL.assetsHandlers[type] || chesterGL.assetsHandlers['default'];
+			if (handler(params, req.response, type)) {
+				asset.status = 'loaded';
+				// call all listeners
+				var l;
+				while ((l = asset.listeners.shift())) { l(asset.data); }
+				// test for assets loaded
+				chesterGL.assetsLoaded(type);
+				chesterGL.assetsLoaded('all');
 			} else {
-				console.log("Error loading asset " + path);
+				// requeue
+				asset.status = 'try';
+				chesterGL.loadAsset(type, params);
 			}
+		} else if (req.readyState == 4) {
+			console.log("Error loading asset " + path);
 		}
-	});
+	};
+	req.send();
 };
 
 /**
@@ -945,7 +948,11 @@ chesterGL.drawScene = function () {
  * @ignore
  */
 chesterGL.installMouseHandlers = function () {
-	if (window.navigator.platform.match(/iPhone|iPad/)) {
+	if (chesterGL.onFakeWebGL) {
+		_touchBeganListeners.push(chesterGL.mouseDownHandler);
+		_touchMovedListeners.push(chesterGL.mouseMoveHandler);
+		_touchEndedListeners.push(chesterGL.mouseUpHandler);
+	} else if ((typeof navigator !== 'undefined') && navigator.platform.match(/iPhone|iPad/)) {
 		document.addEventListener('touchstart', chesterGL.mouseDownHandler, false);
 		document.addEventListener('touchmove', function (event) {
 			chesterGL.mouseMoveHandler(event);
