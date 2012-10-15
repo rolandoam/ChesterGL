@@ -706,10 +706,10 @@ chesterGL.hasAsset = function (type, path) {
 chesterGL.prepareWebGLTexture = function (texture) {
 	var gl = chesterGL.gl;
 	var result = true;
-	
+
 	try {
 		var error = 0;
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+		// gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);

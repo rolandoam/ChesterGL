@@ -761,10 +761,10 @@ chesterGL.Block.prototype.transform = function () {
 					h = this.frame[3] / texH - 0.002;
 
 				_idx += 3;
-				bufferData[_idx           ] = l  ; bufferData[_idx+1           ] = b;
-				bufferData[_idx +   offset] = l  ; bufferData[_idx+1 +   offset] = b+h;
-				bufferData[_idx + 2*offset] = l+w; bufferData[_idx+1 + 2*offset] = b;
-				bufferData[_idx + 3*offset] = l+w; bufferData[_idx+1 + 3*offset] = b+h;
+				bufferData[_idx           ] = l  ; bufferData[_idx+1           ] = b+h; // tl
+				bufferData[_idx +   offset] = l  ; bufferData[_idx+1 +   offset] = b;   // bl
+				bufferData[_idx + 2*offset] = l+w; bufferData[_idx+1 + 2*offset] = b+h; // tr
+				bufferData[_idx + 3*offset] = l+w; bufferData[_idx+1 + 3*offset] = b;   // br
 			}
 		}
 		if (this.isColorDirty) {
