@@ -14,7 +14,7 @@ OUTPUT_DIR ?= ${PWD}/html
 
 # default name for library
 OUTPUT_FILE = chester.js
-EXTERNAL_SOURCES = 
+EXTERNAL_SOURCES =
 SOURCES = ${EXTERNAL_SOURCES} chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js chesterGL/tmxBlock.js chesterGL/GPUParticleSystem.js chesterGL/primitivesBlock.js chesterGL/labelBlock.js
 
 # externs should live in the same dir as the compiler.jar
@@ -30,7 +30,7 @@ DOC_OUTPUT = doc
 
 JS_SOURCES = $(foreach i,${SOURCES},-i $i)
 EXTERNS_TMP = $(foreach i,${EXTERNS},--externs ${CLOSURE_HOME}/$i)
-COMPILER_ARGUMENTS = ${EXTERNS_TMP} --language_in=ECMASCRIPT5_STRICT --warning_level=VERBOSE --jscomp_warning=checkTypes --summary_detail_level=3
+COMPILER_ARGUMENTS = ${EXTERNS_TMP} --language_in=ECMASCRIPT5 --warning_level=VERBOSE --jscomp_warning=checkTypes --summary_detail_level=3
 
 compile: flags
 	${CLOSURE_LIBRARY}/closure/bin/build/closurebuilder.py --root ${CLOSURE_LIBRARY}  \
