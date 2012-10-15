@@ -37,6 +37,50 @@
 var WebGLDebugUtils;
 
 /**
+ * Stats.js
+ * @constructor
+ */
+var Stats = function () {};
+
+/**
+ * runScript
+ */
+var runScript = function () {};
+
+/**
+ * @type {number}
+ */
+var innerWidth;
+
+/**
+ * @type {number}
+ */
+var innerHeight;
+
+/**
+ * @param {number} w
+ * @param {number} h
+ * @constructor
+ * @extends {HTMLElement}
+ */
+var ChesterCanvas = function (w,h) {};
+
+/**
+ * @param {function(Object)} callback
+ */
+var _touchBeganListeners = function (callback) {};
+
+/**
+ * @param {function(Object)} callback
+ */
+var _touchMovedListeners = function (callback) {};
+
+/**
+ * @param {function(Object)} callback
+ */
+var _touchEndedListeners = function (callback) {};
+
+/**
  * @param {WebGLRenderingContext} ctx
  * @param {function(Object, string, Object)=} callback
  * @return {WebGLRenderingContext}
