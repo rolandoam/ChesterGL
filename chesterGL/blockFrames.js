@@ -43,10 +43,13 @@ chesterGL.BlockFrames.frames = {};
 /**
  * loads the json data (callback for the ajax call)
  *
- * @param {Object} data
+ * @param {Object|string} data
  */
 chesterGL.BlockFrames.parseFrameData = function (data) {
 	// first, get the meta data
+	if (typeof data === 'string') {
+		data = /** @type {Object} */(JSON.parse(data));
+	}
 	if (data['meta'] && data['meta']['version'] == '1.0') {
 		var texName = data['meta']['image'];
 		chesterGL.loadAsset('texture', texName, null, function (img) {
