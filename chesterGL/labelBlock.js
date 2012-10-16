@@ -52,7 +52,7 @@ chesterGL.LabelBlock = function (text, font, fillStyle) {
 	this.fillStyle = fillStyle;
 
 	// get the text height
-	var md = font.match(/^(\d+)px/);
+	var md = font.match(/(\d+)px/);
 	if (md) {
 		this.textHeight = parseInt(md[1], 10);
 	} else {
