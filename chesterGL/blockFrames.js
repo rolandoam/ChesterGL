@@ -58,12 +58,12 @@ chesterGL.BlockFrames.parseFrameData = function (data) {
 			for (var frameName in frames) {
 				var f = frames[frameName];
 				/** @type {chesterGL.Block.frameType} */ var realFrame = {frame: {}, texture: ""};
-				realFrame.frame = goog.vec.Vec4.createFloat32FromValues(
+				realFrame.frame = [
 					f['frame']['x'],
-					imgHeight - (f['frame']['y'] + f['frame']['h']),
+					f['frame']['y'],
 					f['frame']['w'],
 					f['frame']['h']
-				);
+				];
 				realFrame.texture = texName;
 				chesterGL.BlockFrames.frames[frameName] = realFrame;
 			}
