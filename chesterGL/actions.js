@@ -94,6 +94,16 @@ chesterGL.Action.prototype.update = function (delta) {
 };
 
 /**
+ * sets the time for the action
+ * @param {number} time
+ */
+chesterGL.Action.prototype.setTotalTime = function (time) {
+	if (!this.running) {
+		this.totalTime = time;
+	}
+};
+
+/**
  * will be called the first time - usually overriden by subclasses
  * @ignore
  */
@@ -688,6 +698,7 @@ goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.Actio
 goog.exportProperty(chesterGL.SequenceAction, 'createSequence', chesterGL.SequenceAction.createSequence);
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
+goog.exportProperty(chesterGL.Action.prototype, 'setTotalTime', chesterGL.Action.prototype.setTotalTime);
 goog.exportProperty(chesterGL.MoveAction.prototype, 'stop', chesterGL.MoveAction.prototype.stop);
 goog.exportProperty(chesterGL.ScaleAction.prototype, 'stop', chesterGL.ScaleAction.prototype.stop);
 goog.exportProperty(chesterGL.SequenceAction.prototype, 'stop', chesterGL.SequenceAction.prototype.stop);
