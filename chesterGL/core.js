@@ -40,17 +40,16 @@ HTMLCanvasElement._canvas_tmp_mouse = new goog.math.Vec2(0, 0);
 HTMLCanvasElement.prototype.relativePosition = function (evt) {
 	var pt = HTMLCanvasElement._canvas_tmp_mouse;
 	pt.x = 0; pt.y = 0;
-	if (this.__offset === undefined) {
-		this.__offset = $(this).offset();
-		this.__height = $(this).height();
+	if (typeof this['__offset'] === "undefined") {
+		this['__offset'] = $(this).offset();
 	}
 	if (evt.changedTouches) {
 		var t = evt.changedTouches[0];
-		pt.x = (t.pageX - this.__offset.left);
-		pt.y = (this.__height - (t.pageY - this.__offset.top));
+		pt.x = (t.pageX - this['__offset'].left);
+		pt.y = (this.height - (t.pageY - this['__offset'].top));
 	} else {
-		pt.x = (evt.pageX - this.__offset.left);
-		pt.y = (this.__height - (evt.pageY - this.__offset.top));
+		pt.x = (evt.pageX - this['__offset'].left);
+		pt.y = (this.height - (evt.pageY - this['__offset'].top));
 	}
 
 	return pt;
@@ -58,6 +57,7 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
 
 // requestAnimationFrame polyfill by Erik Möller
 // fixes from Paul Irish and Tino Zijdel
+/*
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -65,7 +65,7 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
         window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
     }
- 
+
     if (!window.requestAnimationFrame) {
 		console.log("using setTimeout");
         window.requestAnimationFrame = function(callback, element) {
@@ -77,12 +77,29 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
             return id;
         };
     }
- 
+
     if (!window.cancelAnimationFrame)
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
         };
 }());
+*/
+
+(function () {
+	if (typeof requestAnimationFrame === 'undefined') {
+		if (typeof webkitRequestAnimationFrame !== 'undefined') {
+			requestAnimationFrame = webkitRequestAnimationFrame;
+		} else if (typeof mozRequestAnimationFrame !== 'undefined') {
+			requestAnimationFrame = mozRequestAnimationFrame;
+		} else if (typeof msRequestAnimationFrame !== 'undefined') {
+			requestAnimationFrame = msRequestAnimationFrame;
+		} else if (typeof oRequestAnimationFrame !== 'undefined') {
+			requestAnimationFrame = oRequestAnimationFrame;
+		} else {
+			throw "No valid RequestAnimationFrame function available";
+		}
+	}
+})();
 
 /**
  * @define {boolean}
@@ -403,7 +420,7 @@ chesterGL.initGraphics = function (canvas) {
 	}
 	// first resize of the canvas
 	chesterGL.canvasResized();
-	
+
 	// install touch handler
 	chesterGL.installMouseHandlers();
 };
@@ -433,7 +450,7 @@ chesterGL.viewportSize = function () {
  */
 chesterGL.initDefaultShaders = function () {
 	var gl = chesterGL.gl;
-				
+
 	chesterGL.initShader("default", function (program) {
 		program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
 		program.attribs = {
@@ -443,7 +460,7 @@ chesterGL.initDefaultShaders = function () {
 		goog.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
 		goog.exportProperty(program, 'attribs', program.attribs);
 	});
-	
+
 	chesterGL.initShader("texture", function (program) {
 		program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
 		program.samplerUniform = gl.getUniformLocation(program, "uSampler");
@@ -472,12 +489,12 @@ chesterGL.initShader = function (prefix, callback) {
 	var fs = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fs, fsData);
 	gl.compileShader(fs);
-	
+
 	if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
 		console.log("problem compiling fragment shader " + prefix + "(" + gl.getShaderInfoLog(fs) + "):\n" + fsData);
 		return;
 	}
-	
+
 	var vs = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vs, vsData);
 	gl.compileShader(vs);
@@ -485,7 +502,7 @@ chesterGL.initShader = function (prefix, callback) {
 		console.log("problem compiling vertex shader " + prefix + "(" + gl.getShaderInfoLog(vs) + "):\n" + vsData);
 		return;
 	}
-	
+
 	var program = chesterGL.createShader(prefix, fs, vs);
 	if (callback) callback(program);
 };
@@ -921,7 +938,7 @@ chesterGL.drawScene = function () {
 		gl.setTransform(1, 0, 0, 1, 0, 0);
 		gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 	}
-	
+
 	// start mayhem
 	if (chesterGL.runningScene) {
 		chesterGL.runningScene.visit();
@@ -929,7 +946,7 @@ chesterGL.drawScene = function () {
 			chesterGL.runningScene['onEnterScene']();
 		}
 	}
-	
+
 	if (!chesterGL.webglMode) {
 		// copy back the off context (if we use one)
 		if (chesterGL.usesOffscreenBuffer) {
@@ -1079,7 +1096,7 @@ chesterGL.removeMouseHandler = function (callback) {
  */
 chesterGL.run = function () {
 	if (!chesterGL._paused) {
-		window.requestAnimationFrame(chesterGL.run, chesterGL.canvas);
+		requestAnimationFrame(chesterGL.run, chesterGL.canvas);
 		if (chesterGL.stats) chesterGL.stats['begin']();
 		chesterGL.drawScene();
 		chesterGL.ActionManager.tick(chesterGL.delta);
