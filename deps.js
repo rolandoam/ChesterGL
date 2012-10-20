@@ -80,6 +80,52 @@ var _touchMovedListeners = function (callback) {};
  */
 var _touchEndedListeners = function (callback) {};
 
+// these are native implementations of the goog.vec.mat4 functions
+
+/**
+ * @param {goog.vec.Mat4.AnyType} mat0
+ * @param {goog.vec.Mat4.AnyType} mat1
+ * @param {goog.vec.Mat4.AnyType=} out
+ * @return {goog.vec.Mat4.AnyType}
+ */
+var _mat4mul = function (mat0, mat1, out) {};
+
+/**
+ * @param {goog.vec.Mat4.AnyType} mat
+ * @param {goog.vec.Vec3.AnyType} vec
+ * @param {goog.vec.Vec3.AnyType=} out
+ * @return {goog.vec.Vec3.AnyType}
+ */
+var _mat4mulvec3 = function (mat, vec, out) {};
+
+/**
+ * @param {goog.vec.Mat4.AnyType} mat
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @return {goog.vec.Mat4.AnyType}
+ */
+var _mat4translate = function (mat, x, y, z) {};
+
+/**
+ * @param {goog.vec.Mat4.AnyType} mat
+ * @param {number} angle
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @return {goog.vec.Mat4.AnyType}
+ */
+var _mat4rotate = function (mat, angle, x, y, z) {};
+
+/**
+ * @param {goog.vec.Mat4.AnyType} mat
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @return {goog.vec.Mat4.AnyType}
+ */
+var _mat4scale = function (mat, x, y, z) {};
+
 /**
  * @param {WebGLRenderingContext} ctx
  * @param {function(Object, string, Object)=} callback
