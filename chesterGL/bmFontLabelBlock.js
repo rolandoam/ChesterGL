@@ -43,7 +43,7 @@ goog.require("chesterGL.BlockGroup");
  * @extends {chesterGL.BlockGroup}
  */
 chesterGL.BMFontLabelBlock = function (name, text) {
-	goog.base(this, name + ".png", 50);
+	goog.base(this, name + ".png", Math.max(50, text.length));
 	// this._sharedTexture = name + ".png";
 	this.setColor([0, 0, 0, 0]);
 	var fntFile = chesterGL.getAsset('txt', name + ".fnt"),
@@ -100,6 +100,7 @@ chesterGL.BMFontLabelBlock = function (name, text) {
 goog.inherits(chesterGL.BMFontLabelBlock, chesterGL.BlockGroup);
 
 /**
+ * sets the anchor point
  * @param {number} x
  * @param {number} y
  */
@@ -109,15 +110,25 @@ chesterGL.BMFontLabelBlock.prototype.setAnchorPoint = function BMFontLabelBlock_
 };
 
 /**
- * Calculates the width for the given text
+ * Calculates the size for the given text, in width and lines
  * @param {string} text
- * @returns {number}
+ * @returns {Object} the size of the text {width: w, lines: l}
+ * @ignore
  */
-chesterGL.BMFontLabelBlock.prototype.calculateTextWidth = function BMFontLabelBlock_calculateTextWidth(text) {
-	var width = 0,
+chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlock_calculateTextWidth(text) {
+	var maxWidth = 0,
+		lineWidth = 0,
+		lines = 0,
 		i, last = 0;
 	for (i=0; i < text.length; i++) {
 		var ch = text.charCodeAt(i);
+		if (ch == 10 || ch == 13) {
+			console.log("line width: " + lineWidth);
+			maxWidth = Math.max(maxWidth, lineWidth);
+			lineWidth = 0;
+			lines++;
+			continue;
+		}
 		if (this.chars[ch]) {
 			var frameInfo = this.chars[ch],
 				kern = 0;
@@ -125,11 +136,13 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextWidth = function BMFontLabelBl
 				kern = (this.kernings[last][ch] || 0);
 				// console.log("  kerning: " + kern);
 			}
-			width += frameInfo['xadvance'] + kern;
+			lineWidth += frameInfo['xadvance'] + kern;
 			last = ch;
 		}
 	}
-	return width;
+	maxWidth = Math.max(maxWidth, lineWidth);
+	console.log("line width: " + lineWidth);
+	return {width: maxWidth, lines: lines};
 };
 
 /**
@@ -143,15 +156,21 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 	}
 	this.text = text;
 	this.removeAllChildren();
-	var width = this.calculateTextWidth(text),
-		height = this.params['lineHeight'],
+	var sz = this.calculateTextSize(text),
+		lineHeight = this.params['lineHeight'],
 		i,
 		last = 0,
-		curX = -width * this.anchorPoint.x,
-		curY = -height * this.anchorPoint.y;
+		curX = -sz.width * this.anchorPoint.x,
+		curY = -(sz.lines * lineHeight * this.anchorPoint.y);
 	// console.log("width: " + width + "; height: " + height + "; offX: " + offX);
+	text = text.split(/\n|\r/).reverse().join("\n");
 	for (i=0; i < text.length; i++) {
 		var ch = text.charCodeAt(i);
+		if (ch == 10 || ch == 13) {
+			curX = -sz.width * this.anchorPoint.x;
+			curY += lineHeight;
+			continue;
+		}
 		if (this.chars[ch]) {
 			var kern = 0;
 			if (last > 0 && this.kernings[last]) {
@@ -166,7 +185,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 					frameInfo['height']
 				],
 				b = this.createBlock(frame),
-				posY = curY + (height - frameInfo['yoffset']) - frameInfo['height'] * 0.5,
+				posY = curY + (lineHeight - frameInfo['yoffset']) - frameInfo['height'] * 0.5,
 				posX = curX + frameInfo['xoffset'] + frameInfo['width'] * 0.5 + kern;
 			// set the text to pixel-perfect position
 			b.setPosition(~~posX, ~~posY, 0);
@@ -178,7 +197,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		}
 		last = ch;
 	}
-	this.setContentSize(width, height);
+	this.setContentSize(sz.width, sz.lines * lineHeight);
 };
 
 /**
