@@ -131,6 +131,12 @@ chesterGL.onFakeWebGL = false;
 (function () {
 	if (typeof runScript !== 'undefined') {
 		chesterGL.onFakeWebGL = true;
+		// change the mat mult function
+		goog.vec.Mat4.multMat = _mat4mul;
+		goog.vec.Mat4.multVec3 = _mat4mulvec3;
+		goog.vec.Mat4.translate = _mat4translate;
+		goog.vec.Mat4.rotate = _mat4rotate;
+		goog.vec.Mat4.scale = _mat4scale;
 	}
 })();
 
