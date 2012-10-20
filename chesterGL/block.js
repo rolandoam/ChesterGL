@@ -339,14 +339,19 @@ chesterGL.Block.prototype._inVisit = false;
  * @ignore
  */
 chesterGL.Block.prototype.addDebugNode = function () {
-	if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
+	if (this.contentSize.width > 0) {
 		var dbg = new chesterGL.PrimitiveBlock(1, 1);
 		this.addChild(dbg);
+		dbg.isInAtlas = (this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP']) ? 1 : 0;
 		dbg.setUpdate(function () {
 			var sz = this.parent.contentSize;
 			var w = sz.width / 2, h = sz.height / 2;
 			var poly = [[-w, -h, 0], [-w, h, 0], [w, h, 0], [w, -h, 0]];
-			this.drawPolygon(poly, [1, 1, 1, 1], true);
+			if (this.isInAtlas) {
+				this.drawPolygon(poly, [1, 0, 0, 1], true);
+			} else {
+				this.drawPolygon(poly, [1, 1, 1, 1], true);
+			}
 		});
 	}
 	this.debugNodeAdded = true;
@@ -569,7 +574,6 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 	this.texture = texturePath;
 	// force program to texture program
 	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
-	if (chesterGL.debugSprite) { this.addDebugNode(); }
 	var block = this;
 	chesterGL.loadAsset("texture", texturePath, null, function (t) {
 		// set the default frame for all our blocks (if it's not set)
@@ -789,6 +793,7 @@ chesterGL.Block.prototype.transform = function () {
  */
 chesterGL.Block.prototype.visit = function () {
 	this._inVisit = true;
+	if (chesterGL.debugSprite && !this.debugNodeAdded) { this.addDebugNode(); }
 	if (this.update) {
 		this.update(chesterGL.delta);
 	}
@@ -796,15 +801,11 @@ chesterGL.Block.prototype.visit = function () {
 		this._inVisit = false;
 		return;
 	}
-	// if (ENABLE_DEBUG) console.time("transform");
 	this.transform();
-	// if (ENABLE_DEBUG) console.timeEnd("transform");
 
-	// render this block if not in a block group
+	// render this block if not in a block group and if not orphan
 	if (!this.parent || this.parent.type != chesterGL.Block.TYPE['BLOCKGROUP']) {
-		// if (ENABLE_DEBUG) console.time("render");
 		this.render();
-		// if (ENABLE_DEBUG) console.timeEnd("render");
 	}
 
 	var children = this.children;
@@ -832,9 +833,6 @@ chesterGL.Block.prototype.visit = function () {
  * @ignore
  */
 chesterGL.Block.prototype.render = function () {
-	if (this.type == chesterGL.Block.TYPE['BLOCKGROUP']) {
-		throw "Cannot call render on a BlockGroup block!";
-	}
 	// dummy render for scene blocks
 	if (this.type == chesterGL.Block.TYPE['SCENE']) {
 		return;
