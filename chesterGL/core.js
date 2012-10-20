@@ -1194,6 +1194,14 @@ chesterGL.randMin1Plus1 = function () {
 	return Math.random() * 2 - 1;
 };
 
+/**
+ * returns the current associated gl (or canvas 2d) context
+ * @returns {Object}
+ */
+chesterGL.getCurrentContext = function () {
+	return chesterGL.gl;
+};
+
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
@@ -1221,5 +1229,6 @@ goog.exportSymbol('chesterGL.run', chesterGL.run);
 goog.exportSymbol('chesterGL.togglePause', chesterGL.togglePause);
 goog.exportSymbol('chesterGL.isPaused', chesterGL.isPaused);
 goog.exportSymbol('chesterGL.setPause', chesterGL.setPause);
+goog.exportSymbol('chesterGL.getCurrentContext', chesterGL.getCurrentContext);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);
