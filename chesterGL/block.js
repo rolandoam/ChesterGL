@@ -683,6 +683,13 @@ chesterGL.Block.prototype.removeChild = function (block) {
 	}
 };
 
+// used as a replacement for tl, tr, bl, br
+chesterGL.Block.__tmpBuffers = [
+	new Float32Array(3),
+	new Float32Array(3),
+	new Float32Array(3),
+	new Float32Array(3)
+];
 /**
  * actually performs the transformation
  * @ignore
@@ -690,7 +697,10 @@ chesterGL.Block.prototype.removeChild = function (block) {
 chesterGL.Block.prototype.transform = function () {
 	var gl = chesterGL.gl,
 		transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty)),
-		_px, _py;
+		_px, _py,
+		inBlockGroup = this.parent && this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP'];
+	var anchorOffX = (this.contentSize ? (0.5 - this.anchorPoint.x) * this.contentSize.width : 0),
+		anchorOffY = (this.contentSize ? (0.5 - this.anchorPoint.y) * this.contentSize.height : 0);
 	if (transformDirty) {
 		// flag this for our children
 		this.isTransformDirty = true;
@@ -702,7 +712,7 @@ chesterGL.Block.prototype.transform = function () {
 		goog.vec.Mat4.scale(this.mvMatrix, this.scaleX, this.scaleY, 1);
 		// concat with parent's transform
 		var ptransform = (this.parent ? this.parent.mvMatrix : null);
-		if (ptransform) {
+		if (ptransform && !inBlockGroup) {
 			goog.vec.Mat4.multMat(ptransform, this.mvMatrix, this.mvMatrix);
 		}
 	}
@@ -713,7 +723,6 @@ chesterGL.Block.prototype.transform = function () {
 	}
 
 	var bufferData = this.glBufferData;
-	var inBlockGroup = this.parent && this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP'];
 
 	if (chesterGL.webglMode) {
 		var _idx, offset = 9;
@@ -721,33 +730,29 @@ chesterGL.Block.prototype.transform = function () {
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 		}
 		if (this.isFrameDirty || this.isTransformDirty) {
-			// NOTE
-			// the tex coords and the frame coords need to match. Otherwise you get a distorted image
 			var hw = this.contentSize.width * 0.5,
 				hh = this.contentSize.height * 0.5,
 				z = this.position[2];
 			_idx = this.baseBufferIndex * chesterGL.Block.BUFFER_SIZE;
 
-			// NOTE
-			// this is going to be slow :P
-			// this is using the matrix to transform the vertex data
 			if (inBlockGroup) {
-				var tr = [ hw,  hh, 0],
-					tl = [-hw,  hh, 0],
-					br = [ hw, -hh, 0],
-					bl = [-hw, -hh, 0];
+				// NOTE
+				// this is going to be slow :P
+				// this is using the matrix to transform the vertex data
+				var tr = goog.vec.Vec3.setFromValues(chesterGL.Block.__tmpBuffers[0], hw + anchorOffX,  hh + anchorOffY, z),
+					tl = goog.vec.Vec3.setFromValues(chesterGL.Block.__tmpBuffers[1],-hw + anchorOffX,  hh + anchorOffY, z),
+					br = goog.vec.Vec3.setFromValues(chesterGL.Block.__tmpBuffers[2], hw + anchorOffX, -hh + anchorOffY, z),
+					bl = goog.vec.Vec3.setFromValues(chesterGL.Block.__tmpBuffers[3],-hw + anchorOffX, -hh + anchorOffY, z);
 				goog.vec.Mat4.multVec3(this.mvMatrix, tr, tr);
 				goog.vec.Mat4.multVec3(this.mvMatrix, tl, tl);
 				goog.vec.Mat4.multVec3(this.mvMatrix, bl, bl);
 				goog.vec.Mat4.multVec3(this.mvMatrix, br, br);
 
-				bufferData[_idx           ] =  bl[0]; bufferData[_idx + 1           ] =  bl[1]; bufferData[_idx + 2           ] = z;
-				bufferData[_idx +   offset] =  tl[0]; bufferData[_idx + 1 +   offset] =  tl[1]; bufferData[_idx + 2 +   offset] = z;
-				bufferData[_idx + 2*offset] =  br[0]; bufferData[_idx + 1 + 2*offset] =  br[1]; bufferData[_idx + 2 + 2*offset] = z;
-				bufferData[_idx + 3*offset] =  tr[0]; bufferData[_idx + 1 + 3*offset] =  tr[1]; bufferData[_idx + 2 + 3*offset] = z;
+				bufferData[_idx           ] = bl[0]; bufferData[_idx + 1           ] = bl[1]; bufferData[_idx + 2           ] = z;
+				bufferData[_idx +   offset] = tl[0]; bufferData[_idx + 1 +   offset] = tl[1]; bufferData[_idx + 2 +   offset] = z;
+				bufferData[_idx + 2*offset] = br[0]; bufferData[_idx + 1 + 2*offset] = br[1]; bufferData[_idx + 2 + 2*offset] = z;
+				bufferData[_idx + 3*offset] = tr[0]; bufferData[_idx + 1 + 3*offset] = tr[1]; bufferData[_idx + 2 + 3*offset] = z;
 			} else {
-				var anchorOffX = (this.contentSize ? (0.5 - this.anchorPoint.x) * this.contentSize.width : 0),
-					anchorOffY = (this.contentSize ? (0.5 - this.anchorPoint.y) * this.contentSize.height : 0);
 				bufferData[_idx           ] = -hw + anchorOffX; bufferData[_idx + 1           ] = -hh + anchorOffY; bufferData[_idx + 2           ] = z;
 				bufferData[_idx +   offset] = -hw + anchorOffX; bufferData[_idx + 1 +   offset] =  hh + anchorOffY; bufferData[_idx + 2 +   offset] = z;
 				bufferData[_idx + 2*offset] =  hw + anchorOffX; bufferData[_idx + 1 + 2*offset] = -hh + anchorOffY; bufferData[_idx + 2 + 2*offset] = z;
