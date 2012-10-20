@@ -49,7 +49,7 @@ chesterGL.BlockGroup = function (texture, noChildren) {
 		this.program = chesterGL.Block.PROGRAM['DEFAULT'];
 	}
 	this.maxChildren = noChildren || 10;
-	
+
 	// create the buffers for the children
 	this.createBuffers();
 };
@@ -67,7 +67,7 @@ chesterGL.BlockGroup.prototype.maxChildren = 0;
  * @ignore
  */
 chesterGL.BlockGroup.prototype.isChildDirty = false;
-		
+
 /**
  * @type {?WebGLBuffer}
  * @ignore
@@ -107,7 +107,7 @@ chesterGL.BlockGroup.prototype.createBuffers = function (oldBufferData, oldIndex
 
 /**
  * creates a block that can be added to this block group
- * @param {goog.vec.Vec4.Type} rect
+ * @param {goog.vec.Vec4.Vec4Like} rect
  */
 chesterGL.BlockGroup.prototype.createBlock = function (rect) {
 	var b = new chesterGL.Block(rect, chesterGL.Block.TYPE['STANDALONE'], this);
@@ -163,10 +163,11 @@ chesterGL.BlockGroup.prototype.removeChild = function (b) {
 	} else {
 		var idx = this.children.indexOf(b);
 		if (idx > 0) {
-			this.children.splice(idx, 1);
+			var _b = this.children.splice(idx, 1);
+			_b[0].parent = null;
 			// for the rest of the children, mark them as dirty and reduce the baseBufferIndex
 			for (var i=idx; i < this.totalChildren; i++) {
-				var _b = this.children[i];
+				_b = this.children[i];
 				_b.baseBufferIndex = i;
 				_b.isTransformDirty = true;
 				_b.isColorDirty = true;
@@ -209,14 +210,14 @@ chesterGL.BlockGroup.prototype.visit = function () {
 		return;
 	}
 	this.transform();
-	
+
 	// this should be more like cocos2d: preserve the z-ordering
 	var children = this.children;
 	var len = children.length;
 	for (var i=0; i < len; i++) {
 		children[i].visit();
 	}
-	
+
 	// re-bind the glBuffer (might have changed in the children visit)
 	var gl = chesterGL.gl;
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
@@ -246,33 +247,33 @@ chesterGL.BlockGroup.prototype.visit = function () {
  */
 chesterGL.BlockGroup.prototype.render = function (totalChildren) {
 	var gl = chesterGL.gl;
-	
+
 	// select current shader
 	var program = chesterGL.selectProgram(chesterGL.Block.PROGRAM_NAME[this.program]);
 	totalChildren = totalChildren || this.children.length;
 	var texOff = 3 * 4,
 		colorOff = texOff + 2 * 4,
 		stride = chesterGL.Block.VERT_SIZE;
-	
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
-	
+
 	gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 	if (this.program == chesterGL.Block.PROGRAM['DEFAULT']) {
 		// no extra attributes for the shader
 	} else if (this.program == chesterGL.Block.PROGRAM['TEXTURE']) {
 		var texture = chesterGL.getAsset('texture', this.texture);
-		
+
 		// pass the texture attributes
 		gl.vertexAttribPointer(program.attribs['textureCoordAttribute'], 2, gl.FLOAT, false, stride, texOff);
-		
+
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 		gl.uniform1i(program.samplerUniform, 0);
 	}
 	gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
-	
+
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-	
+
 	// set the matrix uniform (the multiplied model view projection matrix)
 	var transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty));
 	if (transformDirty)
