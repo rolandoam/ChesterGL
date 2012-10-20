@@ -178,6 +178,21 @@ chesterGL.BlockGroup.prototype.removeChild = function (b) {
 };
 
 /**
+ * removes all children
+ */
+chesterGL.BlockGroup.prototype.removeAllChildren = function () {
+	if (this._inVisit) {
+		this._scheduledRemove.push("all");
+	} else {
+		var i = 0;
+		for (i=0; i < this.children.length; i++) {
+			this.children[i].parent = null;
+		}
+		this.children.length = 0;
+	}
+};
+
+/**
  * when the block list changes, the indices array must be recreated
  * @param {number} startIdx
  * @param {number=} total
@@ -229,14 +244,18 @@ chesterGL.BlockGroup.prototype.visit = function () {
 	}
 	// render this block group
 	this.render();
-	
+
 	// reset our dirty markers
 	this.isFrameDirty = this.isColorDirty = this.isTransformDirty = false;
 	this._inVisit = false;
 
 	var b;
 	while ((b = this._scheduledRemove.shift())) {
-		this.removeChild(b);
+		if (b === "all") {
+			this.removeAllChildren();
+		} else {
+			this.removeChild(b);
+		}
 	}
 };
 
@@ -288,3 +307,4 @@ goog.exportSymbol('chesterGL.BlockGroup', chesterGL.BlockGroup);
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'createBlock', chesterGL.BlockGroup.prototype.createBlock);
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'addChild', chesterGL.BlockGroup.prototype.addChild);
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeChild', chesterGL.BlockGroup.prototype.removeChild);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeAllChildren', chesterGL.BlockGroup.prototype.removeAllChildren);
