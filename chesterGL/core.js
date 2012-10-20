@@ -1198,6 +1198,7 @@ chesterGL.randMin1Plus1 = function () {
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
 goog.exportSymbol('chesterGL.mouseEvents', chesterGL.mouseEvents);
+goog.exportSymbol('chesterGL.onFakeWebGL', chesterGL.onFakeWebGL);
 goog.exportProperty(chesterGL.mouseEvents, 'UP', chesterGL.mouseEvents.UP);
 goog.exportProperty(chesterGL.mouseEvents, 'DOWN', chesterGL.mouseEvents.DOWN);
 goog.exportProperty(chesterGL.mouseEvents, 'MOVE', chesterGL.mouseEvents.MOVE);
