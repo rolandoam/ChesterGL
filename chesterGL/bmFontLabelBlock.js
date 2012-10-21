@@ -80,7 +80,7 @@ chesterGL.BMFontLabelBlock = function (name, text) {
 			if (ch['id']) {
 				this.chars[ch['id']] = ch;
 			} else {
-				console.log("invalid char at line " + (i+1));
+				console.log("BMFontLabel: invalid char at line " + (i+1));
 			}
 		} else if (md[0] === "kerning") {
 			var kern = {};
@@ -123,7 +123,7 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlo
 	for (i=0; i < text.length; i++) {
 		var ch = text.charCodeAt(i);
 		if (ch == 10 || ch == 13) {
-			console.log("line width: " + lineWidth);
+			// console.log("line width: " + lineWidth);
 			maxWidth = Math.max(maxWidth, lineWidth);
 			lineWidth = 0;
 			lines++;
@@ -141,7 +141,7 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlo
 		}
 	}
 	maxWidth = Math.max(maxWidth, lineWidth);
-	console.log("line width: " + lineWidth);
+	// console.log("line width: " + lineWidth);
 	return {width: maxWidth, lines: lines};
 };
 
