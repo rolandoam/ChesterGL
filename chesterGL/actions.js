@@ -70,7 +70,7 @@ chesterGL.Action.prototype.totalTime = 0;
 chesterGL.Action.prototype.elapsed = 0;
 
 /**
- * The current time of the action
+ * true if the action has ended
  * @type {boolean}
  */
 chesterGL.Action.prototype.finished = false;
@@ -88,7 +88,7 @@ chesterGL.Action.prototype.running = false;
  */
 chesterGL.Action.prototype.update = function (delta) {
 	this.elapsed += delta;
-	if (this.totalTime > 0 && this.elapsed >= this.totalTime) {
+	if (this.totalTime >= 0 && this.elapsed >= this.totalTime) {
 		this.stop();
 	}
 };
@@ -343,7 +343,7 @@ chesterGL.ScaleAction.prototype.reverse = function () {
 chesterGL.CallbackAction = function (callback, delay, arg) {
 	this.callback = callback;
 	this.arg = arg;
-	chesterGL.Action.call(this, delay || 1);
+	chesterGL.Action.call(this, delay || 0);
 };
 goog.inherits(chesterGL.CallbackAction, chesterGL.Action);
 
