@@ -37,11 +37,18 @@ $(document).ready(function () {
 			var animation = new chesterGL.AnimateAction(500, ["1945-4-0.png", "1945-4-1.png", "1945-4-2.png", "1945-4-3.png", "1945-4-4.png"], true, b1);
 			chesterGL.ActionManager.scheduleAction(animation);
 
-			// 2.- using block.runAction
-			var b2 = new chesterGL.Block("1945-4-1.png");
-			var moveAction = new chesterGL.MoveAction([size.width/2, size.height/2, 0], 2500);
-			var totalSeq = new chesterGL.SequenceAction.createSequence(moveAction, moveAction.reverse());
-			var repeat = new chesterGL.RepeatAction(totalSeq, -1);
+			// 2.- testing repeat (forever)
+			var b2 = new chesterGL.Block("1945-4-1.png"),
+				moveAction = new chesterGL.MoveAction([size.width/2, size.height/2, 0], 2500),
+				faceDirection = new chesterGL.CallbackAction(function () {
+					if (this.getRotation() == 45 * oneDeg)
+						this.setRotation(225 * oneDeg);
+					else
+						this.setRotation(45 * oneDeg);
+				}.bind(b2)),
+				totalSeq = new chesterGL.SequenceAction(moveAction, faceDirection, moveAction.reverse(), faceDirection),
+				repeat = new chesterGL.RepeatAction(totalSeq, -1);
+			b2.setRotation(oneDeg * 45);
 			b2.runAction(repeat);
 
 			// 3.- sequence testing
@@ -50,9 +57,10 @@ $(document).ready(function () {
 			var a3 = new chesterGL.MoveAction([0, 100, 0], 1000);
 			var a4 = a3.reverse();
 			var a5 = new chesterGL.CallbackAction(function () {
+				console.log("will wiggle");
 				$("#wiggle").click();
 			});
-			var seq = new chesterGL.SequenceAction.createSequence(a1, a2, a3, a4, a5);
+			var seq = new chesterGL.SequenceAction(a1, a2, a3, a4, a5);
 			b1.runAction(seq);
 
 			// 4.- wiggle sprite
@@ -68,8 +76,8 @@ $(document).ready(function () {
 			label.setPosition([320, 460, 0]);
 			sceneBlock.addChild(label);
 
-			chesterGL.run();
 			chesterGL.togglePause();
+			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();
 		});
