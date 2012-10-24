@@ -85,21 +85,21 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
 }());
 */
 
-(function () {
-	if (typeof requestAnimationFrame === 'undefined') {
-		if (typeof webkitRequestAnimationFrame !== 'undefined') {
-			requestAnimationFrame = webkitRequestAnimationFrame;
+(function (w) {
+	if (typeof w.requestAnimationFrame === 'undefined') {
+		if (typeof w.webkitRequestAnimationFrame !== 'undefined') {
+			w.requestAnimationFrame = w.webkitRequestAnimationFrame;
 		} else if (typeof mozRequestAnimationFrame !== 'undefined') {
-			requestAnimationFrame = mozRequestAnimationFrame;
+			w.requestAnimationFrame = w.mozRequestAnimationFrame;
 		} else if (typeof msRequestAnimationFrame !== 'undefined') {
-			requestAnimationFrame = msRequestAnimationFrame;
+			w.requestAnimationFrame = w.msRequestAnimationFrame;
 		} else if (typeof oRequestAnimationFrame !== 'undefined') {
-			requestAnimationFrame = oRequestAnimationFrame;
+			w.requestAnimationFrame = w.oRequestAnimationFrame;
 		} else {
 			throw "No valid RequestAnimationFrame function available";
 		}
 	}
-})();
+})(this);
 
 /**
  * @define {boolean}
