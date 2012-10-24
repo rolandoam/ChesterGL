@@ -120,6 +120,20 @@ chesterGL.Action.prototype.stop = function () {
 };
 
 /**
+ * pause the action
+ */
+chesterGL.Action.prototype.pause = function () {
+	this.running = false;
+};
+
+/**
+ * resume the action
+ */
+chesterGL.Action.prototype.resume = function () {
+	this.running = true;
+};
+
+/**
  * reset - prepare the action in order to use it again
  * @ignore
  */
@@ -698,6 +712,8 @@ goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.Actio
 goog.exportProperty(chesterGL.SequenceAction, 'createSequence', chesterGL.SequenceAction.createSequence);
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
+goog.exportProperty(chesterGL.Action.prototype, 'pause', chesterGL.Action.prototype.pause);
+goog.exportProperty(chesterGL.Action.prototype, 'resume', chesterGL.Action.prototype.resume);
 goog.exportProperty(chesterGL.Action.prototype, 'setTotalTime', chesterGL.Action.prototype.setTotalTime);
 goog.exportProperty(chesterGL.MoveAction.prototype, 'stop', chesterGL.MoveAction.prototype.stop);
 goog.exportProperty(chesterGL.ScaleAction.prototype, 'stop', chesterGL.ScaleAction.prototype.stop);
