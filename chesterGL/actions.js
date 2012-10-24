@@ -368,8 +368,7 @@ chesterGL.CallbackAction.prototype.update = function (delta) {
 
 /**
  * @constructor
- * @param {chesterGL.Action} action1 the first action
- * @param {chesterGL.Action} action2 the second action
+ * @param {...chesterGL.Action} actions an array of actions
  * @extends {chesterGL.Action}
  * @example
  * var a1 = new chesterGL.MoveAction([100, 100, 0], 5000);
@@ -377,27 +376,20 @@ chesterGL.CallbackAction.prototype.update = function (delta) {
  * var seq = new chesterGL.SequenceAction(a1, a2);
  * block.runAction(seq);
  */
-chesterGL.SequenceAction = function (action1, action2) {
-	var totalTime = (action1.totalTime + action2.totalTime);
-	chesterGL.Action.call(this, totalTime);
-	this.actions = [action1, action2];
+chesterGL.SequenceAction = function (actions) {
+	if (arguments.length < 1) {
+		throw "you need at least one action to create a sequence";
+	}
+	var totalTime = 0;
+	this.actions = [];
+	for (var i in arguments) {
+		totalTime += arguments[i].totalTime;
+		this.actions.push(arguments[i]);
+	}
+	this.nextStop = this.actions[0].totalTime;
+	goog.base(this, totalTime);
 };
 goog.inherits(chesterGL.SequenceAction, chesterGL.Action);
-
-/**
- * @param {...chesterGL.Action} actions The list of actions to use in order to create the sequence
- * @return {chesterGL.Action}
- */
-chesterGL.SequenceAction.createSequence = function (actions) {
-	if (arguments.length === 0) {
-		throw "Needs at least one action to create a sequence!";
-	}
-	var prev = arguments[0];
-	for (var i=1; i < arguments.length; i++) {
-		prev = new chesterGL.SequenceAction(prev, arguments[i]);
-	}
-	return prev;
-};
 
 /**
  * @type {Array.<chesterGL.Action>}
@@ -412,20 +404,14 @@ chesterGL.SequenceAction.prototype.actions = null;
 chesterGL.SequenceAction.prototype.currentAction = 0;
 
 /**
- * where to start executing the next action
- * @type {number}
- * @ignore
- */
-chesterGL.SequenceAction.prototype.splitTime = 0.0;
-
-/**
  * just mark the split time (the duration of the first action)
  * @ignore
  */
 chesterGL.SequenceAction.prototype.begin = function () {
-	chesterGL.Action.prototype.begin.call(this);
-	this.splitTime = this.actions[0].totalTime;
-	this.block.runAction(this.actions[0]);
+	goog.base(this, "begin");
+	this.nextStop = this.actions[0].totalTime;
+	this.actions[0].block = this.block;
+	this.actions[0].begin();
 	// console.log("[seq begin] setting split time: " + this.splitTime);
 };
 
@@ -433,12 +419,12 @@ chesterGL.SequenceAction.prototype.begin = function () {
  * resets the sequence action (will also reset and unschedule its internal actions)
  */
 chesterGL.SequenceAction.prototype.reset = function () {
-	chesterGL.Action.prototype.reset.call(this);
+	goog.base(this, "reset");
 	this.currentAction = 0;
-	this.actions[0].reset();
-	this.actions[1].reset();
-	chesterGL.ActionManager.unscheduleAction(this.actions[0].actionId);
-	chesterGL.ActionManager.unscheduleAction(this.actions[1].actionId);
+	this.nextStop = this.actions[0].totalTime;
+	for (var i=0; i < this.actions.length; i++) {
+		this.actions[i].reset();
+	}
 };
 
 /**
@@ -446,12 +432,40 @@ chesterGL.SequenceAction.prototype.reset = function () {
  * @ignore
  */
 chesterGL.SequenceAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	if (this.currentAction === 0 && this.elapsed >= this.splitTime) {
-		// console.log("switching actions (" + this.actions[1].totalTime + "," + this.actions[1].elapsed + ")");
-		this.actions[0].stop();
-		this.currentAction = 1;
-		this.block.runAction(this.actions[1]);
+	goog.base(this, "update", delta);
+	var current = this.actions[this.currentAction];
+	current.update(delta);
+	if (this.elapsed >= this.nextStop) {
+		if (!current.finished) {
+			// force the action to finish
+			current.update(1000);
+		}
+		/**
+		 * execute the next action:
+		 * 1) increment currentAction
+		 * 2) while there are any actions left, pick the next
+		 * 3) init the new current action (set block & begin)
+		 * 4) increment the nextStop pointer
+		 * 5) if the current action is not instant (totalTime != 0), then break the loop
+		 * 6) execute the current action (update(1), any delta will do since totalTime == 0)
+		 * 6.5) if the currentAction == 0 then break: the update might've reset the sequence
+		 * 7) repeat the loop (2)
+		 */
+		this.currentAction++;
+		while (this.currentAction < this.actions.length) {
+			current = this.actions[this.currentAction];
+			current.block = this.block;
+			current.begin();
+			this.nextStop += current.totalTime;
+			if (current.totalTime > 0) {
+				break;
+			}
+			current.update(1);
+			if (this.currentAction === 0) {
+				break;
+			}
+			this.currentAction += 1;
+		}
 	}
 };
 
@@ -496,6 +510,7 @@ chesterGL.RepeatAction.prototype.action = null;
 chesterGL.RepeatAction.prototype.begin = function () {
 	chesterGL.Action.prototype.begin.call(this);
 	this.action.block = this.block;
+	this.action.begin();
 };
 
 /**
@@ -505,8 +520,7 @@ chesterGL.RepeatAction.prototype.begin = function () {
 chesterGL.RepeatAction.prototype.update = function (delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
 	this.action.update(delta);
-	if (this.finished) {
-		// console.log("repeat finished");
+	if (this.finished && this.action.finished) {
 		if (this.maxTimes < 0 || this.times < this.maxTimes) {
 			this.times++;
 			this.reset();
@@ -709,15 +723,10 @@ goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
 goog.exportSymbol('chesterGL.WiggleAction', chesterGL.WiggleAction);
 goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
-goog.exportProperty(chesterGL.SequenceAction, 'createSequence', chesterGL.SequenceAction.createSequence);
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
 goog.exportProperty(chesterGL.Action.prototype, 'pause', chesterGL.Action.prototype.pause);
 goog.exportProperty(chesterGL.Action.prototype, 'resume', chesterGL.Action.prototype.resume);
 goog.exportProperty(chesterGL.Action.prototype, 'setTotalTime', chesterGL.Action.prototype.setTotalTime);
-goog.exportProperty(chesterGL.MoveAction.prototype, 'stop', chesterGL.MoveAction.prototype.stop);
-goog.exportProperty(chesterGL.ScaleAction.prototype, 'stop', chesterGL.ScaleAction.prototype.stop);
-goog.exportProperty(chesterGL.SequenceAction.prototype, 'stop', chesterGL.SequenceAction.prototype.stop);
-goog.exportProperty(chesterGL.RepeatAction.prototype, 'stop', chesterGL.RepeatAction.prototype.stop);
 goog.exportProperty(chesterGL.MoveAction.prototype, 'reverse', chesterGL.MoveAction.prototype.reverse);
 goog.exportProperty(chesterGL.ScaleAction.prototype, 'reverse', chesterGL.ScaleAction.prototype.reverse);
