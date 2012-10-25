@@ -422,8 +422,10 @@ chesterGL.SequenceAction.prototype.reset = function () {
 	goog.base(this, "reset");
 	this.currentAction = 0;
 	this.nextStop = this.actions[0].totalTime;
+	this.totalTime = 0;
 	for (var i=0; i < this.actions.length; i++) {
 		this.actions[i].reset();
+		this.totalTime += this.actions[i].totalTime;
 	}
 };
 
@@ -725,6 +727,8 @@ goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionM
 goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
+goog.exportProperty(chesterGL.Action.prototype, 'reset', chesterGL.Action.prototype.reset);
+goog.exportProperty(chesterGL.Action.prototype, 'begin', chesterGL.Action.prototype.begin);
 goog.exportProperty(chesterGL.Action.prototype, 'pause', chesterGL.Action.prototype.pause);
 goog.exportProperty(chesterGL.Action.prototype, 'resume', chesterGL.Action.prototype.resume);
 goog.exportProperty(chesterGL.Action.prototype, 'setTotalTime', chesterGL.Action.prototype.setTotalTime);
