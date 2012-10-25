@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
+	<script type="text/javascript" src="chester.js"></script>
+	<!-- audio!! -->
+    <script type="text/javascript">
+
+$(document).ready(function () {
+	setupGame();
+	function setupGame() {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
+
+		chesterGL.loadAsset("texture", "images/test.png");
+		chesterGL.loadAsset("texture", "images/axis.png");
+		chesterGL.BMFontLabelBlock.loadFont("fonts/arial");
+		chesterGL.assetsLoaded("texture", function () {
+			// $("#loading").html("Test Single Block");
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
+			sceneBlock.title = "Test::Single Block";
+			chesterGL.setRunningScene(sceneBlock);
+
+			// create a block
+			var someBlock = new chesterGL.Block();
+			someBlock.setTexture("images/test.png")
+			someBlock.setRotation(-45 * oneDeg);
+			someBlock.setPosition([size.width/2, size.height/2, 0]);
+
+			var test1 = new chesterGL.Block("images/axis.png");
+			test1.setPosition(60, 0, 0);
+			var test2 = new chesterGL.Block("images/axis.png");
+			test2.setPosition(0, -60, 0);
+			test2.setRotation(oneDeg * 66);
+			test2.setScale(1.5);
+			test1.addChild(test2);
+			test1.setAnchorPoint(0, 0);
+
+			someBlock.addChild(test1);
+
+			var pt = someBlock.getAbsolutePosition([size.width/2, size.height/2, 0]);
+			console.log("point: " + pt[0] + "," + pt[1]);
+
+			sceneBlock.addChild(someBlock);
+			var label = new chesterGL.BMFontLabelBlock("fonts/arial", "(0,0)"),
+				fixedLabel = new chesterGL.BMFontLabelBlock("fonts/arial",
+					"click to test position\n" +
+					"positions are relative to the bigger x/y axis sprite\n" +
+					"originally it's 80x80, but scaled 1.5 times\n" +
+					"also, that block is the grand child of the one in the center.\n" +
+					"The center of the axis should be 40,40.\n" +
+					"Check the console for coords relative to the other axis.");
+			label.setAnchorPoint(0, 0);
+			label.setPosition(10.1, 10, 0);
+			fixedLabel.setAnchorPoint(0, 0);
+			fixedLabel.setPosition(10.1, 40, 0);
+			sceneBlock.addChild(label, fixedLabel);
+
+			chesterGL.addMouseHandler(function (pt, eventType) {
+				if (eventType == chesterGL.mouseEvents.DOWN) {
+					var dest = [];
+					test2.toLocal(pt, dest);
+					label.setText("(" + dest[0].toFixed(3) + "," + dest[1].toFixed(3) + ")");
+					test1.toLocal(pt, dest);
+					console.log("(" + dest[0].toFixed(3) + "," + dest[1].toFixed(3) + ")");
+				}
+			});
+
+			// add some action
+			// var dz = 10;
+			someBlock.setUpdate(function (delta) {
+				this.setRotation(this.rotation + oneDeg * 0.2);
+				// this.setPosition([this.position[0], this.position[1], this.position[2] + dz]);
+				// if (this.position[2] >=  200) { dz = -dz; }
+				// if (this.position[2] <= -200) { dz = -dz; }
+			});
+
+			chesterGL.run();
+		});
+	} // setupGame()
+});
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+		</div>
+	</div>
+</body>
+</html>

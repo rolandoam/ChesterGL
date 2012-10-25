@@ -541,6 +541,25 @@ chesterGL.Block.prototype.getAbsolutePosition = function () {
 	return pos;
 };
 
+/** @ignore */
+chesterGL.Block.__tmpInv = [];
+
+/**
+ * converts a global point to local coordinates
+ * @param {Float32Array|Array} pt the point in local coordinates, if no dest provided, then pt will
+ * be modified
+ * @param {Float32Array|Array=} dest optional destination array
+ * @returns {Float32Array|Array}
+ */
+chesterGL.Block.prototype.toLocal = function (pt, dest) {
+	dest = dest || pt;
+	goog.vec.Mat4.invert(this.mvMatrix, chesterGL.Block.__tmpInv);
+	goog.vec.Mat4.multVec3(chesterGL.Block.__tmpInv, pt, dest);
+	dest[0] += this.contentSize.width * this.anchorPoint.x;
+	dest[1] += this.contentSize.height * this.anchorPoint.y;
+	return dest;
+};
+
 /**
  * returns the concatenated matrix from all the block's parents
  * @returns {Float32Array|Array}
@@ -929,6 +948,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'toLocal', chesterGL.Block.prototype.toLocal);
 goog.exportProperty(chesterGL.Block.prototype, 'setAnchorPoint', chesterGL.Block.prototype.setAnchorPoint);
 goog.exportProperty(chesterGL.Block.prototype, 'getAnchorPoint', chesterGL.Block.prototype.getAnchorPoint);
 goog.exportProperty(chesterGL.Block.prototype, 'getAbsolutePosition', chesterGL.Block.prototype.getAbsolutePosition);
