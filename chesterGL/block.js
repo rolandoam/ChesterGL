@@ -702,6 +702,18 @@ chesterGL.Block.prototype.removeChild = function (block) {
 	}
 };
 
+chesterGL.Block.prototype.removeAllChildren = function Block_removeAllChildren() {
+	if (this._inVisit) {
+		this._scheduledRemove.push("all");
+	} else {
+		var i = 0;
+		for (i=0; i < this.children.length; i++) {
+			this.children[i].parent = null;
+		}
+		this.children.length = 0;
+	}
+};
+
 // used as a replacement for tl, tr, bl, br
 chesterGL.Block.__tmpBuffers = [
 	new Float32Array(3),
@@ -848,7 +860,11 @@ chesterGL.Block.prototype.visit = function () {
 		this.addChild(b);
 	}
 	while ((b = this._scheduledRemove.shift())) {
-		this.removeChild(b);
+		if (b === "all") {
+			this.removeAllChildren();
+		} else {
+			this.removeChild(b);
+		}
 	}
 };
 
@@ -945,6 +961,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'onExitScene', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);
 goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
+goog.exportProperty(chesterGL.Block.prototype, 'removeAllChildren', chesterGL.Block.prototype.removeAllChildren);
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
