@@ -43,7 +43,7 @@ goog.require("chesterGL.BlockGroup");
  * @extends {chesterGL.BlockGroup}
  */
 chesterGL.BMFontLabelBlock = function (name, text) {
-	goog.base(this, name + ".png", Math.max(50, text.length));
+	goog.base(this, name + ".png", Math.max(100, text.length));
 	// this._sharedTexture = name + ".png";
 	this.setColor([0, 0, 0, 0]);
 	var fntFile = chesterGL.getAsset('txt', name + ".fnt"),
