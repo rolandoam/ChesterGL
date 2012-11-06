@@ -290,3 +290,5 @@ chesterGL.BlockGroup.prototype.render = function (totalChildren) {
 goog.exportSymbol('chesterGL.BlockGroup', chesterGL.BlockGroup);
 // instance methods
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'createBlock', chesterGL.BlockGroup.prototype.createBlock);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'addChild', chesterGL.BlockGroup.prototype.addChild);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeChild', chesterGL.BlockGroup.prototype.removeChild);
