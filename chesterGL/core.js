@@ -200,7 +200,7 @@ chesterGL.basePath = "";
 /**
  * This is the WebGL context
  *
- * @type {?WebGLRenderingContext}
+ * @type {?WebGLRenderingContext|CanvasRenderingContext2D}
  * @ignore
  */
 chesterGL.gl = null;
@@ -992,12 +992,10 @@ chesterGL.setRunningScene = function (block) {
  * @ignore
  */
 chesterGL.drawScene = function () {
-	var gl;
+	var gl = chesterGL.gl;
 	if (chesterGL.webglMode) {
-		gl = chesterGL.gl;
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	} else {
-		gl = chesterGL.offContext;
 		gl.setTransform(1, 0, 0, 1, 0, 0);
 		gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 	}
@@ -1010,13 +1008,6 @@ chesterGL.drawScene = function () {
 		}
 	}
 
-	if (!chesterGL.webglMode) {
-		// copy back the off context (if we use one)
-		if (chesterGL.usesOffscreenBuffer) {
-			gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
-			gl.drawImage(chesterGL.offCanvas, 0, 0);
-		}
-	}
 	// for actions and other stuff
 	var current = Date.now(); // milliseconds
 	chesterGL.delta = current - chesterGL.lastTime;
