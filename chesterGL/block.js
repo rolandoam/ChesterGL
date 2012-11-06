@@ -398,7 +398,13 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 	} else {
 		goog.vec.Vec4.setFromArray(this.frame, newFrame);
 	}
-	this.setContentSize(newFrame[2], newFrame[3]);
+	// if on highDPI mode, and the texture is a highDPI texture, then set the content size to the
+	// "real" content size.
+	if (chesterGL.highDPI && this.texture && chesterGL.assets['texture'][this.texture].highDPI) {
+		this.setContentSize(newFrame[2] / chesterGL.devicePixelRatio, newFrame[3] / chesterGL.devicePixelRatio);
+	} else {
+		this.setContentSize(newFrame[2], newFrame[3]);
+	}
 	this.isFrameDirty = true;
 };
 
@@ -596,9 +602,6 @@ chesterGL.Block.prototype.setTexture = function (texturePath) {
 	var block = this;
 	chesterGL.loadAsset("texture", texturePath, null, function (t) {
 		// set the default frame for all our blocks (if it's not set)
-		if (!block.contentSize) {
-			block.setContentSize(t.width, t.height);
-		}
 		if (!block.frame) {
 			block.setFrame([0, 0, t.width, t.height]);
 		}

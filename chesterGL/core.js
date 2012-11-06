@@ -38,7 +38,8 @@ HTMLCanvasElement._canvas_tmp_mouse = new goog.math.Vec2(0, 0);
  * @return {goog.math.Vec2}
  */
 HTMLCanvasElement.prototype.relativePosition = function (evt) {
-	var pt = HTMLCanvasElement._canvas_tmp_mouse;
+	var pt = HTMLCanvasElement._canvas_tmp_mouse,
+		height = (chesterGL.highDPI ? this.height / chesterGL.devicePixelRatio : this.height);
 	pt.x = 0; pt.y = 0;
 	if (typeof this['__offset'] === "undefined") {
 		this['__offset'] = $(this).offset();
@@ -46,10 +47,10 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
 	if (evt.changedTouches) {
 		var t = evt.changedTouches[0];
 		pt.x = (t.pageX - this['__offset'].left);
-		pt.y = (this.height - (t.pageY - this['__offset'].top));
+		pt.y = (height - (t.pageY - this['__offset'].top));
 	} else {
 		pt.x = (evt.pageX - this['__offset'].left);
-		pt.y = (this.height - (evt.pageY - this['__offset'].top));
+		pt.y = (height - (evt.pageY - this['__offset'].top));
 	}
 
 	return pt;
@@ -244,6 +245,12 @@ chesterGL.canvas = null;
 chesterGL.debugSprite = false;
 
 /**
+ * Whether or not we're running on a highDPI device
+ * @type {boolean}
+ */
+chesterGL.highDPI = false;
+
+/**
  * @type {Object.<string,Object>}
  * @ignore
  */
@@ -394,7 +401,26 @@ chesterGL.setup = function (canvasId) {
  * @param {Element} canvas
  */
 chesterGL.initGraphics = function (canvas) {
+	var desiredWidth = 0,
+		desiredHeight = 0;
 	try {
+		// test for high-dpi device
+		if (window.devicePixelRatio && window.devicePixelRatio > 1) {
+			var devicePixelRatio = window.devicePixelRatio;
+			console.log("using HighDPI resolution (devicePixelRatio: " + devicePixelRatio + ")");
+			desiredWidth = canvas.width;
+			desiredHeight = canvas.height;
+			canvas.style.width = canvas.width + "px";
+			canvas.style.height = canvas.height + "px";
+			canvas.width = canvas.clientWidth * devicePixelRatio;
+			canvas.height = canvas.clientHeight * devicePixelRatio;
+			chesterGL.highDPI = true;
+			chesterGL.devicePixelRatio = window.devicePixelRatio;
+		} else {
+			desiredWidth = canvas.width;
+			desiredHeight = canvas.height;
+		}
+
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
 			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false, preserveDrawingBuffer: true});
@@ -409,23 +435,15 @@ chesterGL.initGraphics = function (canvas) {
 	if (!chesterGL.gl) {
 		// fallback to canvas API (uses an offscreen buffer)
 		chesterGL.gl = canvas.getContext("2d");
-		if (chesterGL.usesOffscreenBuffer) {
-			chesterGL.offCanvas = document.createElement('canvas');
-			chesterGL.offCanvas.width = canvas.width;
-			chesterGL.offCanvas.height = canvas.height;
-			chesterGL.offContext = chesterGL.offCanvas.getContext("2d");
-			chesterGL.offContext.viewportWidth = canvas.width;
-			chesterGL.offContext.viewportHeight = canvas.height;
-		} else {
-			chesterGL.offContext = chesterGL.gl;
-		}
-		if (!chesterGL.gl || !chesterGL.offContext) {
+		if (!chesterGL.gl) {
 			throw "Error initializing graphic context!";
 		}
 		chesterGL.webglMode = chesterGL.settings['webglMode'] = false;
 	}
+
 	// first resize of the canvas
-	chesterGL.canvasResized();
+	chesterGL.gl.viewportWidth = desiredWidth;
+	chesterGL.gl.viewportHeight = desiredHeight;
 
 	// install touch handler
 	chesterGL.installMouseHandlers();
@@ -613,7 +631,8 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 		params = {
 			dataType: url.dataType,
 			url: url.url,
-			name: url.name || url.url
+			name: url.name || url.url,
+			forceNonRetina: url.forceNonRetina || false
 		};
 	} else {
 		params = {
@@ -624,6 +643,17 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 
 	if (!chesterGL.assets[type]) {
 		chesterGL.assets[type] = {};
+	}
+
+	// test for explicit @Nx request, if no such request, then add the @Nx prefix *only* if on
+	// highDPI mode
+	var md,
+		re = new RegExp("@" + chesterGL.devicePixelRatio + "x\\..+$");
+	if (chesterGL.highDPI && !params.forceNonRetina && (md = params.url.match(re)) === null) {
+		md = params.url.match(/(\..+$)/);
+		if (md && chesterGL.highDPI) {
+			params.url = params.url.replace(/(\..+$)/, "@" + chesterGL.devicePixelRatio + "x$1");
+		}
 	}
 
 	var assets = chesterGL.assets[type],
@@ -803,27 +833,41 @@ chesterGL.defaultTextureHandler = function (params, img, type) {
 chesterGL.defaultTextureLoader = function (type, params) {
 	var img = new Image(),
 		path = params.url,
-		name = params.name;
+		name = params.name,
+		re = new RegExp("@" + chesterGL.devicePixelRatio + "x\\..+$");
+
 	img.src = "";
 	img.addEventListener("load", function () {
 		var texture = chesterGL.assets['texture'][name];
 		if (chesterGL.assetsHandlers[type](params, img)) {
 			// call all listeners
-			texture.status = 'loaded';
+			texture.status = "loaded";
+			texture.highDPI = path.match(re) && chesterGL.highDPI;
 			var l;
 			while ((l = texture.listeners.shift())) { l(texture.data); }
 			// test for assets loaded
 			chesterGL.assetsLoaded(type);
-			chesterGL.assetsLoaded('all');
+			chesterGL.assetsLoaded("all");
 		} else {
 			// requeue
-			texture.status = 'try';
+			texture.status = "try";
 			chesterGL.loadAsset(type, params);
 		}
 	}, false);
+	img.addEventListener("error", function (e) {
+		// if we're a highDPI image, and we failed, load again without @Nx
+		if (e.type === "error" && chesterGL.highDPI && path.match(re)) {
+			var texture = chesterGL.assets["texture"][name];
+			params.url = path.replace("@" + chesterGL.devicePixelRatio + "x", "");
+			params.forceNonRetina = true;
+			// requeue
+			texture.status = "try";
+			chesterGL.loadAsset("texture", params);
+		}
+	}, true);
 	// append the basePath if it's not an absolute url or a data:image url
 	if (path.match(/^http(s)?:/)) {
-		img.crossOrigin = 'anonymous';
+		img.crossOrigin = "anonymous";
 		img.src = path;
 	} else if (path.match(/^data:/)) {
 		img.src = path;
@@ -840,7 +884,9 @@ chesterGL.defaultTextureLoader = function (type, params) {
 chesterGL.defaultAssetLoader = function (type, params) {
 	var path = params.url,
 		realPath = path,
-		name = params.name;
+		name = params.name,
+		re = new RegExp("@" + chesterGL.devicePixelRatio + "x\\..+$");
+
 	if (!path.match(/^http(s)?:\/\//)) {
 		realPath = chesterGL.basePath + path;
 	}
@@ -848,8 +894,8 @@ chesterGL.defaultAssetLoader = function (type, params) {
 	req.open("GET", realPath);
 	req.withCredentials = true;
 	req.onreadystatechange = function () {
+		var asset = chesterGL.assets[type][name];
 		if (req.readyState == 4 && req.status == 200) {
-			var asset = chesterGL.assets[type][name];
 			var handler = chesterGL.assetsHandlers[type] || chesterGL.assetsHandlers['default'];
 			if (handler(params, req.response, type)) {
 				asset.status = 'loaded';
@@ -865,7 +911,15 @@ chesterGL.defaultAssetLoader = function (type, params) {
 				chesterGL.loadAsset(type, params);
 			}
 		} else if (req.readyState == 4) {
-			console.log("Error loading asset " + path);
+			if (req.status == 404 && chesterGL.highDPI && path.match(re)) {
+				params.url = path.replace("@" + chesterGL.devicePixelRatio + "x", "");
+				params.forceNonRetina = true;
+				// requeue
+				asset.status = "try";
+				chesterGL.loadAsset(type, params);
+			} else {
+				console.log("Error loading asset " + path);
+			}
 		}
 	};
 	req.send();
@@ -893,7 +947,7 @@ chesterGL.setupPerspective = function () {
 
 	var width = gl.viewportWidth;
 	var height = gl.viewportHeight;
-	gl.viewport(0, 0, width, height);
+	gl.viewport(0, 0, chesterGL.canvas.width, chesterGL.canvas.height);
 
 	chesterGL.pMatrix = goog.vec.Mat4.createFloat32();
 
