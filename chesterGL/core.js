@@ -97,10 +97,13 @@ HTMLCanvasElement.prototype.relativePosition = function (evt) {
 		} else if (typeof oRequestAnimationFrame !== 'undefined') {
 			w.requestAnimationFrame = w.oRequestAnimationFrame;
 		} else {
-			throw "No valid RequestAnimationFrame function available";
+			console.log("using setTimeout as requestAnimationFrame");
+			w.requestAnimationFrame = function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+			};
 		}
 	}
-})(this);
+})(window);
 
 /**
  * @define {boolean}
