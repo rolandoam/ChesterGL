@@ -55,10 +55,6 @@ For the canvas version, the is a bit more slow, but pretty decent even on iOS de
 * iPhone 4, iOS 5.1 (test_ios.html, with 45 sprites on screen): 19.62ms per frame ~> 51 FPS
 * Chrome 19 (Mac build) running test_perf.html: 17ms per frame, 10000 sprites ~> 58 FPS (YMMV)
 
-## Known problems
-
-<strike>There's a weird problem that makes textures not load the first time, so you might need to reload the page. On webgl I fixed this by reloading the asset if the texture2d binding failed, in canvas mode you will need to reload the page</strike>. This was fixed by the asset loader.
-
 ## Known problems in canvas mode
 
 * You will not get a z-position, for really obvious reasons.
@@ -79,10 +75,11 @@ That's my dog's name. And I would like this library to have the same goals that 
 
 ### 1.0
 
-* Finish the WebGL shell for mobile devices (iOS and Android)
+* Finish the [WebGL shell](https://github.com/funkaster/webglshim) for mobile devices (iOS and Android)
 * Make it a real game library:
  * Add new interesting effects (light?)
  * Add more actions
+ * Add more examples (including input)
 * Add your ideas here
 
 ### 0.2
