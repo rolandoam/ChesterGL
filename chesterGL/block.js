@@ -705,6 +705,15 @@ chesterGL.Block.prototype.removeChild = function (block) {
 	}
 };
 
+/**
+ * detach block from parent
+ */
+chesterGL.Block.prototype.detach = function Block_detach() {
+	if (this.parent) {
+		this.parent.removeChild(this);
+	}
+};
+
 chesterGL.Block.prototype.removeAllChildren = function Block_removeAllChildren() {
 	if (this._inVisit) {
 		this._scheduledRemove.push("all");
@@ -965,6 +974,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.proto
 goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);
 goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
 goog.exportProperty(chesterGL.Block.prototype, 'removeAllChildren', chesterGL.Block.prototype.removeAllChildren);
+goog.exportProperty(chesterGL.Block.prototype, 'detach', chesterGL.Block.prototype.detach);
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
