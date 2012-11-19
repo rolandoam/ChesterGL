@@ -50,14 +50,14 @@ $(document).ready(function () {
 			console.log("point: " + pt[0] + "," + pt[1]);
 
 			sceneBlock.addChild(someBlock);
-			var label = new chesterGL.BMFontLabelBlock("fonts/arial", "(0,0)"),
-				fixedLabel = new chesterGL.BMFontLabelBlock("fonts/arial",
+			var label = new chesterGL.BMFontLabelBlock("(0,0)", "fonts/arial"),
+				fixedLabel = new chesterGL.BMFontLabelBlock(
 					"click to test position\n" +
 					"positions are relative to the bigger x/y axis sprite\n" +
 					"originally it's 80x80, but scaled 1.5 times\n" +
 					"also, that block is the grand child of the one in the center.\n" +
 					"The center of the axis should be 40,40.\n" +
-					"Check the console for coords relative to the other axis.");
+					"Check the console for coords relative to the other axis.", "fonts/arial");
 			label.setAnchorPoint(0, 0);
 			label.setPosition(10.1, 10, 0);
 			fixedLabel.setAnchorPoint(0, 0);

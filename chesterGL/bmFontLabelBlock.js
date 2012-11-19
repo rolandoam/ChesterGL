@@ -37,12 +37,12 @@ goog.require("chesterGL.BlockGroup");
  * http://www.angelcode.com/products/bmfont/
  *
  * @constructor
+ * @param {string} text the initial text for the label
  * @param {string} name This is the name of the fnt file. There should be an existing .fnt and .png
  * file for the texture.
- * @param {string} text the initial text for the label
  * @extends {chesterGL.BlockGroup}
  */
-chesterGL.BMFontLabelBlock = function (name, text) {
+chesterGL.BMFontLabelBlock = function (text, name) {
 	goog.base(this, name + ".png", Math.max(100, text.length));
 	// this._sharedTexture = name + ".png";
 	this.setColor([0, 0, 0, 0]);
@@ -118,7 +118,7 @@ chesterGL.BMFontLabelBlock.prototype.setAnchorPoint = function BMFontLabelBlock_
 chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlock_calculateTextWidth(text) {
 	var maxWidth = 0,
 		lineWidth = 0,
-		lines = 0,
+		lines = 1,
 		i, last = 0;
 	for (i=0; i < text.length; i++) {
 		var ch = text.charCodeAt(i);
