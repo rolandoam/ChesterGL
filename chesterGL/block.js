@@ -414,7 +414,7 @@ chesterGL.Block.prototype.setFrame = function (newFrame, isHighDPI) {
 /**
  * gets the frame for this block
  *
- * @returns {Float32Array}
+ * @return {Float32Array}
  */
 chesterGL.Block.prototype.getFrame = function () {
 	return this.frame;
@@ -457,7 +457,7 @@ chesterGL.Block.prototype.setScale = function (newScaleX, newScaleY) {
 /**
  * gets the scale of the block
  *
- * @returns {number} the scaleX property
+ * @return {number} the scaleX property
  */
 chesterGL.Block.prototype.getScale = function () {
 	return this.scaleX;
@@ -480,7 +480,7 @@ chesterGL.Block.prototype.setColor = function (color) {
 
 /**
  * gets the color of the block
- * @returns {Float32Array} an array with the color [r, g, b, a]
+ * @return {Float32Array} an array with the color [r, g, b, a]
  */
 chesterGL.Block.prototype.getColor = function () {
 	return this.color;
@@ -521,7 +521,7 @@ chesterGL.Block.prototype.setAnchorPoint = function(x, y) {
 };
 
 /**
- * @returns {goog.math.Vec2}
+ * @return {goog.math.Vec2}
  */
 chesterGL.Block.prototype.getAnchorPoint = function() {
 	return this.anchorPoint;
@@ -529,7 +529,7 @@ chesterGL.Block.prototype.getAnchorPoint = function() {
 
 /**
  * gets the position of the block (x, y, z)
- * @returns {Float32Array}
+ * @return {Float32Array}
  */
 chesterGL.Block.prototype.getPosition = function () {
 	return this.position;
@@ -538,7 +538,7 @@ chesterGL.Block.prototype.getPosition = function () {
 /**
  * returns the absolute position of the block, basically the position of the block applying the
  * transformations from all its parents.
- * @returns {Float32Array|Array}
+ * @return {Float32Array|Array}
  */
 chesterGL.Block.prototype.getAbsolutePosition = function () {
 	var p = this.parent,
@@ -558,7 +558,7 @@ chesterGL.Block.__tmpInv = [];
  * @param {Float32Array|Array} pt the point in local coordinates, if no dest provided, then pt will
  * be modified
  * @param {Float32Array|Array=} dest optional destination array
- * @returns {Float32Array|Array}
+ * @return {Float32Array|Array}
  */
 chesterGL.Block.prototype.toLocal = function (pt, dest) {
 	dest = dest || pt;
@@ -571,7 +571,7 @@ chesterGL.Block.prototype.toLocal = function (pt, dest) {
 
 /**
  * returns the concatenated matrix from all the block's parents
- * @returns {Float32Array|Array}
+ * @return {Float32Array|Array}
  */
 chesterGL.Block.prototype.getAbsoluteTransform = function () {
 	var m = goog.vec.Mat4.createFloat32Identity(),
@@ -585,7 +585,7 @@ chesterGL.Block.prototype.getAbsoluteTransform = function () {
 
 /**
  * returns the current bounding box as an Array [bottom, left, width, height]
- * @returns {Array}
+ * @return {Array}
  */
 chesterGL.Block.prototype.getBoundingBox = function () {
 	var p = this.position,
@@ -612,7 +612,7 @@ chesterGL.Block.prototype.setTexture = function (texturePath, frame) {
 
 /**
  * gets the texture of the block
- * @returns {string|null}
+ * @return {string|null}
  */
 chesterGL.Block.prototype.getTexture = function () {
 	return this.texture;
@@ -629,7 +629,7 @@ chesterGL.Block.prototype.setRotation = function (angle) {
 
 /**
  * gets the rotation of the block
- * @returns {number} then current rotation angle in radians, CW
+ * @return {number} then current rotation angle in radians, CW
  */
 chesterGL.Block.prototype.getRotation = function () {
 	return this.rotation;
@@ -653,7 +653,7 @@ chesterGL.Block.prototype.setVisible = function (visible) {
 
 /**
  * returns whether or not the block is visible
- * @returns {boolean}
+ * @return {boolean}
  */
 chesterGL.Block.prototype.isVisible = function () {
 	return this.visible;

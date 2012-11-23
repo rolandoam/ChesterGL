@@ -154,7 +154,7 @@ chesterGL.LabelBlock.prototype.drawText = function () {
  * Returns an array that can be passed to setFrame().
  * @ignore
  * @param {string=} text optional text to set
- * @returns {Array}
+ * @return {Array}
  */
 chesterGL.LabelBlock.prototype.resetCanvas = function (text) {
 	var cx = this.context;

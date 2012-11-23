@@ -1172,7 +1172,7 @@ chesterGL.togglePause = function () {
 };
 
 /**
- * @returns {boolean}
+ * @return {boolean}
  */
 chesterGL.isPaused = function () {
 	return chesterGL._paused;
@@ -1236,7 +1236,7 @@ chesterGL.randomVec4 = function (original, variance) {
 };
 
 /**
- * @returns {number} a random number between -1 and 1
+ * @return {number} a random number between -1 and 1
  */
 chesterGL.randMin1Plus1 = function () {
 	return Math.random() * 2 - 1;
@@ -1244,7 +1244,7 @@ chesterGL.randMin1Plus1 = function () {
 
 /**
  * returns the current associated gl (or canvas 2d) context
- * @returns {Object}
+ * @return {Object}
  */
 chesterGL.getCurrentContext = function () {
 	return chesterGL.gl;

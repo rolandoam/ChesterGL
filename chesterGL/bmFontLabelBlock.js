@@ -112,7 +112,7 @@ chesterGL.BMFontLabelBlock.prototype.setAnchorPoint = function BMFontLabelBlock_
 /**
  * Calculates the size for the given text, in width and lines
  * @param {string} text
- * @returns {Object} the size of the text {width: w, lines: l}
+ * @return {Object} the size of the text {width: w, lines: l}
  * @ignore
  */
 chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlock_calculateTextWidth(text) {

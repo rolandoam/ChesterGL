@@ -79,7 +79,7 @@ goog.inherits(chesterGL.TMXBlock, chesterGL.Block);
  * @ignore
  */
 chesterGL.TMXBlock.prototype.render = function () {};
-	
+
 /**
  * The size (in pixels) of the tiles (in the texture)
  *
@@ -147,7 +147,7 @@ chesterGL.TMXBlock.handleLoadTMX = function (params, data) {
  * finds the right texture for the given gid
  * @param {Array.<Object>} tilesets
  * @param {number} gid
- * @returns {Object}
+ * @return {Object}
  */
 chesterGL.TMXBlock.findTilesetForGid = function (tilesets, gid) {
 	var tex = tilesets[0];
@@ -169,7 +169,7 @@ chesterGL.TMXBlock.findTilesetForGid = function (tilesets, gid) {
 chesterGL.TMXBlock.loadTMX = function (path) {
 	chesterGL.loadAsset('tmx', {url:path, dataType: 'xml'}, null, function (data) {
 		var tmx = {};
-		
+
 		var map = $(data).find("map");
 		var orientation = map.attr("orientation");
 		tmx['tilesets'] = [];
@@ -274,7 +274,7 @@ chesterGL.TMXBlock.loadTMX = function (path) {
 		chesterGL.TMXBlock.maps[path] = tmx;
 	});
 };
-	
+
 // just register a dummy handler
 chesterGL.registerAssetHandler('tmx', chesterGL.TMXBlock.handleLoadTMX);
 

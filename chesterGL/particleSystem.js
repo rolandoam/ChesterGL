@@ -329,7 +329,7 @@ chesterGL.ParticleSystem.prototype.resetSystem = function () {
 };
 
 /**
- * @returns {Object} The newly created particle
+ * @return {Object} The newly created particle
  * @ignore
  */
 chesterGL.ParticleSystem.prototype.createParticle = function () {
@@ -441,7 +441,7 @@ chesterGL.ParticleSystem.prototype.update = function (delta) {
 			var radialAcc = [0, 0, 0],
 				tangAcc = [0, 0, 0],
 				pos = p.position;
-			
+
 			// radial acceleration
 			if (pos[0] !== 0 || pos[1] !== 0)
 				goog.vec.Vec3.normalize(pos, radialAcc);

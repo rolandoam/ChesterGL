@@ -708,7 +708,7 @@ chesterGL.ActionManager.tick = function (delta) {
 /**
  * schedules an action to be run over this block
  * @param {chesterGL.Action} action
- * @returns {number} the action id (to unschedule it if you want)
+ * @return {number} the action id (to unschedule it if you want)
  */
 chesterGL.Block.prototype.runAction = function (action) {
 	action.block = this;
