@@ -112,7 +112,7 @@ chesterGL.BlockGroup.prototype.createBuffers = function (oldBufferData, oldIndex
 chesterGL.BlockGroup.prototype.createBlock = function (rect) {
 	var b = new chesterGL.Block(rect, chesterGL.Block.TYPE['STANDALONE'], this);
 	if (this.texture) {
-		b.setTexture(this.texture);
+		b.setTexture(this.texture, rect);
 	}
 	return b;
 };

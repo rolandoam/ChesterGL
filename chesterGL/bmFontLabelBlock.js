@@ -162,6 +162,13 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		last = 0,
 		curX = -sz.width * this.anchorPoint.x,
 		curY = -(sz.lines * lineHeight * this.anchorPoint.y);
+
+	var isHighDPI = false;
+	if (chesterGL.highDPI && chesterGL.assets['texture'][this.texture].highDPI) {
+		lineHeight = lineHeight >> 1;
+		isHighDPI = true;
+	}
+
 	// console.log("width: " + width + "; height: " + height + "; offX: " + offX);
 	text = text.split(/\n|\r/).reverse().join("\n");
 	for (i=0; i < text.length; i++) {

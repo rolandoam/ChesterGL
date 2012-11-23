@@ -381,9 +381,10 @@ chesterGL.Block.prototype.onExitScene = function () {
 /**
  * sets the frame for this block
  *
- * @param {Array|Float32Array|string} newFrame
+ * @param {goog.vec.Vec3.Vec3Like|string} newFrame
+ * @param {boolean=} isHighDPI
  */
-chesterGL.Block.prototype.setFrame = function (newFrame) {
+chesterGL.Block.prototype.setFrame = function (newFrame, isHighDPI) {
 	if (typeof newFrame === "string") {
 		// just get the cached frame
 		var tmpFrame = chesterGL.BlockFrames.getFrame(newFrame);
@@ -391,19 +392,21 @@ chesterGL.Block.prototype.setFrame = function (newFrame) {
 			throw "Invalid frame name: " + newFrame;
 		}
 		newFrame = tmpFrame.frame;
-		this.setTexture(tmpFrame.texture);
-	}
-	if (!this.frame) {
-		this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
+		// this will, in turn, call setFrame again
+		this.setTexture(tmpFrame.texture, newFrame);
 	} else {
-		goog.vec.Vec4.setFromArray(this.frame, newFrame);
-	}
-	// if on highDPI mode, and the texture is a highDPI texture, then set the content size to the
-	// "real" content size.
-	if (chesterGL.highDPI && this.texture && chesterGL.assets['texture'][this.texture].highDPI) {
-		this.setContentSize(newFrame[2] / chesterGL.devicePixelRatio, newFrame[3] / chesterGL.devicePixelRatio);
-	} else {
-		this.setContentSize(newFrame[2], newFrame[3]);
+		if (!this.frame) {
+			this.frame = goog.vec.Vec4.createFloat32FromArray(newFrame);
+		} else {
+			goog.vec.Vec4.setFromArray(this.frame, newFrame);
+		}
+		// if on highDPI mode, and the texture is a highDPI texture, then set the content size to
+		// the "real" content size.
+		if (isHighDPI) {
+			this.setContentSize(newFrame[2] / chesterGL.devicePixelRatio, newFrame[3] / chesterGL.devicePixelRatio);
+		} else {
+			this.setContentSize(newFrame[2], newFrame[3]);
+		}
 	}
 	this.isFrameDirty = true;
 };
@@ -594,18 +597,17 @@ chesterGL.Block.prototype.getBoundingBox = function () {
 /**
  * sets the texture of the block - the texture will be loaded if needed
  * @param {string} texturePath
+ * @param {goog.vec.Vec3.Vec3Like=} frame
  */
-chesterGL.Block.prototype.setTexture = function (texturePath) {
+chesterGL.Block.prototype.setTexture = function (texturePath, frame) {
 	this.texture = texturePath;
 	// force program to texture program
 	this.program = chesterGL.Block.PROGRAM['TEXTURE'];
-	var block = this;
 	chesterGL.loadAsset("texture", texturePath, null, function (t) {
 		// set the default frame for all our blocks (if it's not set)
-		if (!block.frame) {
-			block.setFrame([0, 0, t.width, t.height]);
-		}
-	});
+		var isHighDPI = chesterGL.highDPI && chesterGL.assets['texture'][this.texture].highDPI;
+		this.setFrame(frame || [0, 0, t.width, t.height], isHighDPI);
+	}.bind(this));
 };
 
 /**
