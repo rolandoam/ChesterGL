@@ -310,7 +310,7 @@ chesterGL.Block.prototype.frame = null;
 chesterGL.Block.prototype.parent = null;
 
 /**
- * the array to hold children blocks. Read only, to modify use addChild or removeChild
+ * the array to hold children blocks. Read only, to modify use append or remove
  * @type {?Array.<chesterGL.Block>}
  */
 chesterGL.Block.prototype.children = null;
@@ -341,7 +341,7 @@ chesterGL.Block.prototype._inVisit = false;
 chesterGL.Block.prototype.addDebugNode = function () {
 	if (this.contentSize.width > 0) {
 		var dbg = new chesterGL.PrimitiveBlock(1, 1);
-		this.addChild(dbg);
+		this.append(dbg);
 		dbg.isInAtlas = (this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP']) ? 1 : 0;
 		dbg.setUpdate(function () {
 			var sz = this.parent.contentSize;
@@ -660,12 +660,12 @@ chesterGL.Block.prototype.isVisible = function () {
 };
 
 /**
- * Adds a block as a child. If you add the block while in a visit of the parent block,
+ * Append a block as a child. If you add the block while in a visit of the parent block,
  * the child will be scheduled to be added after the visit.
  *
  * @param {...chesterGL.Block} blocks
  */
-chesterGL.Block.prototype.addChild = function (blocks) {
+chesterGL.Block.prototype.append = function (blocks) {
 	for (var i in arguments) {
 		var block = arguments[i];
 		if (block.parent) {
@@ -689,7 +689,7 @@ chesterGL.Block.prototype.addChild = function (blocks) {
  *
  * @param {chesterGL.Block} block
  */
-chesterGL.Block.prototype.removeChild = function (block) {
+chesterGL.Block.prototype.remove = function (block) {
 	if (!block.parent || block.parent != this) {
 		throw "not our child!";
 	}
@@ -712,11 +712,11 @@ chesterGL.Block.prototype.removeChild = function (block) {
  */
 chesterGL.Block.prototype.detach = function Block_detach() {
 	if (this.parent) {
-		this.parent.removeChild(this);
+		this.parent.remove(this);
 	}
 };
 
-chesterGL.Block.prototype.removeAllChildren = function Block_removeAllChildren() {
+chesterGL.Block.prototype.removeAll = function Block_removeAll() {
 	if (this._inVisit) {
 		this._scheduledRemove.push("all");
 	} else {
@@ -871,13 +871,13 @@ chesterGL.Block.prototype.visit = function () {
 	// do we have blocks scheduled to be removed/added?
 	var b;
 	while ((b = this._scheduledAdd.shift())) {
-		this.addChild(b);
+		this.append(b);
 	}
 	while ((b = this._scheduledRemove.shift())) {
 		if (b === "all") {
-			this.removeAllChildren();
+			this.removeAll();
 		} else {
-			this.removeChild(b);
+			this.remove(b);
 		}
 	}
 };
@@ -973,9 +973,9 @@ goog.exportProperty(chesterGL.Block.prototype, 'title', chesterGL.Block.prototyp
 goog.exportProperty(chesterGL.Block.prototype, 'onEnterScene', chesterGL.Block.prototype.onEnterScene);
 goog.exportProperty(chesterGL.Block.prototype, 'onExitScene', chesterGL.Block.prototype.onExitScene);
 goog.exportProperty(chesterGL.Block.prototype, 'children', chesterGL.Block.prototype.children);
-goog.exportProperty(chesterGL.Block.prototype, 'addChild', chesterGL.Block.prototype.addChild);
-goog.exportProperty(chesterGL.Block.prototype, 'removeChild', chesterGL.Block.prototype.removeChild);
-goog.exportProperty(chesterGL.Block.prototype, 'removeAllChildren', chesterGL.Block.prototype.removeAllChildren);
+goog.exportProperty(chesterGL.Block.prototype, 'append', chesterGL.Block.prototype.append);
+goog.exportProperty(chesterGL.Block.prototype, 'remove', chesterGL.Block.prototype.remove);
+goog.exportProperty(chesterGL.Block.prototype, 'removeAll', chesterGL.Block.prototype.removeAll);
 goog.exportProperty(chesterGL.Block.prototype, 'detach', chesterGL.Block.prototype.detach);
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);

@@ -67,14 +67,14 @@ $(document).ready(function () {
 			wiggle = new chesterGL.Block("1945-4-2.png");
 			wiggle.setPosition([50, 150, 0]);
 
-			sceneBlock.addChild(b1);
-			sceneBlock.addChild(b2);
-			sceneBlock.addChild(wiggle);
+			sceneBlock.append(b1);
+			sceneBlock.append(b2);
+			sceneBlock.append(wiggle);
 
 			// add a label so the user can know that he needs to unpause the scene
 			var label = new chesterGL.LabelBlock("Click Play to Start");
 			label.setPosition([320, 460, 0]);
-			sceneBlock.addChild(label);
+			sceneBlock.append(label);
 
 			chesterGL.togglePause();
 			chesterGL.run();

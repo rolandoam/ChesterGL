@@ -15,21 +15,21 @@ $(document).ready(function () {
 		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
-		
+
 		chesterGL.loadAsset('texture', 'images/iso-test.png');
 		chesterGL.TMXBlock.loadTMX("images/iso.tmx");
 		chesterGL.assetsLoaded("all", function () {
-			// $("#loading").html("Test Single Block");        	
+			// $("#loading").html("Test Single Block");
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
-			
+
 			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
 			sceneBlock.title = "Test::TMX iso";
 			chesterGL.setRunningScene(sceneBlock);
-			
+
 			var tmx = new chesterGL.TMXBlock("images/iso.tmx");
-			sceneBlock.addChild(tmx);
-			
+			sceneBlock.append(tmx);
+
 			var stPoint = null;
 			chesterGL.addMouseHandler(function (pt, type) {
 				if (type == chesterGL.mouseEvents.DOWN) {
@@ -42,7 +42,7 @@ $(document).ready(function () {
 					stPoint = null;
 				}
 			});
-			
+
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();

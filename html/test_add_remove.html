@@ -16,7 +16,7 @@ $(document).ready(function () {
 		someBlock2.setColor([1, 1, 1, 0.5]);
 		someBlock2.setPosition([Math.random() * 100, Math.random() * 100, 0]);
 		someBlock2.setUpdate(updateFunc);
-		parent.addChild(someBlock2);
+		parent.append(someBlock2);
 		return someBlock2;
 	}
 
@@ -30,7 +30,7 @@ $(document).ready(function () {
 		chesterGL.loadAsset("texture", "images/test.png");
 		chesterGL.loadAsset("texture", "images/star.png");
 		chesterGL.assetsLoaded("texture", function () {
-			// $("#loading").html("Test Single Block");        	
+			// $("#loading").html("Test Single Block");
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
 
@@ -46,7 +46,7 @@ $(document).ready(function () {
 			var lastAdded = createBlock(someBlock, function () {
 				this.setRotation(this.rotation - oneDeg);
 			});
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 
 			// add some action
 			var dz = [0, 0, 10];
@@ -57,7 +57,7 @@ $(document).ready(function () {
 				if (this.position[2] <= -200) { dz[2] = -dz[2]; }
 				if (Math.random() > 0.8) {
 					if (Math.random() > 0.4) {
-						lastAdded && this.removeChild(lastAdded);
+						lastAdded && this.remove(lastAdded);
 						lastAdded = null;
 					} else {
 						lastAdded = createBlock(this, function () {

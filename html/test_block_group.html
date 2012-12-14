@@ -37,10 +37,10 @@ $(document).ready(function () {
 					if (this.position[0] >= size.width  || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
 					if (this.position[1] >= size.height || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
 				});
-				group.addChild(b);
+				group.append(b);
 			}
 
-			sceneBlock.addChild(group);
+			sceneBlock.append(group);
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();

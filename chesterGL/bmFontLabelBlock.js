@@ -155,7 +155,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		return;
 	}
 	this.text = text;
-	this.removeAllChildren();
+	this.removeAll();
 	var sz = this.calculateTextSize(text),
 		lineHeight = this.params['lineHeight'],
 		i,
@@ -198,7 +198,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 			b.setPosition(~~posX, ~~posY, 0);
 			// console.log(text.charAt(i) + ": " + posX + "," + posY);
 			curX += frameInfo['xadvance'] + kern;
-			this.addChild(b);
+			this.append(b);
 		} else {
 			throw "Invalid charcode " + ch + " for text " + text;
 		}

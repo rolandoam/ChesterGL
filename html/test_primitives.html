@@ -20,10 +20,10 @@ $(document).ready(function () {
 		chesterGL.loadAsset("texture", "images/test.png");
 		chesterGL.loadAsset("texture", "images/star.png");
 		chesterGL.assetsLoaded("texture", function () {
-			// $("#loading").html("Test Single Block");        	
+			// $("#loading").html("Test Single Block");
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
-			
+
 			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
 			sceneBlock.title = "Test::Primitives";
 			chesterGL.setRunningScene(sceneBlock);
@@ -49,7 +49,7 @@ $(document).ready(function () {
 				someBlock.drawPolygon(poly2, [0, 1, 0, 1], true);
 			});
 
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();

@@ -67,9 +67,9 @@ chesterGL.TMXBlock = function (tmxFile) {
 				b.setTexture(tileset['texture']);
 			}
 			b.setPosition(mblock['position']);
-			l.addChild(b);
+			l.append(b);
 		}
-		this.addChild(l);
+		this.append(l);
 	}
 };
 goog.inherits(chesterGL.TMXBlock, chesterGL.Block);

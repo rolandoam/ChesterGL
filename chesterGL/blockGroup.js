@@ -118,10 +118,10 @@ chesterGL.BlockGroup.prototype.createBlock = function (rect) {
 };
 
 /**
- * adds a child
+ * appends a child
  * @param {...chesterGL.Block} blocks
  */
-chesterGL.BlockGroup.prototype.addChild = function (blocks) {
+chesterGL.BlockGroup.prototype.append = function (blocks) {
 	for (var i in arguments) {
 		var block = arguments[i];
 		if (block.parent != this) {
@@ -154,7 +154,7 @@ chesterGL.BlockGroup.prototype.addChild = function (blocks) {
  * removes a block from the group
  * @param {chesterGL.Block} b
  */
-chesterGL.BlockGroup.prototype.removeChild = function (b) {
+chesterGL.BlockGroup.prototype.remove = function (b) {
 	if (b.parent != this) {
 		throw "Invalid child";
 	}
@@ -237,9 +237,9 @@ chesterGL.BlockGroup.prototype.visit = function () {
 	var b;
 	while ((b = this._scheduledRemove.shift())) {
 		if (b === "all") {
-			this.removeAllChildren();
+			this.removeAll();
 		} else {
-			this.removeChild(b);
+			this.remove(b);
 		}
 	}
 };
@@ -290,5 +290,5 @@ chesterGL.BlockGroup.prototype.render = function (totalChildren) {
 goog.exportSymbol('chesterGL.BlockGroup', chesterGL.BlockGroup);
 // instance methods
 goog.exportProperty(chesterGL.BlockGroup.prototype, 'createBlock', chesterGL.BlockGroup.prototype.createBlock);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'addChild', chesterGL.BlockGroup.prototype.addChild);
-goog.exportProperty(chesterGL.BlockGroup.prototype, 'removeChild', chesterGL.BlockGroup.prototype.removeChild);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'append', chesterGL.BlockGroup.prototype.append);
+goog.exportProperty(chesterGL.BlockGroup.prototype, 'remove', chesterGL.BlockGroup.prototype.remove);

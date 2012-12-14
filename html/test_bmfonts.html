@@ -44,8 +44,8 @@ $(document).ready(function () {
 				c2 = atlas.createBlock();
 			c1.setPosition(40, 100, 0);
 			c2.setPosition(40, 180, 0);
-			atlas.addChild(c1, c2);
-			group.addChild(atlas);
+			atlas.append(c1, c2);
+			group.append(atlas);
 
 			// add some action
 			var dz = 10;
@@ -56,8 +56,8 @@ $(document).ready(function () {
 				if (this.position[2] <= -200) { dz = -dz; }
 			});
 
-			sceneBlock.addChild(group);
-			sceneBlock.addChild(label);
+			sceneBlock.append(group);
+			sceneBlock.append(label);
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();

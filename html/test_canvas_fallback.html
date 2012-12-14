@@ -10,7 +10,7 @@
     <script type="text/javascript">
 
 $(document).ready(function () {
-	setTimeout(function() { window.scrollTo(0, 1) }, 100);	
+	setTimeout(function() { window.scrollTo(0, 1) }, 100);
 	setupGame();
 
 	function setupGame() {
@@ -24,7 +24,7 @@ $(document).ready(function () {
 		chesterGL.loadAsset("texture", "images/test.png");
 		chesterGL.loadAsset("texture", "images/star.png");
 		chesterGL.assetsLoaded("texture", function () {
-			// $("#loading").html("Test Single Block");        	
+			// $("#loading").html("Test Single Block");
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
 
@@ -43,7 +43,7 @@ $(document).ready(function () {
 					if (this.position[0] >= size.width || this.position[0] <= 0) { this.speed[0] = -this.speed[0]; }
 					if (this.position[1] >= size.height || this.position[1] <= 0) { this.speed[1] = -this.speed[1]; }
 				});
-				sceneBlock.addChild(b);
+				sceneBlock.append(b);
 			}
 
 			// create a block
@@ -56,9 +56,9 @@ $(document).ready(function () {
 			someBlock2.setTexture("images/star.png");
 			someBlock2.setColor([1, 1, 1, 0.5]);
 			someBlock2.setPosition([60, 0, 0]);
-			someBlock.addChild(someBlock2);
+			someBlock.append(someBlock2);
 
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 
 			// add some action
 			var dz = 2;

@@ -40,7 +40,7 @@ $(document).ready(function () {
 
 			createGroup();
 
-			sceneBlock.addChild(group);
+			sceneBlock.append(group);
 			chesterGL.run();
 			// draw a single frame (for debug purposes)
 			// chesterGL.drawScene();
@@ -51,7 +51,7 @@ $(document).ready(function () {
 		console.log("remove " + n);
 		for (var i=0; i < n; i++) {
 			var b = group.children[group.children.length - 1];
-			b && group.removeChild(b);
+			b && group.remove(b);
 		}
 		totalBlocks -= n;
 		$("#totalBlocks").html(totalBlocks);
@@ -71,7 +71,7 @@ $(document).ready(function () {
 			}
 			b.setColor([1, 1, 1, 0.1]);
 			b.setPosition([Math.random() * size.width, Math.random() * size.height, 0]);
-			group.addChild(b);
+			group.append(b);
 		}
 		totalBlocks += n;
 		$("#totalBlocks").html(totalBlocks);
@@ -92,9 +92,9 @@ $(document).ready(function () {
 		useBlockGroup = $("#useBlockGroup").is(':checked');
 		chesterGL.togglePause();
 
-		sceneBlock.removeChild(group);
+		sceneBlock.remove(group);
 		createGroup();
-		sceneBlock.addChild(group);
+		sceneBlock.append(group);
 
 		chesterGL.togglePause();
 	});

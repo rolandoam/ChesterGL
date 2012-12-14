@@ -38,7 +38,7 @@ $(document).ready(function () {
 			nonRetinaShip.setTexture("images/ship_non_hdpi.png");
 			nonRetinaShip.setPosition(size.width/2 + 100, size.height/2, 0);
 
-			sceneBlock.addChild(retinaShip, nonRetinaShip);
+			sceneBlock.append(retinaShip, nonRetinaShip);
 
 			chesterGL.run();
 			// draw a single frame (for debug purposes)

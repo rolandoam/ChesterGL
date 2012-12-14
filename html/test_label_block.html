@@ -33,7 +33,7 @@ $(document).ready(function () {
 		var size = chesterGL.viewportSize();
 		var oneDeg = Math.PI / 180.0;
 
-		// $("#loading").html("Test Single Block");        	
+		// $("#loading").html("Test Single Block");
 		// finish with the setup and run the game
 		chesterGL.setupPerspective();
 		var text = "Hello World!";
@@ -53,7 +53,7 @@ $(document).ready(function () {
 				var b = new chesterGL.LabelBlock(randLetter(), smallFont, randColor());
 				b.setRotation(Math.PI * 2 * Math.random());
 				b.setPosition(Math.random() * size.width, Math.random() * size.height, 0);
-				sceneBlock.addChild(b);
+				sceneBlock.append(b);
 			}
 
 			// create a label block
@@ -62,7 +62,7 @@ $(document).ready(function () {
 			// add some action to the label
 			var dz = 10;
 			time = 0.0;
-			
+
 			someBlock.setUpdate(function (delta) {
 				time += delta;
 				this.setRotation(this.rotation + oneDeg);
@@ -75,7 +75,7 @@ $(document).ready(function () {
 					time = 0.0;
 				}
 			});
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 		}, 500);
 		sceneBlock.runAction(delay);
 

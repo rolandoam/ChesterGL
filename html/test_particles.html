@@ -25,17 +25,17 @@ $(document).ready(function () {
 		"smoke"
 	];
 	var currentExample = 0;
-	
+
 	var emitter = null;
-	
+
 	setupGame();
-	
+
 	function setupGame() {
 		chesterGL.settings['useGoogleAnalytics'] = true;
 		chesterGL.setup("demo-canvas");
 		var size = chesterGL.viewportSize();
-		
-		chesterGL.loadAsset("json", "images/test_particle1.json");		
+
+		chesterGL.loadAsset("json", "images/test_particle1.json");
 		chesterGL.loadAsset("texture", particle_properties[currentExample]['texture']);
 		chesterGL.loadAsset("texture", "images/test_particle1.png");
 		chesterGL.assetsLoaded('texture', function () {
@@ -50,7 +50,7 @@ $(document).ready(function () {
 			emitter = new chesterGL.ParticleSystem(props);
 			emitter.setPosition(size.width / 2, size.height/2, 0);
 
-			sceneBlock.addChild(emitter);
+			sceneBlock.append(emitter);
 
 			chesterGL.addMouseHandler(function (pt, type) {
 				if (type == chesterGL.mouseEvents.UP) {
@@ -121,11 +121,11 @@ $(document).ready(function () {
 		$("#vendsize").val(pp['endSizeVariance']);
 		$("#src_blend option[value=" + pp['blendOptions'][0] + "]").attr('selected', 'selected');
 		$("#dst_blend option[value=" + pp['blendOptions'][1] + "]").attr('selected', 'selected');
-		
+
 		$("#jsondata").val(JSON.stringify(pp));
 		$("#example_name").html("Particle Properties (" + examples_names[currentExample] + ")");
 	}
-	
+
 	function reloadData() {
 		var pp = particle_properties[currentExample];
 		pp['maxParticles'] = parseInt($("#max_particles").val());
@@ -220,7 +220,7 @@ _gaq.push(['_trackPageview']);
 			</div>
 			<div>Initial Color Var: r: <input type="text" size="2" id="initial_color_var_r"/>
 									g: <input type="text" size="2" id="initial_color_var_b"/>
-									b: <input type="text" size="2" id="initial_color_var_g"/> 
+									b: <input type="text" size="2" id="initial_color_var_g"/>
 									a: <input type="text" size="2" id="initial_color_var_a"/>
 			</div>
 			<div>End Color: <input type="color" id="end_color"/>

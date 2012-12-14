@@ -38,12 +38,12 @@ $(document).ready(function () {
 			someBlock2.setTexture("images/star.png");
 			someBlock2.setColor([1, 1, 1, 0.5]);
 			someBlock2.setPosition([60, 0, 0]);
-			someBlock.addChild(someBlock2);
+			someBlock.append(someBlock2);
 
 			var pt = someBlock.getAbsolutePosition([size.width/2, size.height/2, 0]);
 			console.log("point: " + pt[0] + "," + pt[1]);
 
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 
 			// add some action
 			var dz = 10;

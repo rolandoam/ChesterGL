@@ -31,7 +31,7 @@ $(document).ready(function () {
 			var someBlock = new chesterGL.Block();
 			someBlock.setTexture("Character Horn Girl");
 			someBlock.setPosition([size.width/2, size.height/2, 0]);
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 
 			// add some action
 			var moveUp = new chesterGL.MoveAction([0, 0, 100], 2000);

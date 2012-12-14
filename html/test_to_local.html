@@ -41,15 +41,15 @@ $(document).ready(function () {
 			test2.setPosition(0, -60, 0);
 			test2.setRotation(oneDeg * 66);
 			test2.setScale(1.5);
-			test1.addChild(test2);
+			test1.append(test2);
 			test1.setAnchorPoint(0, 0);
 
-			someBlock.addChild(test1);
+			someBlock.append(test1);
 
 			var pt = someBlock.getAbsolutePosition([size.width/2, size.height/2, 0]);
 			console.log("point: " + pt[0] + "," + pt[1]);
 
-			sceneBlock.addChild(someBlock);
+			sceneBlock.append(someBlock);
 			var label = new chesterGL.BMFontLabelBlock("(0,0)", "fonts/arial"),
 				fixedLabel = new chesterGL.BMFontLabelBlock(
 					"click to test position\n" +
@@ -62,7 +62,7 @@ $(document).ready(function () {
 			label.setPosition(10.1, 10, 0);
 			fixedLabel.setAnchorPoint(0, 0);
 			fixedLabel.setPosition(10.1, 40, 0);
-			sceneBlock.addChild(label, fixedLabel);
+			sceneBlock.append(label, fixedLabel);
 
 			chesterGL.addMouseHandler(function (pt, eventType) {
 				if (eventType == chesterGL.mouseEvents.DOWN) {

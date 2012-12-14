@@ -18,7 +18,7 @@ $(document).ready(function () {
 		chesterGL.loadAsset('texture', 'images/tileset2.png');
 		chesterGL.TMXBlock.loadTMX("images/test-plain.tmx");
 		chesterGL.assetsLoaded("all", function () {
-			// $("#loading").html("Test Single Block");        	
+			// $("#loading").html("Test Single Block");
 			// finish with the setup and run the game
 			chesterGL.setupPerspective();
 
@@ -28,7 +28,7 @@ $(document).ready(function () {
 
 			/** @type {chesterGL.TMXBlock} */
 			var tmx = new chesterGL.TMXBlock('images/test-plain.tmx');
-			sceneBlock.addChild(tmx);
+			sceneBlock.append(tmx);
 
 			/** @type {?Float32Array} */
 			var stPoint = null;
