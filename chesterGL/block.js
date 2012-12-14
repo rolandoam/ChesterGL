@@ -735,6 +735,7 @@ chesterGL.Block.__tmpBuffers = [
 	new Float32Array(3),
 	new Float32Array(3)
 ];
+
 /**
  * actually performs the transformation
  * @ignore
