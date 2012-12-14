@@ -38,21 +38,17 @@ HTMLCanvasElement._canvas_tmp_mouse = new goog.math.Vec2(0, 0);
  * @return {goog.math.Vec2}
  */
 HTMLCanvasElement.prototype.relativePosition = function (evt) {
-	var pt = HTMLCanvasElement._canvas_tmp_mouse,
-		height = (chesterGL.highDPI ? this.height / chesterGL.devicePixelRatio : this.height);
-	pt.x = 0; pt.y = 0;
-	if (typeof this['__offset'] === "undefined") {
-		this['__offset'] = $(this).offset();
-	}
+	var rect = this.getBoundingClientRect(),
+		height = (chesterGL.highDPI ? this.height / chesterGL.devicePixelRatio : this.height),
+		pt = HTMLCanvasElement._canvas_tmp_mouse;
 	if (evt.changedTouches) {
 		var t = evt.changedTouches[0];
-		pt.x = (t.pageX - this['__offset'].left);
-		pt.y = (height - (t.pageY - this['__offset'].top));
+		pt.x = t.clientX - rect.left;
+		pt.y = height - (t.clientY - rect.top);
 	} else {
-		pt.x = (evt.pageX - this['__offset'].left);
-		pt.y = (height - (evt.pageY - this['__offset'].top));
+		pt.x = evt.clientX - rect.left;
+		pt.y = height - (evt.clientY - rect.top);
 	}
-
 	return pt;
 };
 
