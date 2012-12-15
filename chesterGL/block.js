@@ -376,6 +376,7 @@ chesterGL.Block.prototype.onExitScene = function () {
 	for (var i in this.children) {
 		this.children[i]['onExitScene']();
 	}
+	this.removeAllActions();
 };
 
 /**
