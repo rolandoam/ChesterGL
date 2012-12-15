@@ -328,7 +328,7 @@ chesterGL.selectProgram = function (program) {
 	if (program != chesterGL.currentProgram) {
 		// console.log("selecting program " + program);
 		chesterGL.currentProgram = program;
-		gl.validateProgram(prog);
+		// gl.validateProgram(prog);
 		gl.useProgram(prog);
 		// enable attribs
 		for (var attr in prog.attribs) {
@@ -1246,6 +1246,14 @@ chesterGL.getCurrentContext = function () {
 	return chesterGL.gl;
 };
 
+/**
+ * returns the current running scene (if any)
+ * @return {?chesterGL.Block}
+ */
+chesterGL.getRunningScene = function () {
+	return chesterGL.runningScene;
+};
+
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
@@ -1273,6 +1281,7 @@ goog.exportSymbol('chesterGL.run', chesterGL.run);
 goog.exportSymbol('chesterGL.togglePause', chesterGL.togglePause);
 goog.exportSymbol('chesterGL.isPaused', chesterGL.isPaused);
 goog.exportSymbol('chesterGL.setPause', chesterGL.setPause);
+goog.exportSymbol('chesterGL.getRunningScene', chesterGL.getRunningScene);
 goog.exportSymbol('chesterGL.getCurrentContext', chesterGL.getCurrentContext);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);
