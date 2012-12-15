@@ -342,7 +342,7 @@ chesterGL.Block.prototype.addDebugNode = function () {
 	if (this.contentSize.width > 0) {
 		var dbg = new chesterGL.PrimitiveBlock(1, 1);
 		this.append(dbg);
-		dbg.isInAtlas = (this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP']) ? 1 : 0;
+		dbg.isInAtlas = (this.parent && this.parent.type == chesterGL.Block.TYPE['BLOCKGROUP']) ? 1 : 0;
 		dbg.setUpdate(function () {
 			var sz = this.parent.contentSize;
 			var w = sz.width / 2, h = sz.height / 2;
