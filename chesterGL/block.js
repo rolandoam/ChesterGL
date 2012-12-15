@@ -542,11 +542,9 @@ chesterGL.Block.prototype.getPosition = function () {
  */
 chesterGL.Block.prototype.getAbsolutePosition = function () {
 	var p = this.parent,
-		pos = goog.vec.Vec3.createFloat32FromArray(this.position);
-	while (p) {
-		goog.vec.Mat4.multVec3(p.mvMatrix, pos, pos);
-		p = p.parent;
-	}
+		pos = goog.vec.Vec3.createFloat32FromArray(this.position),
+		m = this.getAbsoluteTransform();
+	goog.vec.Mat4.multVec3(m, pos, pos);
 	return pos;
 };
 
@@ -574,7 +572,7 @@ chesterGL.Block.prototype.toLocal = function (pt, dest) {
  * @return {Float32Array|Array}
  */
 chesterGL.Block.prototype.getAbsoluteTransform = function () {
-	var m = goog.vec.Mat4.createFloat32Identity(),
+	var m = goog.vec.Mat4.createFloat32FromArray(this.mvMatrix),
 		p = this.parent;
 	while (p) {
 		goog.vec.Mat4.multMat(p.mvMatrix, m, m);
@@ -589,8 +587,8 @@ chesterGL.Block.prototype.getAbsoluteTransform = function () {
  */
 chesterGL.Block.prototype.getBoundingBox = function () {
 	var p = this.position,
-		w = this.frame[2],
-		h = this.frame[3];
+		w = this.contentSize.width,
+		h = this.contentSize.height;
 	return [p[0] - w/2, p[1] - h/2, w, h];
 };
 
