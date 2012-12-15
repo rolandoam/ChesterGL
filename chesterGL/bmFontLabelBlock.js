@@ -163,12 +163,6 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		curX = -sz.width * this.anchorPoint.x,
 		curY = -(sz.lines * lineHeight * this.anchorPoint.y);
 
-	var isHighDPI = false;
-	if (chesterGL.highDPI && chesterGL.assets['texture'][this.texture].highDPI) {
-		lineHeight = lineHeight >> 1;
-		isHighDPI = true;
-	}
-
 	// console.log("width: " + width + "; height: " + height + "; offX: " + offX);
 	text = text.split(/\n|\r/).reverse().join("\n");
 	for (i=0; i < text.length; i++) {
@@ -204,7 +198,11 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		}
 		last = ch;
 	}
-	this.setContentSize(sz.width, sz.lines * lineHeight);
+	if (chesterGL.highDPI && chesterGL.assets['texture'][this.texture].highDPI) {
+		this.setContentSize(sz.width, sz.lines * lineHeight / chesterGL.devicePixelRatio);
+	} else {
+		this.setContentSize(sz.width, sz.lines * lineHeight);
+	}
 };
 
 /**
