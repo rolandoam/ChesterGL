@@ -715,6 +715,18 @@ chesterGL.Block.prototype.runAction = function (action) {
 	return chesterGL.ActionManager.scheduleAction(action);
 };
 
+/**
+ * removes all actions associated with this block
+ */
+chesterGL.Block.prototype.removeAllActions = function Block_removeAllActions() {
+	for (var i in chesterGL.ActionManager.scheduledActions_) {
+		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
+		if (a.block == this) {
+			chesterGL.ActionManager.unscheduleAction(a.actionId);
+		}
+	}
+};
+
 goog.exportSymbol('chesterGL.ActionManager', chesterGL.ActionManager);
 goog.exportSymbol('chesterGL.MoveAction', chesterGL.MoveAction);
 goog.exportSymbol('chesterGL.ScaleAction', chesterGL.ScaleAction);
