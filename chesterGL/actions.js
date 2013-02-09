@@ -696,6 +696,9 @@ chesterGL.ActionManager.unscheduleAction = function (actionId) {
  * @ignore
  */
 chesterGL.ActionManager.tick = function (delta) {
+	if (chesterGL.ActionManager.paused) {
+		return;
+	}
 	for (var i in chesterGL.ActionManager.scheduledActions_) {
 		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
 		if (a.running) a.update(delta);
@@ -703,6 +706,20 @@ chesterGL.ActionManager.tick = function (delta) {
 			delete chesterGL.ActionManager.scheduledActions_[a.actionId];
 		}
 	}
+};
+
+/**
+ * pauses all actions (basically just skip the tick)
+ */
+chesterGL.ActionManager.pause = function ActionManager_pause() {
+	chesterGL.ActionManager.paused = true;
+};
+
+/**
+ * resumes all actions
+ */
+chesterGL.ActionManager.resume = function ActionManager_resume() {
+	chesterGL.ActionManager.paused = false;
 };
 
 /**
@@ -737,6 +754,8 @@ goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
 goog.exportSymbol('chesterGL.WiggleAction', chesterGL.WiggleAction);
 goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
+goog.exportProperty(chesterGL.ActionManager, 'pause', chesterGL.ActionManager.pause);
+goog.exportProperty(chesterGL.ActionManager, 'resume', chesterGL.ActionManager.resume);
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
 goog.exportProperty(chesterGL.Action.prototype, 'reset', chesterGL.Action.prototype.reset);
