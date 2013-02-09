@@ -64,6 +64,12 @@ chesterGL.BlockFrames.parseFrameData = function (data) {
 					f['frame']['w'],
 					f['frame']['h']
 				];
+				if (f['sourceSize']) {
+					realFrame['sourceSize'] = {
+						'width': f['sourceSize']['w'],
+						'height': f['sourceSize']['h']
+					};
+				}
 				realFrame.texture = texName;
 				chesterGL.BlockFrames.frames[frameName] = realFrame;
 			}
