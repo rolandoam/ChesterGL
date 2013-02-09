@@ -1048,10 +1048,11 @@ chesterGL.__tmp_mouse_vec = new Float32Array(3);
  */
 chesterGL.mouseDownHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
-	var i = 0, len = chesterGL.mouseHandlers.length;
+	var i, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
-	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.DOWN);
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.DOWN))
+			break;
 	}
 };
 
@@ -1061,10 +1062,11 @@ chesterGL.mouseDownHandler = function (event) {
  */
 chesterGL.mouseMoveHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
-	var i = 0, len = chesterGL.mouseHandlers.length;
+	var i, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
-	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.MOVE);
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.MOVE))
+			break;
 	}
 };
 
@@ -1074,10 +1076,11 @@ chesterGL.mouseMoveHandler = function (event) {
  */
 chesterGL.mouseUpHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
-	var i = 0, len = chesterGL.mouseHandlers.length;
+	var i, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
-	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP);
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP))
+			break;
 	}
 };
 
@@ -1087,10 +1090,11 @@ chesterGL.mouseUpHandler = function (event) {
  */
 chesterGL.mouseEnterHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
-	var i = 0, len = chesterGL.mouseHandlers.length;
+	var i, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
-	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER);
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER))
+			break;
 	}
 };
 
@@ -1100,16 +1104,19 @@ chesterGL.mouseEnterHandler = function (event) {
  */
 chesterGL.mouseLeaveHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
-	var i = 0, len = chesterGL.mouseHandlers.length;
+	var i, len = chesterGL.mouseHandlers.length;
 	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
-	for (; i < len; i++) {
-		chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE);
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE))
+			break;
 	}
 };
 
 /**
- * Adds a mouse handler: the function will be called for every mouse event on the main canvas
- * @param {function((Array|Float32Array), chesterGL.mouseEvents)} callback
+ * Adds a mouse handler: the function will be called for every mouse event on the main canvas. If
+ * the handler returns `true`, then the event chain will be aborted (the mouse/touch event will no
+ * longer be propagated).
+ * @param {function((Array|Float32Array), chesterGL.mouseEvents): boolean} callback
  * @example
  * var stPoint = null;
  * chesterGL.addMouseHandler(function (pt, type) {
