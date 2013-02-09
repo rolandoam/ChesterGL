@@ -344,7 +344,7 @@ chesterGL.selectProgram = function (program) {
  * @param {string} canvasId
  */
 chesterGL.setup = function (canvasId) {
-	var canvas = chesterGL.onFakeWebGL ? new ChesterCanvas(innerWidth, innerHeight) : document.getElementById(canvasId); // get the DOM element
+	var canvas = chesterGL.onFakeWebGL ? document.createElement("canvas") : document.getElementById(canvasId); // get the DOM element
 	var settings = chesterGL.settings;
 
 	// copy values for future reference
