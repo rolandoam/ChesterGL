@@ -521,9 +521,9 @@ chesterGL.Block.prototype.adjustPosition = function (dx, dy, dz) {
 	if (!this.position) {
 		throw "call setPosition before adjusting it!";
 	}
-	this.position[0] += dx;
-	this.position[1] += dy;
-	this.position[2] += dz;
+	this.position[0] += dx || 0;
+	this.position[1] += dy || 0;
+	this.position[2] += dz || 0;
 	this.isTransformDirty = true;
 };
 
