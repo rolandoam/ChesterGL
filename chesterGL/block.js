@@ -511,6 +511,23 @@ chesterGL.Block.prototype.setPosition = function (x, y, z) {
 };
 
 /**
+ * adjusts the position in a relative fashion (relative to the current position)
+ *
+ * @param {number} dx
+ * @param {number} dy
+ * @param {number} dz
+ */
+chesterGL.Block.prototype.adjustPosition = function (dx, dy, dz) {
+	if (!this.position) {
+		throw "call setPosition before adjusting it!";
+	}
+	this.position[0] += dx;
+	this.position[1] += dy;
+	this.position[2] += dz;
+	this.isTransformDirty = true;
+};
+
+/**
  * sets the anchor point for the block. By default it's (0.5, 0.5)
  * That means it's in the center of the block. (0,0) is the bottom left, (1,1) is the top right.
  * You can specify numbers bigger than 1 and smaller than 0 if you want.
@@ -983,6 +1000,7 @@ goog.exportProperty(chesterGL.Block.prototype, 'detach', chesterGL.Block.prototy
 goog.exportProperty(chesterGL.Block.prototype, 'getBoundingBox', chesterGL.Block.prototype.getBoundingBox);
 goog.exportProperty(chesterGL.Block.prototype, 'setPosition', chesterGL.Block.prototype.setPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'getPosition', chesterGL.Block.prototype.getPosition);
+goog.exportProperty(chesterGL.Block.prototype, 'adjustPosition', chesterGL.Block.prototype.adjustPosition);
 goog.exportProperty(chesterGL.Block.prototype, 'toLocal', chesterGL.Block.prototype.toLocal);
 goog.exportProperty(chesterGL.Block.prototype, 'setAnchorPoint', chesterGL.Block.prototype.setAnchorPoint);
 goog.exportProperty(chesterGL.Block.prototype, 'getAnchorPoint', chesterGL.Block.prototype.getAnchorPoint);
