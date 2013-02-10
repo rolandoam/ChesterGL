@@ -65,15 +65,38 @@ $(document).ready(function () {
 
 			// 4.- wiggle sprite
 			wiggle = new chesterGL.Block("1945-4-2.png");
-			wiggle.setPosition([50, 150, 0]);
+			wiggle.setPosition(50, 150, 0);
 
 			sceneBlock.append(b1);
 			sceneBlock.append(b2);
 			sceneBlock.append(wiggle);
 
+			// 5.- elastic zoom
+			var elasticSprite = new chesterGL.Block("1945-3-1.png"),
+				// elastic scale to normal scale, in 2 seconds
+				ea1 = new chesterGL.ElasticAction({
+					getter: 'getScale',
+					setter: 'setScale'
+				}, 1.0, 500);
+			elasticSprite.setScale(0.3);
+			elasticSprite.setPosition(180, 50, 0);
+			elasticSprite.runAction(ea1);
+
+			// 5.1 - elastic position
+			var elasticSprite2 = new chesterGL.Block("1945-3-0.png"),
+				ea2 = new chesterGL.ElasticAction({
+					getter: 'getPosition',
+					setter: 'setPosition'
+				}, [500, 300, 0], 1500);
+			elasticSprite2.setPosition(100, 100, 0);
+			elasticSprite2.runAction(ea2);
+
+			sceneBlock.append(elasticSprite);
+			sceneBlock.append(elasticSprite2);
+
 			// add a label so the user can know that he needs to unpause the scene
 			var label = new chesterGL.LabelBlock("Click Play to Start");
-			label.setPosition([320, 460, 0]);
+			label.setPosition(320, 460, 0);
 			sceneBlock.append(label);
 
 			chesterGL.togglePause();

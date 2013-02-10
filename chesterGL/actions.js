@@ -255,7 +255,7 @@ chesterGL.MoveAction.prototype.reverse = function () {
  * @extends {chesterGL.Action}
  */
 chesterGL.ScaleAction = function (scaleX, scaleY, totalTime, relative, block) {
-	goog.base(this, totalTime, block);
+	chesterGL.Action.call(this, totalTime, block);
 	this.isRelative = relative;
 	this.dx = scaleX;
 	this.dy = scaleY;
@@ -534,6 +534,87 @@ chesterGL.RepeatAction.prototype.update = function (delta) {
 
 /**
  * @constructor
+ * This is not really "elastic", It's applying a bezier-curve to transform the parameter in an
+ * elastic-like curve. The current curve is:
+ *
+ * y(t)=(1-t)^3*0.5+3(1-t)^2*t*0.06+3*(1-t)*t^2*2.2+t^3*1.5 - 0.5
+ *
+ * Q0 = 0.5; Q1 = 0.06; Q2 = 2.2; Q3 = 1.5
+ * Google graph: http://goo.gl/p0DKc
+ *
+ * The function is shifted in 0.5 to simulate a bounce at the beginning as well. This will only
+ * work if the parameter to modify is either an array or a number.
+ *
+ * @param {string|Object} param the paramenter to modify in the block. You can also pass an object
+ * to specify a getter/setter instead.
+ * @param {Array|number} targetValue the target value of the parameter
+ * @param {number} totalTime the totalTime of the action, in milliseconds
+ * @param {chesterGL.Block=} block the block on which to run the action
+ * @extends {chesterGL.Action}
+ */
+chesterGL.ElasticAction = function (param, targetValue, totalTime, block) {
+	chesterGL.Action.call(this, totalTime, block);
+	this.param = param;
+	this.targetValue = targetValue;
+	this.hasGetterAndSetter = (typeof param === "object");
+};
+goog.inherits(chesterGL.ElasticAction, chesterGL.Action);
+
+chesterGL.ElasticAction.prototype.begin = function ElasticAction_begin() {
+	chesterGL.Action.prototype.begin.call(this);
+	var iv;
+	if (this.hasGetterAndSetter) {
+		iv = this.block[this.param['getter']]();
+	} else {
+		iv = this.block[this.param];
+		if (!iv) {
+			throw "Invalid ElasticAction param!";
+		}
+	}
+	this.arrayLike = false;
+	if (iv instanceof Array) {
+		this.initialValue = iv.slice(0);
+		this.arrayLike = true;
+	} else if (iv instanceof Float32Array) {
+		this.initialValue = new Float32Array(iv);
+		this.arrayLike = true;
+	} else {
+		// assume number
+		this.initialValue = iv;
+	}
+};
+
+// TODO:
+// make the f(t) an argument, so we can update f(t) any way we want
+chesterGL.ElasticAction.prototype.update = function ElasticAction_update(delta) {
+	chesterGL.Action.prototype.update.call(this, delta);
+	var t = Math.min(1, this.elapsed / this.totalTime),
+		fakeT = Math.pow(1-t,3)*0.5+3*Math.pow(1-t,2)*t*0.06+3*(1-t)*Math.pow(t,2)*2.2+Math.pow(t,3)*1.5 - 0.5,
+		b = this.block;
+	// now simply interpolate using the new `t`
+	if (this.arrayLike) {
+		var tmp = [],
+			tpLen = this.initialValue.length;
+		for (var i=0; i < tpLen; i++) {
+			tmp[i] = this.initialValue[i] + fakeT * (this.targetValue[i] - this.initialValue[i]);
+		}
+		if (this.hasGetterAndSetter) {
+			b[this.param['setter']].apply(b, tmp);
+		} else {
+			b[this.param] = tmp;
+		}
+	} else {
+		var newv = this.initialValue + fakeT * (this.targetValue - this.initialValue);
+		if (this.hasGetterAndSetter) {
+			b[this.param['setter']].call(b, newv);
+		} else {
+			b[this.param] = newv;
+		}
+	}
+};
+
+/**
+ * @constructor
  * @param {number} delay in seconds between frames
  * @param {Array.<Object>} frames The frames of the animation
  * @param {boolean=} loop Whether or not this animation should loop
@@ -752,6 +833,7 @@ goog.exportSymbol('chesterGL.SequenceAction', chesterGL.SequenceAction);
 goog.exportSymbol('chesterGL.RepeatAction', chesterGL.RepeatAction);
 goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
 goog.exportSymbol('chesterGL.WiggleAction', chesterGL.WiggleAction);
+goog.exportSymbol('chesterGL.ElasticAction', chesterGL.ElasticAction);
 goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'pause', chesterGL.ActionManager.pause);
