@@ -794,7 +794,9 @@ chesterGL.Block.prototype.transform = function () {
 		this.isTransformDirty = true;
 		_px = this.position[0];
 		_py = this.position[1];
-		if(chesterGL.canvasOriginTopLeft) _py = (chesterGL.gl.viewportHeight / 2) - _py;
+
+		if (chesterGL.webglMode && chesterGL.canvasOriginTopLeft) _py = (gl.viewportHeight / 2) - _py;
+		
 		goog.vec.Mat4.makeIdentity(this.mvMatrix);
 		goog.vec.Mat4.translate(this.mvMatrix, _px, _py, this.position[2]);
 		goog.vec.Mat4.rotate(this.mvMatrix, this.rotation * -1, 0, 0, 1);
@@ -981,9 +983,15 @@ chesterGL.Block.prototype.render = function () {
 			h = this.contentSize.height;
 		}
 		gl.globalAlpha = this.color[3];
-		gl.setTransform(m[0], m[4], m[1], m[5],
-			m[12] + (0.5 - this.anchorPoint.x) * w,
-			(chesterGL.canvasOriginTopLeft ? 0 : -gl.viewportHeight)  + (m[13] + (0.5 - this.anchorPoint.y) * h));
+		if (chesterGL.canvasOriginTopLeft) {
+			gl.setTransform(m[0], m[4], m[1], m[5],
+				m[12] + (0.5 - this.anchorPoint.x) * w,
+				(m[13] + (0.5 - this.anchorPoint.y) * h));
+		} else {
+			gl.setTransform(m[0], m[4], m[1], m[5],
+				m[12] + (0.5 - this.anchorPoint.x) * w,
+				gl.viewportHeight - (m[13] + (0.5 - this.anchorPoint.y) * h));
+		}
 		if (this.program == chesterGL.Block.PROGRAM.TEXTURE) {
 			texture = chesterGL.getAsset('texture', this.texture);
 			var frame = this.frame;
