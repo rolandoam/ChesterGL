@@ -621,11 +621,20 @@ chesterGL.registerAssetLoader = function (type, loader) {
  *
  * @param {string} type the type of asset being loaded, it could be "texture" or "default"
  * @param {string|Object} url the url for the asset
- * @param {(string|null)=} name the name of the asset. If none is provided, then the name is the path
- * @param {function(Object)=} callback the callback that will be executed as soon as the asset is loaded
+ * @param {(string|null)=} [name] the name of the asset. If none is provided, then the name is the path
+ * @param {function(Object, Object)=} [callback] execute when asset is loaded or an error occurs. Callback Arguments (err, asset)
+ * @example
+ * chesterGL.loadAsset("texture", "someImage.png");
+ * chesterGL.loadAsset("texture", "someImage.png", "spr-house");
+ * chesterGL.loadAsset("texture", "someImage.png", "spr-house", onAssetLoad);
+ * chesterGL.loadAsset("texture", "someImage.png", onAssetLoad);
  */
 chesterGL.loadAsset = function (type, url, name, callback) {
 	var params;
+	if (typeof(name) == 'function') {
+		callback = name;
+		name = null;
+	}
 	if (typeof(url) == 'object') {
 		params = {
 			dataType: url.dataType,
@@ -672,7 +681,7 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 		if (callback) assets[rname].listeners.push(callback);
 	} else if (assets[rname].status == 'loaded') {
 		// created and loaded, just call the callback
-		if (callback) callback(assets[rname].data);
+		if (callback) callback(null, assets[rname].data);
 	} else if (assets[rname].status == 'try') {
 		assets[rname].status = 'loading';
 		if (chesterGL.assetsLoaders[type])
@@ -843,7 +852,7 @@ chesterGL.defaultTextureLoader = function (type, params) {
 			texture.status = "loaded";
 			texture.highDPI = path.match(re) && chesterGL.highDPI;
 			var l;
-			while ((l = texture.listeners.shift())) { l(texture.data); }
+			while ((l = texture.listeners.shift())) { l(null, texture.data); }
 			// test for assets loaded
 			chesterGL.assetsLoaded(type);
 			chesterGL.assetsLoaded("all");
@@ -854,14 +863,19 @@ chesterGL.defaultTextureLoader = function (type, params) {
 		}
 	}, false);
 	img.addEventListener("error", function (e) {
+		var texture = chesterGL.assets["texture"][name];
 		// if we're a highDPI image, and we failed, load again without @Nx
 		if (e.type === "error" && chesterGL.highDPI && path.match(re)) {
-			var texture = chesterGL.assets["texture"][name];
 			params.url = path.replace("@" + chesterGL.devicePixelRatio + "x", "");
 			params.forceNonRetina = true;
 			// requeue
 			texture.status = "try";
 			chesterGL.loadAsset("texture", params);
+		} else {
+			//Failed to load, let's call the callback
+			texture.status = "error";
+			var l;
+			while ((l = texture.listeners.shift())) { l({url: name, type: e.type}, texture.data); }
 		}
 	}, true);
 	// append the basePath if it's not an absolute url or a data:image url
@@ -900,7 +914,7 @@ chesterGL.defaultAssetLoader = function (type, params) {
 				asset.status = 'loaded';
 				// call all listeners
 				var l;
-				while ((l = asset.listeners.shift())) { l(asset.data); }
+				while ((l = asset.listeners.shift())) { l(null, asset.data); }
 				// test for assets loaded
 				chesterGL.assetsLoaded(type);
 				chesterGL.assetsLoaded('all');
@@ -918,6 +932,8 @@ chesterGL.defaultAssetLoader = function (type, params) {
 				chesterGL.loadAsset(type, params);
 			} else {
 				console.log("Error loading asset " + path);
+				var l;
+				while ((l = asset.listeners.shift())) { l({url: path, type: req.status}, asset.data); }
 			}
 		}
 	};

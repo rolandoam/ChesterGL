@@ -167,7 +167,7 @@ chesterGL.TMXBlock.findTilesetForGid = function (tilesets, gid) {
  * @param {string} path
  */
 chesterGL.TMXBlock.loadTMX = function (path) {
-	chesterGL.loadAsset('tmx', {url:path, dataType: 'xml'}, null, function (data) {
+	chesterGL.loadAsset('tmx', {url:path, dataType: 'xml'}, null, function (err, data) {
 		var tmx = {};
 
 		var map = $(data).find("map");
