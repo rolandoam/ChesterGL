@@ -147,6 +147,7 @@ chesterGL.onFakeWebGL = false;
  * <li>useGoogleAnalytics: whether or not to track fps and send analytics. Will send every 5 seconds</li>
  * <li>projection: "3d" or "2d" (ortho)</li>
  * <li>webglMode: true to try for webGL, false to force canvas mode</li>
+ * <li>canvasOriginTopLeft: If true makes 0,0 the Top-Left corner. If false makes 0,0 the Bottom-Left</li>
  * </ul>
  * @type {Object.<string,string|boolean>}
  * @example
@@ -160,7 +161,8 @@ chesterGL.settings = {
 	'projection': '3d',
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
-	'basePath': ''
+	'basePath': '',
+	'canvasOriginTopLeft': false
 };
 
 /**
@@ -192,6 +194,12 @@ chesterGL.useGoogleAnalytics = false;
  * @ignore
  */
 chesterGL.basePath = "";
+
+/**
+ * @type {boolean}
+ * @ignore
+ */
+chesterGL.canvasOriginTopLeft = false;
 
 /**
  * This is the WebGL context
@@ -353,6 +361,7 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.useGoogleAnalytics = /** @type {boolean} */(settings['useGoogleAnalytics']);
 	chesterGL.usesOffscreenBuffer = /** @type {boolean} */(settings['usesOffscreenBuffer']);
 	chesterGL.basePath = /** @type {string} */(settings['basePath']);
+	chesterGL.canvasOriginTopLeft = /** @type {boolean} */(settings['canvasOriginTopLeft']);
 
 	chesterGL.initGraphics(canvas);
 	if (chesterGL.webglMode) {
