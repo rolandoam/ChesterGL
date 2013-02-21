@@ -84,7 +84,6 @@ if subprocess.call(compileArgs, shell=True) != 0:
     print '================================'
     print 'We had an error during the compile process.'
     sys.exit()
-#os.system(compileArgs);
 
 # If debug, add source mapping comment to compiled file.
 if args.mode == 'debug':
@@ -97,10 +96,10 @@ if args.docs:
     docs = args.java + ' '
     docs += '-jar ' + args.jsdoc + '/jsrun.jar ' + args.jsdoc + '/app/run.js -w -version 170 -v -a '
     docs += '-t=' + args.jsdoc + '/templates/jsdoc ' 
-    src.insert(0, 'chesterGL/doc.js')
+    src.insert(0, 'chesterGL/docs.js')
     for file in src:
         docs += file + ' '
-    docs += '-d=' + args.output + '/doc'
+    docs += '-d=' + args.output + '/docs'
     if subprocess.call(docs, shell=True) != 0:
         print '================================'
         print 'We had an error during the compile process.'
