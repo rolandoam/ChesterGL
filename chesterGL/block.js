@@ -488,6 +488,26 @@ chesterGL.Block.prototype.getColor = function () {
 };
 
 /**
+ * gets the alpha of the block (the fourth element of the color)
+ * @return {number} the alpha
+ */
+chesterGL.Block.prototype.getAlpha = function () {
+	return this.color[3];
+};
+
+/**
+ * sets the alpha of the block (the fourth element of the color)
+ * @param {number} alpha the new alpha value
+ */
+chesterGL.Block.prototype.setAlpha = function (alpha) {
+	if (!this.color) {
+		throw "Need to set the color before alpha";
+	}
+	this.color[3] = alpha;
+	this.isColorDirty = true;
+};
+
+/**
  * sets the position of the block (x, y, z). It accepts an array
  * or three values (preferred in order to avoid GC)
  *
@@ -1009,6 +1029,8 @@ goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
 goog.exportProperty(chesterGL.Block.prototype, 'getColor', chesterGL.Block.prototype.getColor);
+goog.exportProperty(chesterGL.Block.prototype, 'getAlpha', chesterGL.Block.prototype.getAlpha);
+goog.exportProperty(chesterGL.Block.prototype, 'setAlpha', chesterGL.Block.prototype.setAlpha);
 goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'getFrame', chesterGL.Block.prototype.getFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
