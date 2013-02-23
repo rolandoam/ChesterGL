@@ -636,7 +636,7 @@ chesterGL.Block.prototype.getBoundingBox = function () {
  * @param {goog.vec.Vec3.Vec3Like=} frame
  */
 chesterGL.Block.prototype.setTexture = function (texturePath, frame) {
-	if (texturePath == this.texture) {
+	if (texturePath == this.texture && (!frame || this.frame == frame)) {
 		return;
 	}
 	this.texture = texturePath;
