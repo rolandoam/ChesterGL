@@ -148,12 +148,14 @@ chesterGL.onFakeWebGL = false;
  * <li>projection: "3d" or "2d" (ortho)</li>
  * <li>webglMode: true to try for webGL, false to force canvas mode</li>
  * <li>canvasOriginTopLeft: If true makes 0,0 the Top-Left corner. If false makes 0,0 the Bottom-Left</li>
+ * <li>backgroundColor: Canvas Background Color</li>
  * </ul>
- * @type {Object.<string,string|boolean>}
+ * @type {Object.<string,string|boolean,Array>}
  * @example
  * // use google analytics and force canvas mode
  * chesterGL.settings['useGoogleAnalytics'] = true;
  * chesterGL.settings['webglMode'] = false;
+ * chesterGL.settings['backgroundColor'] = [0,0,0,0];
  * chesterGL.setup('canvas-id');
  */
 chesterGL.settings = {
@@ -162,7 +164,8 @@ chesterGL.settings = {
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
 	'basePath': '',
-	'canvasOriginTopLeft': false
+	'canvasOriginTopLeft': false,
+	'backgroundColor': [0, 0, 0, 1]
 };
 
 /**
@@ -200,6 +203,12 @@ chesterGL.basePath = "";
  * @ignore
  */
 chesterGL.canvasOriginTopLeft = false;
+
+/**
+ * @type {Array|Float32Array|String}
+ * @ignore
+ */
+chesterGL.backgroundColor = goog.vec.Vec4.createFloat32FromArray([0, 0, 0, 1]);
 
 /**
  * This is the WebGL context
@@ -367,6 +376,8 @@ chesterGL.setup = function (canvasId) {
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
 	}
+	chesterGL.setBackgroundColor(settings['backgroundColor']);
+
 	// only test for debug query on browser
 	if (!chesterGL.onFakeWebGL) {
 		var queryStr = window.location.search.substring(1);
@@ -431,7 +442,7 @@ chesterGL.initGraphics = function (canvas) {
 
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
-			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false, preserveDrawingBuffer: true});
+			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false});
 			if (chesterGL.gl && typeof WebGLDebugUtils !== 'undefined') {
 				console.log("installing debug context");
 				chesterGL.gl = WebGLDebugUtils.makeDebugContext(chesterGL.gl, throwOnGLError);
@@ -960,7 +971,7 @@ chesterGL.setupPerspective = function () {
 		return;
 	}
 
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.clearColor(chesterGL.backgroundColor[0], chesterGL.backgroundColor[1], chesterGL.backgroundColor[2], chesterGL.backgroundColor[3]);
 	// gl.clearDepth(1.0);
 
 	// global blending options
@@ -1015,9 +1026,12 @@ chesterGL.setRunningScene = function (block) {
 chesterGL.drawScene = function () {
 	var gl = chesterGL.gl;
 	if (chesterGL.webglMode) {
+		gl.clearColor(chesterGL.backgroundColor[0], chesterGL.backgroundColor[1], chesterGL.backgroundColor[2], chesterGL.backgroundColor[3]);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	} else {
 		gl.setTransform(1, 0, 0, 1, 0, 0);
+		gl.fillStyle = chesterGL.backgroundColor;
+		gl.clearRect(0, 0, gl.viewportWidth, gl.viewportHeight); //We are using RGBA
 		gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 	}
 
@@ -1286,6 +1300,29 @@ chesterGL.getRunningScene = function () {
 	return chesterGL.runningScene;
 };
 
+/**
+ * sets the clear (background) color
+ * the array should be created in the order RGBA
+ *
+ * @param {Array|Float32Array} color
+ * @suppress {checkTypes}
+ */
+chesterGL.setBackgroundColor = function (color) {
+	if (chesterGL.webglMode) {
+		goog.vec.Vec4.setFromArray(chesterGL.backgroundColor, color);
+	} else {
+		chesterGL.backgroundColor = 'rgba(' + 
+			color[0] * 255 + ', ' + 
+			color[1] * 255 + ', ' + 
+			color[2] * 255 + ', ' + 
+			color[3] + ')';
+	}
+};
+
+chesterGL.getBackgroundColor = function() {
+	return chesterGL.backgroundColor;
+}
+
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
@@ -1317,3 +1354,5 @@ goog.exportSymbol('chesterGL.getRunningScene', chesterGL.getRunningScene);
 goog.exportSymbol('chesterGL.getCurrentContext', chesterGL.getCurrentContext);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);
+goog.exportSymbol('chesterGL.setBackgroundColor', chesterGL.setBackgroundColor);
+goog.exportSymbol('chesterGL.getBackgroundColor', chesterGL.getBackgroundColor);
