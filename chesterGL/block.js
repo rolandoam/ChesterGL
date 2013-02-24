@@ -1017,7 +1017,7 @@ chesterGL.Block.prototype.render = function () {
 		if (this.program == chesterGL.Block.PROGRAM.TEXTURE) {
 			texture = chesterGL.getAsset('texture', this.texture);
 			var frame = this.frame;
-			gl.drawImage(/** @type {HTMLImageElement} */(texture), frame[0], texture.height - (frame[1] + h), frame[2], frame[3], -w/2, -h/2, w, h);
+			gl.drawImage(/** @type {HTMLImageElement} */(texture), frame[0], frame[1], frame[2], frame[3], -w/2, -h/2, w, h);
 		} else {
 			// draw a rectangle, to simulate the quad being drawn
 			var byteColor = [];
