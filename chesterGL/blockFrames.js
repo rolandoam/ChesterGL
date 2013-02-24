@@ -52,7 +52,7 @@ chesterGL.BlockFrames.parseFrameData = function (data) {
 	}
 	if (data['meta'] && data['meta']['version'] == '1.0') {
 		var texName = data['meta']['image'];
-		chesterGL.loadAsset('texture', texName, null, function (img) {
+		chesterGL.loadAsset('texture', texName, null, function (err, img) {
 			var imgHeight = img.height;
 			var frames = data['frames'];
 			for (var frameName in frames) {
@@ -107,7 +107,7 @@ chesterGL.BlockFrames.getFrame = function (frameName) {
  */
 chesterGL.BlockFrames.loadFrames = function (path, callback) {
 	console.log("loadFrames: will fetch " + path);
-	chesterGL.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (data) {
+	chesterGL.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (err, data) {
 		chesterGL.BlockFrames.parseFrameData(data);
 	});
 };

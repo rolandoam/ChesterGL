@@ -16,3 +16,6 @@ iOS/
 .svn
 closure-library/
 *.flags
+
+# remove build script
+build.bat

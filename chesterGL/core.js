@@ -147,12 +147,15 @@ chesterGL.onFakeWebGL = false;
  * <li>useGoogleAnalytics: whether or not to track fps and send analytics. Will send every 5 seconds</li>
  * <li>projection: "3d" or "2d" (ortho)</li>
  * <li>webglMode: true to try for webGL, false to force canvas mode</li>
+ * <li>canvasOriginTopLeft: If true makes 0,0 the Top-Left corner. If false makes 0,0 the Bottom-Left</li>
+ * <li>backgroundColor: Canvas Background Color</li>
  * </ul>
- * @type {Object.<string,string|boolean>}
+ * @type {Object.<string,string|boolean,Array>}
  * @example
  * // use google analytics and force canvas mode
  * chesterGL.settings['useGoogleAnalytics'] = true;
  * chesterGL.settings['webglMode'] = false;
+ * chesterGL.settings['backgroundColor'] = [0,0,0,0];
  * chesterGL.setup('canvas-id');
  */
 chesterGL.settings = {
@@ -160,7 +163,9 @@ chesterGL.settings = {
 	'projection': '3d',
 	'webglMode': true,
 	'usesOffscreenBuffer': false,
-	'basePath': ''
+	'basePath': '',
+	'canvasOriginTopLeft': false,
+	'backgroundColor': [0, 0, 0, 1]
 };
 
 /**
@@ -192,6 +197,18 @@ chesterGL.useGoogleAnalytics = false;
  * @ignore
  */
 chesterGL.basePath = "";
+
+/**
+ * @type {boolean}
+ * @ignore
+ */
+chesterGL.canvasOriginTopLeft = false;
+
+/**
+ * @type {Array|Float32Array|String}
+ * @ignore
+ */
+chesterGL.backgroundColor = goog.vec.Vec4.createFloat32FromArray([0, 0, 0, 1]);
 
 /**
  * This is the WebGL context
@@ -353,11 +370,14 @@ chesterGL.setup = function (canvasId) {
 	chesterGL.useGoogleAnalytics = /** @type {boolean} */(settings['useGoogleAnalytics']);
 	chesterGL.usesOffscreenBuffer = /** @type {boolean} */(settings['usesOffscreenBuffer']);
 	chesterGL.basePath = /** @type {string} */(settings['basePath']);
+	chesterGL.canvasOriginTopLeft = /** @type {boolean} */(settings['canvasOriginTopLeft']);
 
 	chesterGL.initGraphics(canvas);
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
 	}
+	chesterGL.setBackgroundColor(settings['backgroundColor']);
+
 	// only test for debug query on browser
 	if (!chesterGL.onFakeWebGL) {
 		var queryStr = window.location.search.substring(1);
@@ -422,7 +442,7 @@ chesterGL.initGraphics = function (canvas) {
 
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
-			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: false, antialias: false, preserveDrawingBuffer: true});
+			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false});
 			if (chesterGL.gl && typeof WebGLDebugUtils !== 'undefined') {
 				console.log("installing debug context");
 				chesterGL.gl = WebGLDebugUtils.makeDebugContext(chesterGL.gl, throwOnGLError);
@@ -621,11 +641,20 @@ chesterGL.registerAssetLoader = function (type, loader) {
  *
  * @param {string} type the type of asset being loaded, it could be "texture" or "default"
  * @param {string|Object} url the url for the asset
- * @param {(string|null)=} name the name of the asset. If none is provided, then the name is the path
- * @param {function(Object)=} callback the callback that will be executed as soon as the asset is loaded
+ * @param {(string|null)=} [name] the name of the asset. If none is provided, then the name is the path
+ * @param {function(Object, Object)=} [callback] execute when asset is loaded or an error occurs. Callback Arguments (err, asset)
+ * @example
+ * chesterGL.loadAsset("texture", "someImage.png");
+ * chesterGL.loadAsset("texture", "someImage.png", "spr-house");
+ * chesterGL.loadAsset("texture", "someImage.png", "spr-house", onAssetLoad);
+ * chesterGL.loadAsset("texture", "someImage.png", onAssetLoad);
  */
 chesterGL.loadAsset = function (type, url, name, callback) {
 	var params;
+	if (typeof(name) == 'function') {
+		callback = name;
+		name = null;
+	}
 	if (typeof(url) == 'object') {
 		params = {
 			dataType: url.dataType,
@@ -672,7 +701,7 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 		if (callback) assets[rname].listeners.push(callback);
 	} else if (assets[rname].status == 'loaded') {
 		// created and loaded, just call the callback
-		if (callback) callback(assets[rname].data);
+		if (callback) callback(null, assets[rname].data);
 	} else if (assets[rname].status == 'try') {
 		assets[rname].status = 'loading';
 		if (chesterGL.assetsLoaders[type])
@@ -843,7 +872,7 @@ chesterGL.defaultTextureLoader = function (type, params) {
 			texture.status = "loaded";
 			texture.highDPI = path.match(re) && chesterGL.highDPI;
 			var l;
-			while ((l = texture.listeners.shift())) { l(texture.data); }
+			while ((l = texture.listeners.shift())) { l(null, texture.data); }
 			// test for assets loaded
 			chesterGL.assetsLoaded(type);
 			chesterGL.assetsLoaded("all");
@@ -854,14 +883,19 @@ chesterGL.defaultTextureLoader = function (type, params) {
 		}
 	}, false);
 	img.addEventListener("error", function (e) {
+		var texture = chesterGL.assets["texture"][name];
 		// if we're a highDPI image, and we failed, load again without @Nx
 		if (e.type === "error" && chesterGL.highDPI && path.match(re)) {
-			var texture = chesterGL.assets["texture"][name];
 			params.url = path.replace("@" + chesterGL.devicePixelRatio + "x", "");
 			params.forceNonRetina = true;
 			// requeue
 			texture.status = "try";
 			chesterGL.loadAsset("texture", params);
+		} else {
+			//Failed to load, let's call the callback
+			texture.status = "error";
+			var l;
+			while ((l = texture.listeners.shift())) { l({url: name, type: e.type}, texture.data); }
 		}
 	}, true);
 	// append the basePath if it's not an absolute url or a data:image url
@@ -900,7 +934,7 @@ chesterGL.defaultAssetLoader = function (type, params) {
 				asset.status = 'loaded';
 				// call all listeners
 				var l;
-				while ((l = asset.listeners.shift())) { l(asset.data); }
+				while ((l = asset.listeners.shift())) { l(null, asset.data); }
 				// test for assets loaded
 				chesterGL.assetsLoaded(type);
 				chesterGL.assetsLoaded('all');
@@ -918,6 +952,8 @@ chesterGL.defaultAssetLoader = function (type, params) {
 				chesterGL.loadAsset(type, params);
 			} else {
 				console.log("Error loading asset " + path);
+				var l;
+				while ((l = asset.listeners.shift())) { l({url: path, type: req.status}, asset.data); }
 			}
 		}
 	};
@@ -935,7 +971,7 @@ chesterGL.setupPerspective = function () {
 		return;
 	}
 
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.clearColor(chesterGL.backgroundColor[0], chesterGL.backgroundColor[1], chesterGL.backgroundColor[2], chesterGL.backgroundColor[3]);
 	// gl.clearDepth(1.0);
 
 	// global blending options
@@ -993,6 +1029,8 @@ chesterGL.drawScene = function () {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	} else {
 		gl.setTransform(1, 0, 0, 1, 0, 0);
+		gl.fillStyle = chesterGL.backgroundColor;
+		gl.clearRect(0, 0, gl.viewportWidth, gl.viewportHeight); //We are using RGBA
 		gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 	}
 
@@ -1261,6 +1299,35 @@ chesterGL.getRunningScene = function () {
 	return chesterGL.runningScene;
 };
 
+/**
+ * sets the clear (background) color
+ * the array should be created in the order RGBA
+ *
+ * @param {Array|Float32Array} color
+ * @suppress {checkTypes}
+ */
+chesterGL.setBackgroundColor = function (color) {
+	if (chesterGL.webglMode) {
+		goog.vec.Vec4.setFromArray(chesterGL.backgroundColor, color);
+		chesterGL.gl.clearColor(chesterGL.backgroundColor[0], chesterGL.backgroundColor[1], chesterGL.backgroundColor[2], chesterGL.backgroundColor[3]);
+	} else {
+		chesterGL.backgroundColor = 'rgba(' + 
+			color[0] * 255 + ', ' + 
+			color[1] * 255 + ', ' + 
+			color[2] * 255 + ', ' + 
+			color[3] + ')';
+	}
+};
+
+/**
+ * get's the clear (background) color
+ *
+ * @return {Array|Float32Array|String}
+ */
+chesterGL.getBackgroundColor = function() {
+	return chesterGL.backgroundColor;
+}
+
 // properties
 goog.exportSymbol('chesterGL.version', chesterGL.version);
 goog.exportSymbol('chesterGL.settings', chesterGL.settings);
@@ -1292,3 +1359,5 @@ goog.exportSymbol('chesterGL.getRunningScene', chesterGL.getRunningScene);
 goog.exportSymbol('chesterGL.getCurrentContext', chesterGL.getCurrentContext);
 goog.exportSymbol('chesterGL.addMouseHandler', chesterGL.addMouseHandler);
 goog.exportSymbol('chesterGL.removeMouseHandler', chesterGL.removeMouseHandler);
+goog.exportSymbol('chesterGL.setBackgroundColor', chesterGL.setBackgroundColor);
+goog.exportSymbol('chesterGL.getBackgroundColor', chesterGL.getBackgroundColor);

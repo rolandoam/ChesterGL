@@ -58,7 +58,7 @@ var PARTICLE_SIZE = BUFFER_ELEMENTS * 4;
 chesterGL.GPUParticleSystem = function (properties) {
 	chesterGL.Block.call(this, null, chesterGL.Block.TYPE.PARTICLE);
 	var _this = this;
-	chesterGL.loadAsset('texture', properties['texture'], null, function () {
+	chesterGL.loadAsset('texture', properties['texture'], null, function (err, data) {
 		_this.loadProperties(properties);
 	});
 };
