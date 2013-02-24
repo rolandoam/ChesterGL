@@ -1026,7 +1026,6 @@ chesterGL.setRunningScene = function (block) {
 chesterGL.drawScene = function () {
 	var gl = chesterGL.gl;
 	if (chesterGL.webglMode) {
-		gl.clearColor(chesterGL.backgroundColor[0], chesterGL.backgroundColor[1], chesterGL.backgroundColor[2], chesterGL.backgroundColor[3]);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	} else {
 		gl.setTransform(1, 0, 0, 1, 0, 0);
@@ -1310,6 +1309,7 @@ chesterGL.getRunningScene = function () {
 chesterGL.setBackgroundColor = function (color) {
 	if (chesterGL.webglMode) {
 		goog.vec.Vec4.setFromArray(chesterGL.backgroundColor, color);
+		chesterGL.gl.clearColor(chesterGL.backgroundColor[0], chesterGL.backgroundColor[1], chesterGL.backgroundColor[2], chesterGL.backgroundColor[3]);
 	} else {
 		chesterGL.backgroundColor = 'rgba(' + 
 			color[0] * 255 + ', ' + 
@@ -1319,6 +1319,11 @@ chesterGL.setBackgroundColor = function (color) {
 	}
 };
 
+/**
+ * get's the clear (background) color
+ *
+ * @return {Array|Float32Array|String}
+ */
 chesterGL.getBackgroundColor = function() {
 	return chesterGL.backgroundColor;
 }
