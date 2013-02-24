@@ -513,6 +513,7 @@ chesterGL.Block.prototype.setAlpha = function (alpha) {
 	}
 	this.color[3] = alpha;
 	this.isColorDirty = true;
+	return this;
 };
 
 /**
