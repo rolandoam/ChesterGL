@@ -534,6 +534,51 @@ chesterGL.RepeatAction.prototype.update = function (delta) {
 
 /**
  * @constructor
+ * Flexible action, that will change linearly in time a numeric property
+ * @param {string|Object} param the paramenter to modify in the block. You can also pass an object
+ * to specify a getter/setter instead.
+ * @param {number} targetValue
+ * @param {number} totalTime the total time of the action, in milliseconds
+ * @param {chesterGL.Block=} block the block on which to run the action
+ * @extends {chesterGL.Action}
+ */
+chesterGL.ParametricAction = function (param, targetValue, totalTime, block) {
+	chesterGL.Action.call(this, totalTime, block);
+	this.param = param;
+	this.targetValue = targetValue;
+	this.hasGetterAndSetter = (typeof param === "object");
+};
+goog.inherits(chesterGL.ParametricAction, chesterGL.Action);
+
+/** @ignore */
+chesterGL.ParametricAction.prototype.begin = function ParametricAction_begin() {
+	chesterGL.Action.prototype.begin.call(this);
+	if (this.hasGetterAndSetter) {
+		this.initialValue = this.block[this.param['getter']]();
+	} else {
+		var iv = this.block[this.param];
+		if (!iv) {
+			throw "Invalid ElasticAction param!";
+		}
+		this.initialValue = iv;
+	}
+};
+
+/** @ignore */
+chesterGL.ParametricAction.prototype.update = function ParametricAction_update(delta) {
+	chesterGL.Action.prototype.update.call(this, delta);
+	var t = Math.min(1, this.elapsed / this.totalTime),
+		b = this.block;
+	var newv = this.initialValue + t * (this.targetValue - this.initialValue);
+	if (this.hasGetterAndSetter) {
+		b[this.param['setter']].call(b, newv);
+	} else {
+		b[this.param] = newv;
+	}
+};
+
+/**
+ * @constructor
  * This is not really "elastic", It's applying a bezier-curve to transform the parameter in an
  * elastic-like curve. The current curve is:
  *
@@ -560,6 +605,7 @@ chesterGL.ElasticAction = function (param, targetValue, totalTime, block) {
 };
 goog.inherits(chesterGL.ElasticAction, chesterGL.Action);
 
+/** @ignore */
 chesterGL.ElasticAction.prototype.begin = function ElasticAction_begin() {
 	chesterGL.Action.prototype.begin.call(this);
 	var iv;
@@ -586,6 +632,7 @@ chesterGL.ElasticAction.prototype.begin = function ElasticAction_begin() {
 
 // TODO:
 // make the f(t) an argument, so we can update f(t) any way we want
+/** @ignore */
 chesterGL.ElasticAction.prototype.update = function ElasticAction_update(delta) {
 	chesterGL.Action.prototype.update.call(this, delta);
 	var t = Math.min(1, this.elapsed / this.totalTime),
@@ -834,6 +881,7 @@ goog.exportSymbol('chesterGL.RepeatAction', chesterGL.RepeatAction);
 goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
 goog.exportSymbol('chesterGL.WiggleAction', chesterGL.WiggleAction);
 goog.exportSymbol('chesterGL.ElasticAction', chesterGL.ElasticAction);
+goog.exportSymbol('chesterGL.ParametricAction', chesterGL.ParametricAction);
 goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
 goog.exportProperty(chesterGL.ActionManager, 'pause', chesterGL.ActionManager.pause);

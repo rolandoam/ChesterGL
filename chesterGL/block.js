@@ -381,6 +381,7 @@ chesterGL.Block.prototype.onExitScene = function () {
 
 /**
  * sets the frame for this block
+ *
  * @param {goog.vec.Vec3.Vec3Like|string} newFrame
  * @param {boolean=} isHighDPI
  * @returns {chesterGL.Block} The object itself
@@ -492,6 +493,26 @@ chesterGL.Block.prototype.setColor = function (color) {
  */
 chesterGL.Block.prototype.getColor = function () {
 	return this.color;
+};
+
+/**
+ * gets the alpha of the block (the fourth element of the color)
+ * @return {number} the alpha
+ */
+chesterGL.Block.prototype.getAlpha = function () {
+	return this.color[3];
+};
+
+/**
+ * sets the alpha of the block (the fourth element of the color)
+ * @param {number} alpha the new alpha value
+ */
+chesterGL.Block.prototype.setAlpha = function (alpha) {
+	if (!this.color) {
+		throw "Need to set the color before alpha";
+	}
+	this.color[3] = alpha;
+	this.isColorDirty = true;
 };
 
 /**
@@ -628,7 +649,7 @@ chesterGL.Block.prototype.getBoundingBox = function () {
  * @returns {chesterGL.Block} The object itself
  */
 chesterGL.Block.prototype.setTexture = function (texturePath, frame) {
-	if (texturePath == this.texture) {
+	if (texturePath == this.texture && (!frame || this.frame == frame)) {
 		return this;
 	}
 	this.texture = texturePath;
@@ -1041,6 +1062,8 @@ goog.exportProperty(chesterGL.Block.prototype, 'setRotation', chesterGL.Block.pr
 goog.exportProperty(chesterGL.Block.prototype, 'getRotation', chesterGL.Block.prototype.getRotation);
 goog.exportProperty(chesterGL.Block.prototype, 'setColor', chesterGL.Block.prototype.setColor);
 goog.exportProperty(chesterGL.Block.prototype, 'getColor', chesterGL.Block.prototype.getColor);
+goog.exportProperty(chesterGL.Block.prototype, 'getAlpha', chesterGL.Block.prototype.getAlpha);
+goog.exportProperty(chesterGL.Block.prototype, 'setAlpha', chesterGL.Block.prototype.setAlpha);
 goog.exportProperty(chesterGL.Block.prototype, 'setFrame', chesterGL.Block.prototype.setFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'getFrame', chesterGL.Block.prototype.getFrame);
 goog.exportProperty(chesterGL.Block.prototype, 'setContentSize', chesterGL.Block.prototype.setContentSize);
