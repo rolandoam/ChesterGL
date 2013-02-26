@@ -4,4 +4,10 @@ Lead Developer
 
 Contributors
 * Leander Harding (lharding)
-	Adds fudge factor to prevent texture bleeding
+  Adds fudge factor to prevent texture bleeding
+* Preston Alvarado (coolhome)
+  Support for canvas background
+  Fix #36
+  Added option for top-left or bottom-left origin
+  python makefile
+  improvements to loadAsset
