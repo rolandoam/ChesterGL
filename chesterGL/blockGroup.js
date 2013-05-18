@@ -148,6 +148,7 @@ chesterGL.BlockGroup.prototype.append = function (blocks) {
 		block.glBufferData    = this.glBufferData;
 		this.isChildDirty = true;
 	}
+	return this;
 };
 
 /**
@@ -175,6 +176,7 @@ chesterGL.BlockGroup.prototype.remove = function (b) {
 		}
 		this.isChildDirty = true;
 	}
+	return this;
 };
 
 /**
