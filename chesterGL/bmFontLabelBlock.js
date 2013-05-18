@@ -40,11 +40,14 @@ goog.require("chesterGL.BlockGroup");
  * @param {string} text the initial text for the label
  * @param {string} name This is the name of the fnt file. There should be an existing .fnt and .png
  * file for the texture.
+ * @param {number=} maxWidth the max width for the label. If the text is larger than this, it will scale
+ * down the content to match that width.
  * @extends {chesterGL.BlockGroup}
  */
-chesterGL.BMFontLabelBlock = function (text, name) {
-	goog.base(this, name + ".png", Math.max(100, text.length));
-	// this._sharedTexture = name + ".png";
+chesterGL.BMFontLabelBlock = function (text, name, maxWidth) {
+	text = text || "";
+	chesterGL.BlockGroup.call(this, name + ".png", Math.max(255, text.length));
+	this.maxWidth = maxWidth || 0;
 	this.setColor([0, 0, 0, 0]);
 	var fntFile = chesterGL.getAsset('txt', name + ".fnt"),
 		totalChars = 0,
@@ -107,6 +110,7 @@ goog.inherits(chesterGL.BMFontLabelBlock, chesterGL.BlockGroup);
 chesterGL.BMFontLabelBlock.prototype.setAnchorPoint = function BMFontLabelBlock_setAnchorPoint(x, y) {
 	goog.base(this, "setAnchorPoint", x, y);
 	this.setText(this.text);
+	return this;
 };
 
 /**
@@ -116,15 +120,14 @@ chesterGL.BMFontLabelBlock.prototype.setAnchorPoint = function BMFontLabelBlock_
  * @ignore
  */
 chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlock_calculateTextWidth(text) {
-	var maxWidth = 0,
+	var curWidth = 0,
 		lineWidth = 0,
 		lines = 1,
 		i, last = 0;
 	for (i=0; i < text.length; i++) {
 		var ch = text.charCodeAt(i);
 		if (ch == 10 || ch == 13) {
-			// console.log("line width: " + lineWidth);
-			maxWidth = Math.max(maxWidth, lineWidth);
+			curWidth = Math.max(curWidth, lineWidth);
 			lineWidth = 0;
 			lines++;
 			continue;
@@ -140,9 +143,9 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlo
 			last = ch;
 		}
 	}
-	maxWidth = Math.max(maxWidth, lineWidth);
+	curWidth = Math.max(curWidth, lineWidth);
 	// console.log("line width: " + lineWidth);
-	return {width: maxWidth, lines: lines};
+	return {width: curWidth, lines: lines};
 };
 
 /**
@@ -150,7 +153,7 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlo
  * @param {string} text
  */
 chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText(text) {
-	// bail early if no text
+	// bail out early if no text
 	if (text === null || text === undefined) {
 		return;
 	}
@@ -163,7 +166,12 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		curX = -sz.width * this.anchorPoint.x,
 		curY = -(sz.lines * lineHeight * this.anchorPoint.y);
 
-	// console.log("width: " + width + "; height: " + height + "; offX: " + offX);
+	if (this.maxWidth > 0 && sz.width > this.maxWidth) {
+		var scale = this.maxWidth / sz.width;
+		this.setScale(scale);
+	} else {
+		this.setScale(1.0);
+	}
 	text = text.split(/\n|\r/).reverse().join("\n");
 	for (i=0; i < text.length; i++) {
 		var ch = text.charCodeAt(i);
@@ -194,7 +202,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 			curX += frameInfo['xadvance'] + kern;
 			this.append(b);
 		} else {
-			throw "Invalid charcode " + ch + " for text " + text;
+			throw "Invalid charcode " + ch + " for text " + text + " (" + text.length + ")";
 		}
 		last = ch;
 	}
@@ -210,8 +218,8 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
  * @param {string} prefix
  */
 chesterGL.BMFontLabelBlock.loadFont = function (prefix) {
-	chesterGL.loadAsset("texture", prefix + ".png");
 	chesterGL.loadAsset("txt", prefix + ".fnt");
+	chesterGL.loadAsset("texture", prefix + ".png");
 };
 
 // export the symbol & static methods
