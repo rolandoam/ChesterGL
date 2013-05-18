@@ -447,7 +447,7 @@ chesterGL.Block.prototype.getContentSize = function () {
  * sets the scale of the block
  *
  * @param {number} newScaleX
- * @param {?number} newScaleY optional: pass only newScaleX to set both
+ * @param {number=} newScaleY optional: pass only newScaleX to set both
  * @returns {chesterGL.Block} The object itself
  */
 chesterGL.Block.prototype.setScale = function (newScaleX, newScaleY) {
@@ -599,8 +599,11 @@ chesterGL.Block.prototype.getAbsolutePosition = function () {
 	return pos;
 };
 
-/** @ignore */
-chesterGL.Block.__tmpInv = [];
+/**
+ * @type {Float32Array}
+ * @ignore
+ */
+chesterGL.Block.__tmpInv = new Float32Array(16);
 
 /**
  * converts a global point to local coordinates
