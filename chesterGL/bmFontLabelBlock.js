@@ -148,6 +148,18 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlo
 	return {width: curWidth, lines: lines};
 };
 
+chesterGL.BMFontLabelBlock.prototype.getFrameForChar = function BMFontLabelBlock_frameForChar(ch) {
+	if (typeof ch === "string") {
+		ch = ch.charCodeAt(0);
+	}
+	var fi = this.chars[ch];
+	if (fi) {
+		return [fi['x'], fi['y'], fi['width'], fi['height']];
+	} else {
+		throw "Invalid character '" + ch + "' for BMFont";
+	}
+};
+
 /**
  * sets the text of the label
  * @param {string} text
@@ -186,13 +198,8 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 				kern = (this.kernings[last][ch] || 0);
 				// console.log("  kerning: " + kern);
 			}
-			var frameInfo = this.chars[ch],
-				frame = [
-					frameInfo['x'],
-					frameInfo['y'],
-					frameInfo['width'],
-					frameInfo['height']
-				],
+			var frame = this.getFrameForChar(ch),
+				frameInfo = this.chars[ch],
 				b = this.createBlock(frame),
 				posY = curY + (lineHeight - frameInfo['yoffset']) - frameInfo['height'] * 0.5,
 				posX = curX + frameInfo['xoffset'] + frameInfo['width'] * 0.5 + kern;
@@ -228,3 +235,4 @@ goog.exportSymbol('chesterGL.BMFontLabelBlock.loadFont', chesterGL.BMFontLabelBl
 // instance methods
 goog.exportProperty(chesterGL.BMFontLabelBlock.prototype, 'setText', chesterGL.BMFontLabelBlock.prototype.setText);
 goog.exportProperty(chesterGL.BMFontLabelBlock.prototype, 'setAnchorPoint', chesterGL.BMFontLabelBlock.prototype.setAnchorPoint);
+goog.exportProperty(chesterGL.BMFontLabelBlock.prototype, 'getFrameForChar', chesterGL.BMFontLabelBlock.prototype.getFrameForChar);
