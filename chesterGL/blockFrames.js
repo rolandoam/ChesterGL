@@ -106,7 +106,6 @@ chesterGL.BlockFrames.getFrame = function (frameName) {
  * @param {function()=} callback The callback to be called after everything is ready
  */
 chesterGL.BlockFrames.loadFrames = function (path, callback) {
-	console.log("loadFrames: will fetch " + path);
 	chesterGL.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (err, data) {
 		chesterGL.BlockFrames.parseFrameData(data);
 	});
