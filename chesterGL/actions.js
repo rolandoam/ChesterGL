@@ -82,15 +82,36 @@ chesterGL.Action.prototype.finished = false;
 chesterGL.Action.prototype.running = false;
 
 /**
+ * is there a next action?
+ * @type {chesterGL.Action?}
+ */
+chesterGL.Action.prototype.next = null;
+
+/**
  * This is the default update function (does nothing)
  * @param {number} delta
  * @ignore
  */
 chesterGL.Action.prototype.update = function (delta) {
-	this.elapsed += delta;
-	if (this.totalTime >= 0 && this.elapsed >= this.totalTime) {
-		this.stop();
+	if (this.running) {
+		this.elapsed += delta;
+		if (this.totalTime >= 0 && this.elapsed >= this.totalTime) {
+			this.stop();
+			if (this.next) {
+				this.block.runAction(this.next);
+			}
+		}
 	}
+};
+
+/**
+ * sets the next action. Returns that action (chainable methods)
+ * @param {chesterGL.Action} action
+ * @return {chesterGL.Action}
+ */
+chesterGL.Action.prototype.setNext = function (action) {
+	this.next = action;
+	return action;
 };
 
 /**
@@ -270,7 +291,7 @@ goog.inherits(chesterGL.ScaleAction, chesterGL.Action);
  * @ignore
  */
 chesterGL.ScaleAction.prototype.begin = function() {
-	goog.base(this, "begin");
+	chesterGL.Action.prototype.begin.call(this);
 	if (!this.block) {
 		throw "invalid scale action - no block provided";
 	}
@@ -290,7 +311,7 @@ chesterGL.ScaleAction.prototype.begin = function() {
  * @ignore
  */
 chesterGL.ScaleAction.prototype.update = function (delta) {
-	goog.base(this, "update", delta);
+	chesterGL.Action.prototype.update.call(this, delta);
 	var block = this.block,
 		t = Math.min(1, this.elapsed / this.totalTime),
 		scaleX = this.startScaleX + t * (this.finalScaleX - this.startScaleX),
@@ -302,14 +323,10 @@ chesterGL.ScaleAction.prototype.update = function (delta) {
  * @ignore
  */
 chesterGL.ScaleAction.prototype.stop = function () {
-	goog.base(this, "stop");
+	chesterGL.Action.prototype.stop.call(this);
 	if (this.elapsed >= this.totalTime) {
 		this.block.setScale(this.finalScaleX, this.finalScaleY);
 	}
-};
-
-chesterGL.ScaleAction.prototype.reset = function() {
-	goog.base(this, "reset");
 };
 
 /**
@@ -387,7 +404,7 @@ chesterGL.SequenceAction = function (actions) {
 		this.actions.push(arguments[i]);
 	}
 	this.nextStop = this.actions[0].totalTime;
-	goog.base(this, totalTime);
+	chesterGL.Action.call(this, totalTime);
 };
 goog.inherits(chesterGL.SequenceAction, chesterGL.Action);
 
@@ -408,7 +425,7 @@ chesterGL.SequenceAction.prototype.currentAction = 0;
  * @ignore
  */
 chesterGL.SequenceAction.prototype.begin = function () {
-	goog.base(this, "begin");
+	chesterGL.Action.prototype.begin.call(this);
 	this.nextStop = this.actions[0].totalTime;
 	this.actions[0].block = this.block;
 	this.actions[0].begin();
@@ -554,7 +571,12 @@ goog.inherits(chesterGL.ParametricAction, chesterGL.Action);
 chesterGL.ParametricAction.prototype.begin = function ParametricAction_begin() {
 	chesterGL.Action.prototype.begin.call(this);
 	if (this.hasGetterAndSetter) {
-		this.initialValue = this.block[this.param['getter']]();
+		if (typeof this.param['getter'] === "string") {
+			this.initialValue = this.block[this.param['getter']]();
+		} else {
+			// assume it's a function
+			this.initialValue = this.param['getter'].call(this.block);
+		}
 	} else {
 		var iv = this.block[this.param];
 		if (!iv) {
@@ -571,7 +593,11 @@ chesterGL.ParametricAction.prototype.update = function ParametricAction_update(d
 		b = this.block;
 	var newv = this.initialValue + t * (this.targetValue - this.initialValue);
 	if (this.hasGetterAndSetter) {
-		b[this.param['setter']].call(b, newv);
+		if (typeof this.param['setter'] === "string") {
+			b[this.param['setter']].call(b, newv);
+		} else {
+			this.param['setter'].call(b, newv);
+		}
 	} else {
 		b[this.param] = newv;
 	}
@@ -831,7 +857,7 @@ chesterGL.ActionManager.tick = function (delta) {
 		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
 		if (a.running) a.update(delta);
 		if (a.finished) {
-			delete chesterGL.ActionManager.scheduledActions_[a.actionId];
+			delete chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
 		}
 	}
 };
@@ -867,7 +893,7 @@ chesterGL.Block.prototype.removeAllActions = function Block_removeAllActions() {
 	for (var i in chesterGL.ActionManager.scheduledActions_) {
 		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
 		if (a.block == this) {
-			chesterGL.ActionManager.unscheduleAction(a.actionId);
+			chesterGL.ActionManager.unscheduleAction(/** @type{number} */(i));
 		}
 	}
 };
@@ -887,6 +913,7 @@ goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.Actio
 goog.exportProperty(chesterGL.ActionManager, 'pause', chesterGL.ActionManager.pause);
 goog.exportProperty(chesterGL.ActionManager, 'resume', chesterGL.ActionManager.resume);
 goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
+goog.exportProperty(chesterGL.Action.prototype, 'setNext', chesterGL.Action.prototype.setNext);
 goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
 goog.exportProperty(chesterGL.Action.prototype, 'reset', chesterGL.Action.prototype.reset);
 goog.exportProperty(chesterGL.Action.prototype, 'begin', chesterGL.Action.prototype.begin);
