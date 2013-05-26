@@ -155,6 +155,14 @@ chesterGL.Action.prototype.resume = function () {
 };
 
 /**
+ * is running?
+ * @return {boolean}
+ */
+chesterGL.Action.prototype.isRunning = function () {
+	return this.running === true;
+};
+
+/**
  * reset - prepare the action in order to use it again
  * @ignore
  */
@@ -920,5 +928,6 @@ goog.exportProperty(chesterGL.Action.prototype, 'begin', chesterGL.Action.protot
 goog.exportProperty(chesterGL.Action.prototype, 'pause', chesterGL.Action.prototype.pause);
 goog.exportProperty(chesterGL.Action.prototype, 'resume', chesterGL.Action.prototype.resume);
 goog.exportProperty(chesterGL.Action.prototype, 'setTotalTime', chesterGL.Action.prototype.setTotalTime);
+goog.exportProperty(chesterGL.Action.prototype, 'isRunning', chesterGL.Action.prototype.isRunning);
 goog.exportProperty(chesterGL.MoveAction.prototype, 'reverse', chesterGL.MoveAction.prototype.reverse);
 goog.exportProperty(chesterGL.ScaleAction.prototype, 'reverse', chesterGL.ScaleAction.prototype.reverse);
