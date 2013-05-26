@@ -870,7 +870,7 @@ chesterGL.defaultTextureLoader = function (type, params) {
 		if (chesterGL.assetsHandlers[type](params, img)) {
 			// call all listeners
 			texture.status = "loaded";
-			texture.highDPI = path.match(re) && chesterGL.highDPI;
+			texture.highDPI = !!(path.match(re) && chesterGL.highDPI);
 			var l;
 			while ((l = texture.listeners.shift())) { l(null, texture.data); }
 			// test for assets loaded
@@ -985,6 +985,7 @@ chesterGL.setupPerspective = function () {
 	gl.viewport(0, 0, chesterGL.canvas.width, chesterGL.canvas.height);
 
 	chesterGL.pMatrix = goog.vec.Mat4.createFloat32();
+	chesterGL.projection = chesterGL.settings["projection"];
 
 	if (chesterGL.projection == "2d") {
 		// 2d projection
