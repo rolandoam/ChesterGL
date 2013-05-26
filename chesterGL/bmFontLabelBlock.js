@@ -49,13 +49,15 @@ chesterGL.BMFontLabelBlock = function (text, name, maxWidth) {
 	chesterGL.BlockGroup.call(this, name + ".png", Math.max(255, text.length));
 	this.maxWidth = maxWidth || 0;
 	this.setColor([0, 0, 0, 0]);
-	var fntFile = chesterGL.getAsset('txt', name + ".fnt"),
+	var fntFile = chesterGL.getAsset("txt", name + ".fnt"),
+		tex = chesterGL.assets["texture"][name + ".png"],
 		totalChars = 0,
 		md,
 		lines = fntFile.split(/\n|\r/),
 		i, j, tmp;
 	this.chars = {};
 	this.kernings = {};
+	this.isHighDPI = tex.highDPI;
 	for (i in lines) {
 		md = lines[i].match(/chars count=(\d+)/);
 		if (md) {
@@ -139,7 +141,8 @@ chesterGL.BMFontLabelBlock.prototype.calculateTextSize = function BMFontLabelBlo
 				kern = (this.kernings[last][ch] || 0);
 				// console.log("  kerning: " + kern);
 			}
-			lineWidth += frameInfo['xadvance'] + kern;
+			var dx = frameInfo['xadvance'] + kern;
+			lineWidth += (this.isHighDPI ? dx / chesterGL.devicePixelRatio : dx);
 			last = ch;
 		}
 	}
@@ -204,8 +207,10 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 				posY = curY + (lineHeight - frameInfo['yoffset']) - frameInfo['height'] * 0.5,
 				posX = curX + frameInfo['xoffset'] + frameInfo['width'] * 0.5 + kern;
 			// set the text to pixel-perfect position
-			b.setPosition(~~posX, ~~posY, 0);
-			// console.log(text.charAt(i) + ": " + posX + "," + posY);
+			if (this.isHighDPI)
+				b.setPosition(~~(posX / chesterGL.devicePixelRatio), ~~(posY / chesterGL.devicePixelRatio), 0);
+			else
+				b.setPosition(~~posX, ~~posY, 0);
 			curX += frameInfo['xadvance'] + kern;
 			this.append(b);
 		} else {
@@ -213,7 +218,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		}
 		last = ch;
 	}
-	if (chesterGL.highDPI && chesterGL.assets['texture'][this.texture].highDPI) {
+	if (this.isHighDPI) {
 		this.setContentSize(sz.width, sz.lines * lineHeight / chesterGL.devicePixelRatio);
 	} else {
 		this.setContentSize(sz.width, sz.lines * lineHeight);
