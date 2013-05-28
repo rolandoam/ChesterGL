@@ -426,7 +426,6 @@ chesterGL.initGraphics = function (canvas) {
 		// test for high-dpi device
 		if (window.devicePixelRatio && window.devicePixelRatio > 1) {
 			var devicePixelRatio = window.devicePixelRatio;
-			console.log("using HighDPI resolution (devicePixelRatio: " + devicePixelRatio + ")");
 			desiredWidth = canvas.width;
 			desiredHeight = canvas.height;
 			canvas.style.width = canvas.width + "px";
@@ -435,6 +434,7 @@ chesterGL.initGraphics = function (canvas) {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 			chesterGL.highDPI = true;
 			chesterGL.devicePixelRatio = window.devicePixelRatio;
+			console.log("using HighDPI resolution (devicePixelRatio: " + devicePixelRatio + ")");
 		} else {
 			desiredWidth = canvas.width;
 			desiredHeight = canvas.height;
@@ -805,7 +805,7 @@ chesterGL.prepareWebGLTexture = function (texture) {
 			console.log("gl error " + error);
 			result = false;
 		}
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -994,7 +994,6 @@ chesterGL.setupPerspective = function () {
 	} else if (chesterGL.projection == "3d") {
 		// 3d projection
 		console.log("setting up 3d projection (" + width + "," + height + ")");
-		// var f_aspect = (1.7320508075688776 / (width / height));
 		var zeye   = height / 1.1566;
 		var matA   = goog.vec.Mat4.makePerspective(goog.vec.Mat4.createFloat32(), 60 * Math.PI / 180.0, width / height, 0.5, 1500.0);
 		var eye    = [width/2, height/2, zeye];
