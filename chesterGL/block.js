@@ -207,6 +207,12 @@ chesterGL.Block.prototype.visible = true;
 chesterGL.Block.prototype.isRunning = false;
 
 /**
+ * The z-order of the blocks inside the parent block
+ * @type {number}
+ */
+chesterGL.Block.prototype.zorder = 0;
+
+/**
  * did the position, scale or rotation change?
  * @type {boolean}
  * @ignore
@@ -705,6 +711,48 @@ chesterGL.Block.prototype.setUpdate = function (callback) {
 };
 
 /**
+ * @param {chesterGL.Block}
+ * @ignore
+ */
+chesterGL.Block.prototype.reorder = function (block) {
+	var idx = this.children.indexOf(block);
+	if (idx >= 0) {
+		this.children.splice(idx, 1);
+		var added = false;
+		for (var j in this.children) {
+			if (this.children[j].zorder > block.zorder) {
+				this.children.splice(j, 0, block);
+				added = true;
+				break;
+			}
+		}
+		if (!added) {
+			this.children.push(block);
+		}
+	}
+};
+
+/**
+ * @param {number} zorder
+ */
+chesterGL.Block.prototype.setZOrder = function (zorder) {
+	if (zorder !== this.zorder) {
+		this.zorder = zorder;
+		if (this.parent) {
+			this.parent.reorder(this);
+		}
+	}
+	return this;
+};
+
+/**
+ * return {number} the zorder of this block
+ */
+chesterGL.Block.prototype.getZOrder = function () {
+	return this.zorder;
+};
+
+/**
  * sets whether or not the block is visible
  * @param {boolean} visible
  * @returns {chesterGL.Block} The object itself
@@ -738,7 +786,17 @@ chesterGL.Block.prototype.append = function (blocks) {
 		if (this._inVisit) {
 			this._scheduledAdd.push(block);
 		} else {
-			this.children.push(block);
+			var added = false;
+			for (var j in this.children) {
+				if (this.children[j].zorder > block.zorder) {
+					this.children.splice(j, 0, block);
+					added = true;
+					break;
+				}
+			}
+			if (!added) {
+				this.children.push(block);
+			}
 			block.parent = this;
 		}
 		if (this.isRunning) {
@@ -1079,3 +1137,5 @@ goog.exportProperty(chesterGL.Block.prototype, 'getScale', chesterGL.Block.proto
 goog.exportProperty(chesterGL.Block.prototype, 'setUpdate', chesterGL.Block.prototype.setUpdate);
 goog.exportProperty(chesterGL.Block.prototype, 'setVisible', chesterGL.Block.prototype.setVisible);
 goog.exportProperty(chesterGL.Block.prototype, 'isVisible', chesterGL.Block.prototype.isVisible);
+goog.exportProperty(chesterGL.Block.prototype, 'setZOrder', chesterGL.Block.prototype.setZOrder);
+goog.exportProperty(chesterGL.Block.prototype, 'getZOrder', chesterGL.Block.prototype.getZOrder);
