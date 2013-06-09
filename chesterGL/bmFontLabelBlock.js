@@ -178,7 +178,7 @@ chesterGL.BMFontLabelBlock.prototype.setText = function BMFontLabelBlock_setText
 		lineHeight = this.params['lineHeight'],
 		i,
 		last = 0,
-		curX = -sz.width * this.anchorPoint.x,
+		curX = -sz.width * this.anchorPoint.x * (this.isHighDPI ? chesterGL.devicePixelRatio : 1),
 		curY = -(sz.lines * lineHeight * this.anchorPoint.y);
 
 	if (this.maxWidth > 0 && sz.width > this.maxWidth) {
