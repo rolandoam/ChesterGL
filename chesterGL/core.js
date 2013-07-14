@@ -557,16 +557,72 @@ chesterGL.initShader = function (prefix, callback) {
  */
 chesterGL.loadShader = function (prefix, type) {
 	var shaderData = "";
-	var req = new XMLHttpRequest();
-	req.open("GET", chesterGL.basePath + "shaders/" + prefix + "." + type, false);
-	req.onreadystatechange = function () {
-		if (req.readyState == 4 && req.status == 200) {
-			shaderData = req.responseText;
-		} else if (req.readyState == 4) {
-			console.log("error getting the shader data");
+	if (prefix == "default" || prefix == "texture") {
+		// these are going to be packed in the source code now
+		if (type == "frag") {
+			if (prefix == "default") {
+				shaderData = ["#ifdef GL_ES",
+							  "precision mediump float;",
+							  "#endif",
+							  "varying vec4 vColor;",
+							  "void main(void) {",
+							  "    gl_FragColor = vColor;",
+							  "}"].join("\n");
+			} else {
+				shaderData = ["#ifdef GL_ES",
+							  "precision mediump float;",
+							  "#endif",
+							  "uniform sampler2D uSampler;",
+							  "varying vec4 vColor;",
+							  "varying vec2 vTextureCoord;",
+							  "void main(void) {",
+							  "    vec4 textureColor = texture2D(uSampler, vTextureCoord);",
+							  "    gl_FragColor = textureColor * vColor;",
+							  "}"].join("\n");
+			}
+		} else {
+			if (prefix == "default") {
+				shaderData = ["#ifdef GL_ES",
+							  "precision mediump float;",
+							  "#endif",
+							  "attribute vec3 aVertexPosition;",
+							  "attribute vec4 aVertexColor;",
+							  "uniform mat4 uMVPMatrix;",
+							  "varying vec4 vColor;",
+							  "void main(void) {",
+							  "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);",
+							  "    gl_PointSize = 1.0;",
+							  "    vColor = aVertexColor;",
+							  "}"].join("\n");
+			} else {
+				shaderData = ["#ifdef GL_ES",
+							  "precision mediump float;",
+							  "#endif",
+							  "attribute vec3 aVertexPosition;",
+							  "attribute vec4 aVertexColor;",
+							  "attribute vec2 aTextureCoord;",
+							  "uniform mat4 uMVPMatrix;",
+							  "varying vec2 vTextureCoord;",
+							  "varying vec4 vColor;",
+							  "void main(void) {",
+							  "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);",
+							  "    vTextureCoord = aTextureCoord;",
+							  "    vColor = aVertexColor;",
+							  "}"].join("\n");
+			}
 		}
-	};
-	req.send();
+	} else {
+		var req = new XMLHttpRequest();
+		req.open("GET", chesterGL.basePath + "shaders/" + prefix + "." + type, false);
+		req.onreadystatechange = function () {
+			if (req.readyState == 4 && req.status == 200) {
+				shaderData = req.responseText;
+			} else if (req.readyState == 4) {
+				console.log("error getting the shader data");
+			}
+		};
+		req.send();
+	}
 	return shaderData;
 };
 
