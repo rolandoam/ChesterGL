@@ -711,8 +711,8 @@ chesterGL.Block.prototype.setUpdate = function (callback) {
 };
 
 /**
- * @param {chesterGL.Block}
  * @ignore
+ * @param {chesterGL.Block} block
  */
 chesterGL.Block.prototype.reorder = function (block) {
 	var idx = this.children.indexOf(block);

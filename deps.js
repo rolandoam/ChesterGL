@@ -138,3 +138,10 @@ WebGLDebugUtils.makeDebugContext = function (ctx, callback) {};
  * @return {string}
  */
 WebGLDebugUtils.glEnumToString = function (err) {};
+
+/**
+ * @param {number} width
+ * @param {number} height
+ * @constructor
+ */
+var FakeCanvas = function (width, height) {};

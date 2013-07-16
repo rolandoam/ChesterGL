@@ -31,10 +31,9 @@ $(document).ready(function () {
 			b1.setPosition([size.width * 0.5, size.height * 0.5, 0]);
 
 			var b2 = new chesterGL.Block("1945-4-1.png");
-			b2.setPosition([size.width *0.5 - 50, size.height * 0.5, 0]);
+			b2.setPosition([size.width * 0.5 + 20, size.height * 0.5, 0]);
 
-			sceneBlock.append(b1);
-			sceneBlock.append(b2);
+			sceneBlock.append(b1, b2);
 
 			b1.setUpdate(function () {
 				this.setRotation(this.rotation + oneDeg);

@@ -862,10 +862,10 @@ chesterGL.ActionManager.tick = function (delta) {
 		return;
 	}
 	for (var i in chesterGL.ActionManager.scheduledActions_) {
-		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
+		var a = chesterGL.ActionManager.scheduledActions_[i];
 		if (a.running) a.update(delta);
 		if (a.finished) {
-			delete chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
+			delete chesterGL.ActionManager.scheduledActions_[i];
 		}
 	}
 };

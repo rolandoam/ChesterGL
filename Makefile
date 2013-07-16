@@ -18,7 +18,7 @@ EXTERNAL_SOURCES =
 SOURCES = ${EXTERNAL_SOURCES} chesterGL/core.js chesterGL/block.js chesterGL/blockFrames.js chesterGL/blockGroup.js chesterGL/actions.js chesterGL/tmxBlock.js chesterGL/GPUParticleSystem.js chesterGL/primitivesBlock.js chesterGL/labelBlock.js chesterGL/bmFontLabelBlock.js
 
 # externs should live in the same dir as the compiler.jar
-EXTERNS = jquery-1.7.js webkit_console.js google_analytics_api.js json.js
+EXTERNS = jquery-1.7.js webkit_console.js google_analytics_api.js
 COMPILE_LEVEL_RELEASE = ADVANCED_OPTIMIZATIONS
 COMPILE_LEVEL_DEBUG = ${COMPILE_LEVEL_RELEASE}
 

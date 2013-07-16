@@ -149,8 +149,12 @@ chesterGL.onFakeWebGL = false;
  * <li>webglMode: true to try for webGL, false to force canvas mode</li>
  * <li>canvasOriginTopLeft: If true makes 0,0 the Top-Left corner. If false makes 0,0 the Bottom-Left</li>
  * <li>backgroundColor: Canvas Background Color</li>
+ * <li>useHighDPI: set to true to check whether or not we should check for highDPI. Setting this to false
+ *     will use the true size of the images, whether or not they have the proper prefix.</li>
+ * <li>highDPIPrefix: the prefix to use for highDPI images. Defaults to "@__PR__x", where the string
+ *     "__PR__" will be replaced for the current pixel ratio.</li>
  * </ul>
- * @type {Object.<string,string|boolean,Array>}
+ * @type {Object.<string,string|boolean,Float32Array>}
  * @example
  * // use google analytics and force canvas mode
  * chesterGL.settings['useGoogleAnalytics'] = true;
@@ -165,7 +169,9 @@ chesterGL.settings = {
 	'usesOffscreenBuffer': false,
 	'basePath': '',
 	'canvasOriginTopLeft': false,
-	'backgroundColor': [0, 0, 0, 1]
+	'backgroundColor': [0, 0, 0, 1],
+	'useHighDPI': true,
+	'highDPIPrefix': '@__PR__x'
 };
 
 /**
@@ -248,7 +254,7 @@ chesterGL.pMatrix = null;
 chesterGL.runningScene = null;
 
 /**
- * @type {?Element}
+ * @type {?HTMLElement|FakeCanvas}
  * @ignore
  */
 chesterGL.canvas = null;
@@ -320,6 +326,16 @@ chesterGL.mouseEvents = {
 };
 
 /**
+ * @enum {number}
+ */
+chesterGL.keyboardEvents = {
+	FOCUS: 0,
+	KEY_DOWN: 1,
+	KEY_PRESS: 2,
+	KEY_UP: 3
+};
+
+/**
  * The stats object
  * @type {Object}
  */
@@ -359,10 +375,12 @@ chesterGL.selectProgram = function (program) {
 /**
  * setups the webgl canvas
  * @param {string} canvasId
+ * @param {string=} loadingImageURL
  */
-chesterGL.setup = function (canvasId) {
-	var canvas = chesterGL.onFakeWebGL ? document.createElement("canvas") : document.getElementById(canvasId); // get the DOM element
+chesterGL.setup = function (canvasId, loadingImageURL) {
+	var canvas = chesterGL.onFakeWebGL ? new FakeCanvas(innerWidth, innerHeight) : document.getElementById(canvasId); // get the DOM element
 	var settings = chesterGL.settings;
+	loadingImageURL = loadingImageURL || "images/chesterGL.loading.png";
 
 	// copy values for future reference
 	chesterGL.projection = /** @type {string} */(settings['projection']);
@@ -376,7 +394,7 @@ chesterGL.setup = function (canvasId) {
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
 	}
-	chesterGL.setBackgroundColor(settings['backgroundColor']);
+	chesterGL.setBackgroundColor(/** @type {Float32Array} */(settings['backgroundColor']));
 
 	// only test for debug query on browser
 	if (!chesterGL.onFakeWebGL) {
@@ -417,14 +435,15 @@ chesterGL.setup = function (canvasId) {
  * 1st attempt: webgl
  * fallback: canvas
  *
- * @param {Element} canvas
+ * @param {FakeCanvas|HTMLElement} canvas
  */
 chesterGL.initGraphics = function (canvas) {
 	var desiredWidth = 0,
 		desiredHeight = 0;
 	try {
 		// test for high-dpi device
-		if (window.devicePixelRatio && window.devicePixelRatio > 1) {
+		var settings = chesterGL.settings;
+		if (settings['useHighDPI'] && window.devicePixelRatio && window.devicePixelRatio > 1) {
 			var devicePixelRatio = window.devicePixelRatio;
 			desiredWidth = canvas.width;
 			desiredHeight = canvas.height;
@@ -697,7 +716,7 @@ chesterGL.registerAssetLoader = function (type, loader) {
  *
  * @param {string} type the type of asset being loaded, it could be "texture" or "default"
  * @param {string|Object} url the url for the asset
- * @param {(string|null)=} [name] the name of the asset. If none is provided, then the name is the path
+ * @param {(function(Object, Object)|string|null)=} [name] the name of the asset. If none is provided, then the name is the path
  * @param {function(Object, Object)=} [callback] execute when asset is loaded or an error occurs. Callback Arguments (err, asset)
  * @example
  * chesterGL.loadAsset("texture", "someImage.png");
@@ -732,11 +751,12 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 	// test for explicit @Nx request, if no such request, then add the @Nx prefix *only* if on
 	// highDPI mode
 	var md,
-		re = new RegExp("@" + chesterGL.devicePixelRatio + "x\\..+$");
+		prefix = chesterGL.settings['highDPIPrefix'].replace("__PR__", ""+chesterGL.devicePixelRatio),
+		re = new RegExp(prefix + "\\..+$");
 	if (chesterGL.highDPI && !params.forceNonRetina && (md = params.url.match(re)) === null) {
 		md = params.url.match(/(\..+$)/);
 		if (md && chesterGL.highDPI) {
-			params.url = params.url.replace(/(\..+$)/, "@" + chesterGL.devicePixelRatio + "x$1");
+			params.url = params.url.replace(/(\..+$)/, prefix + "$1");
 		}
 	}
 
@@ -757,7 +777,7 @@ chesterGL.loadAsset = function (type, url, name, callback) {
 		if (callback) assets[rname].listeners.push(callback);
 	} else if (assets[rname].status == 'loaded') {
 		// created and loaded, just call the callback
-		if (callback) callback(null, assets[rname].data);
+		if (callback) /** @function (Object,Object) */(callback)(null, assets[rname].data);
 	} else if (assets[rname].status == 'try') {
 		assets[rname].status = 'loading';
 		if (chesterGL.assetsLoaders[type])
@@ -918,7 +938,8 @@ chesterGL.defaultTextureLoader = function (type, params) {
 	var img = new Image(),
 		path = params.url,
 		name = params.name,
-		re = new RegExp("@" + chesterGL.devicePixelRatio + "x\\..+$");
+		prefix = chesterGL.settings.highDPIPrefix.replace("__PR__", ""+chesterGL.devicePixelRatio),
+		re = new RegExp(prefix + "\\..+$");
 
 	img.src = "";
 	img.addEventListener("load", function () {
@@ -1131,10 +1152,34 @@ chesterGL.installMouseHandlers = function () {
 };
 
 /**
+ * install all key handlers
+ * @ignore
+ */
+chesterGL.installKeyHandlers = function () {
+	if (!chesterGL.onFakeWebGL) {
+		$(chesterGL.canvas).focus(chesterGL.focusHandler);
+		$(chesterGL.canvas).keydown(chesterGL.keyDownHandler);
+		$(chesterGL.canvas).keypress(chesterGL.keyPressHandler);
+		$(chesterGL.canvas).keyup(chesterGL.keyUpHandler);
+	}
+};
+
+/**
  * @type {Float32Array}
  * @ignore
  */
 chesterGL.__tmp_mouse_vec = new Float32Array(3);
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @ignore
+ */
+chesterGL.__tmp_mouse_setFromValues = function (x, y) {
+	chesterGL.__tmp_mouse_vec[0] = x;
+	chesterGL.__tmp_mouse_vec[1] = y;
+	chesterGL.__tmp_mouse_vec[2] = 0;
+};
 
 /**
  * @param {Event} event
@@ -1143,9 +1188,9 @@ chesterGL.__tmp_mouse_vec = new Float32Array(3);
 chesterGL.mouseDownHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i, len = chesterGL.mouseHandlers.length;
-	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	chesterGL.__tmp_mouse_setFromValues(pt.x, pt.y);
 	for (i = len-1; i >= 0; i--) {
-		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.DOWN))
+		if (true === chesterGL.mouseHandlers[i].call(null, chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.DOWN))
 			break;
 	}
 };
@@ -1157,9 +1202,9 @@ chesterGL.mouseDownHandler = function (event) {
 chesterGL.mouseMoveHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i, len = chesterGL.mouseHandlers.length;
-	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	chesterGL.__tmp_mouse_setFromValues(pt.x, pt.y);
 	for (i = len-1; i >= 0; i--) {
-		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.MOVE))
+		if (true === chesterGL.mouseHandlers[i].call(null, chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.MOVE))
 			break;
 	}
 };
@@ -1171,9 +1216,9 @@ chesterGL.mouseMoveHandler = function (event) {
 chesterGL.mouseUpHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i, len = chesterGL.mouseHandlers.length;
-	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	chesterGL.__tmp_mouse_setFromValues(pt.x, pt.y);
 	for (i = len-1; i >= 0; i--) {
-		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP))
+		if (true === chesterGL.mouseHandlers[i].call(null, chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.UP))
 			break;
 	}
 };
@@ -1185,9 +1230,9 @@ chesterGL.mouseUpHandler = function (event) {
 chesterGL.mouseEnterHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i, len = chesterGL.mouseHandlers.length;
-	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	chesterGL.__tmp_mouse_setFromValues(pt.x, pt.y);
 	for (i = len-1; i >= 0; i--) {
-		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER))
+		if (true === chesterGL.mouseHandlers[i].call(null, chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.ENTER))
 			break;
 	}
 };
@@ -1199,11 +1244,31 @@ chesterGL.mouseEnterHandler = function (event) {
 chesterGL.mouseLeaveHandler = function (event) {
 	var pt = chesterGL.canvas.relativePosition(event);
 	var i, len = chesterGL.mouseHandlers.length;
-	chesterGL.__tmp_mouse_vec.set([pt.x, pt.y, 0]);
+	chesterGL.__tmp_mouse_setFromValues(pt.x, pt.y);
 	for (i = len-1; i >= 0; i--) {
-		if (true === chesterGL.mouseHandlers[i](chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE))
+		if (true === chesterGL.mouseHandlers[i].call(null, chesterGL.__tmp_mouse_vec, chesterGL.mouseEvents.LEAVE))
 			break;
 	}
+};
+
+/**
+ * @param {Event} event
+ * @ignore
+ */
+chesterGL.focusHandler = function (event) {
+	var i, len = chesterGL.keyboardHandlers.length;
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.keyboardHandlers[i].call(null, 0, chesterGL.keyboardEvents.FOCUS))
+			break;
+	}
+};
+
+chesterGL.keyDownHandler = function (event) {
+	var i, len = chesterGL.keyboardHandlers.length;
+	for (i = len-1; i >= 0; i--) {
+		if (true === chesterGL.keyboardHandlers[i].call(null, event.keyCode, chesterGL.keyboardEvents.KEY_DOWN))
+			break;
+	}	
 };
 
 /**
@@ -1247,7 +1312,7 @@ chesterGL.removeMouseHandler = function (callback) {
  */
 chesterGL.run = function () {
 	if (!chesterGL._paused) {
-		requestAnimationFrame(chesterGL.run, chesterGL.canvas);
+		requestAnimationFrame(chesterGL.run, /** @type {HTMLElement} */(chesterGL.canvas));
 		if (chesterGL.stats) chesterGL.stats['begin']();
 		chesterGL.drawScene();
 		chesterGL.ActionManager.tick(chesterGL.delta);
