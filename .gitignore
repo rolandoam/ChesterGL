@@ -19,3 +19,5 @@ closure-library/
 
 # remove build script
 build.bat
+
+node_modules/
