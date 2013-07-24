@@ -1,7 +1,7 @@
 /**
  * chesterGL - Simple 2D WebGL Library
  *
- * Copyright (c) 2010-2012 Rolando Abarca
+ * Copyright (c) 2010-2013 Rolando Abarca
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -362,6 +362,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @returns {block} The object itself
 	 */
 	block.prototype.setFrame = function (newFrame, isHighDPI) {
+		var blockFrames = require("chester/blockFrames");
 		if (typeof newFrame === "string") {
 			// just get the cached frame
 			var tmpFrame = blockFrames.getFrame(newFrame);

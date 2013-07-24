@@ -1,7 +1,7 @@
 /**
- * chesterGL - Simple 2D WebGL demo/library
+ * chesterGL - Simple 2D WebGL Library
  *
- * Copyright (c) 2010-2012 Rolando Abarca
+ * Copyright (c) 2010-2013 Rolando Abarca
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,98 +23,90 @@
  *
  */
 
-goog.provide("chesterGL.BlockFrames");
+define(["require", "glmatrix"], function (require, glmatrix) {
+	/**
+	 * The namespace for BlockFrame related functions
+	 *
+	 * @const
+	 */
+	var blockFrames = {};
 
-goog.require("goog.vec.Vec4");
-goog.require("chesterGL.Block");
+	/**
+	 * @type {Object.<string,chesterGL.Block.frameType>}
+	 */
+	var frames = {};
 
-/**
- * The namespace for BlockFrame related functions
- *
- * @const
- */
-chesterGL.BlockFrames = {};
-
-/**
- * @type {Object.<string,chesterGL.Block.frameType>}
- */
-chesterGL.BlockFrames.frames = {};
-
-/**
- * loads the json data (callback for the ajax call)
- *
- * @param {Object|string} data
- */
-chesterGL.BlockFrames.parseFrameData = function (data) {
-	// first, get the meta data
-	if (typeof data === 'string') {
-		data = /** @type {Object} */(JSON.parse(data));
-	}
-	if (data['meta'] && data['meta']['version'] == '1.0') {
-		var texName = data['meta']['image'];
-		chesterGL.loadAsset('texture', texName, null, function (err, img) {
-			var imgHeight = img.height;
-			var frames = data['frames'];
-			for (var frameName in frames) {
-				var f = frames[frameName];
-				/** @type {chesterGL.Block.frameType} */ var realFrame = {frame: {}, texture: ""};
-				realFrame.frame = [
-					f['frame']['x'],
-					f['frame']['y'],
-					f['frame']['w'],
-					f['frame']['h']
-				];
-				if (f['sourceSize']) {
-					realFrame['sourceSize'] = {
-						'width': f['sourceSize']['w'],
-						'height': f['sourceSize']['h']
-					};
+	/**
+	 * loads the json data (callback for the ajax call)
+	 *
+	 * @param {Object|string} data
+	 */
+	blockFrames.parseFrameData = function (data) {
+		// first, get the meta data
+		if (typeof data === 'string') {
+			data = JSON.parse(data);
+		}
+		if (data['meta'] && data['meta']['version'] == '1.0') {
+			var texName = data['meta']['image'];
+			require("chester/core").loadAsset('texture', texName, null, function (err, img) {
+				var imgHeight = img.height;
+				var dataFrames = data['frames'];
+				for (var frameName in dataFrames) {
+					var f = dataFrames[frameName];
+					var realFrame = {frame: {}, texture: ""};
+					realFrame.frame = [
+						f['frame']['x'],
+						f['frame']['y'],
+						f['frame']['w'],
+						f['frame']['h']
+					];
+					if (f['sourceSize']) {
+						realFrame['sourceSize'] = {
+							'width': f['sourceSize']['w'],
+							'height': f['sourceSize']['h']
+						};
+					}
+					realFrame.texture = texName;
+					frames[frameName] = realFrame;
 				}
-				realFrame.texture = texName;
-				chesterGL.BlockFrames.frames[frameName] = realFrame;
-			}
+			});
+		} else {
+			throw "Unkown json data";
+		}
+	};
+
+	/**
+	 * @param {Object} params
+	 * @param {string|Object} data
+	 * @return {boolean}
+	 * @ignore
+	 */
+	blockFrames.framesLoadHandler = function (params, data) {
+		var frameset = require("chester/core").getRawAsset('frameset', params.name);
+		frameset.data = data;
+		return true;
+	};
+
+	/**
+	 * Returns a named frame.
+	 *
+	 * @param {string} frameName
+	 * @return {chesterGL.Block.frameType}
+	 */
+	blockFrames.getFrame = function (frameName) {
+		return frames[frameName];
+	};
+
+	/**
+	 * @param {string} path The path for the json file (TexturePacker format)
+	 * @param {function()=} callback The callback to be called after everything is ready
+	 */
+	blockFrames.loadFrames = function (path, callback) {
+		require("chester/core").loadAsset("frameset", {url: path, dataType: 'json'}, null, function (err, data) {
+			blockFrames.parseFrameData(data);
 		});
-	} else {
-		throw "Unkown json data";
-	}
-};
+	};
 
-/**
- * @param {Object} params
- * @param {string|Object} data
- * @return {boolean}
- * @ignore
- */
-chesterGL.BlockFrames.framesLoadHandler = function (params, data) {
-	var frameset = chesterGL.assets['frameset'][params.name];
-	frameset.data = data;
-	return true;
-};
-
-/**
- * Returns a named frame.
- *
- * @param {string} frameName
- * @return {chesterGL.Block.frameType}
- */
-chesterGL.BlockFrames.getFrame = function (frameName) {
-	return chesterGL.BlockFrames.frames[frameName];
-};
-
-/**
- * @param {string} path The path for the json file (TexturePacker format)
- * @param {function()=} callback The callback to be called after everything is ready
- */
-chesterGL.BlockFrames.loadFrames = function (path, callback) {
-	chesterGL.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (err, data) {
-		chesterGL.BlockFrames.parseFrameData(data);
-	});
-};
-
-chesterGL.registerAssetHandler('frameset', chesterGL.BlockFrames.framesLoadHandler);
-
-// export symbols
-goog.exportSymbol('chesterGL.BlockFrames', chesterGL.BlockFrames);
-// static methods
-goog.exportProperty(chesterGL.BlockFrames, 'getFrame', chesterGL.BlockFrames.getFrame);
-goog.exportProperty(chesterGL.BlockFrames, 'loadFrames', chesterGL.BlockFrames.loadFrames);
+	require("chester/core").registerAssetHandler('frameset', blockFrames.framesLoadHandler);
+	return blockFrames;
+});

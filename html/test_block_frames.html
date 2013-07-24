@@ -3,66 +3,8 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
-	<script type="text/javascript" src="chester.js"></script>
-    <script type="text/javascript">
-
-$(document).ready(function () {
-	setupGame();
-
-	function setupGame() {
-		chesterGL.settings['useGoogleAnalytics'] = true;
-		chesterGL.setup("demo-canvas");
-		var size = chesterGL.viewportSize();
-		var oneDeg = Math.PI / 180.0;
-
-		chesterGL.BlockFrames.loadFrames("images/1945.json");
-		chesterGL.assetsLoaded('all', function () {
-			// finish with the setup and run the game
-			chesterGL.setupPerspective();
-
-			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE.SCENE);
-			sceneBlock.title = "Test::Block Frames";
-			chesterGL.setRunningScene(sceneBlock);
-
-			// create a block with a block frame
-			var b1 = new chesterGL.Block("1945-4-0.png");
-			b1.setPosition([size.width * 0.5, size.height * 0.5, 0]);
-
-			var b2 = new chesterGL.Block("1945-4-1.png");
-			b2.setPosition([size.width * 0.5 + 20, size.height * 0.5, 0]);
-
-			sceneBlock.append(b1, b2);
-
-			b1.setUpdate(function () {
-				this.setRotation(this.rotation + oneDeg);
-			});
-
-			chesterGL.run();
-			// draw a single frame (for debug purposes)
-			// chesterGL.drawScene();
-		});
-	} // setupGame()
-});
-    </script>
-    <style type="text/css">
-body {
-	margin: 0;
-	padding: 0;
-}
-#loading {
-    color: #fff;
-    text-shadow: 2px 2px 2px #000;
-    font-weight: bold;
-    font-size: 18pt;
-    padding: 1em;
-}
-#demo-canvas {
-	margin-left: auto;
-	margin-right: auto;
-}
-    </style>
+	<script type="text/javascript" data-main="scripts/test-block-frames" src="scripts/require.js"></script>
 	<script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-77863-9']);

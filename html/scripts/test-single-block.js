@@ -6,7 +6,7 @@ requirejs.config({
 	}
 });
 
-require(["chester/core", "chester/block"], function (core, block) {
+require(["chester/core", "chester/block", "chester/blockFrames"], function (core, block) {
 	core.settings.useGoogleAnalytics = true;
 	core.setup("demo-canvas");
 	var size = core.getViewportSize();
