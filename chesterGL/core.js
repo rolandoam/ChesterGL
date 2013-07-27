@@ -498,9 +498,6 @@ chesterGL.initGraphics = function (canvas) {
  */
 chesterGL.canvasResized = function () {
 	var canvas = chesterGL.canvas;
-	// get real width and height
-	chesterGL.gl.viewportWidth = canvas.width;
-	chesterGL.gl.viewportHeight = canvas.height;
 
 	if (chesterGL.webglMode) {
 		chesterGL.initDefaultShaders();
@@ -519,6 +516,8 @@ chesterGL.canvasResized = function () {
 		};
 		createBuffers(chesterGL.runningScene);
 	}
+	// setup the projection again
+	chesterGL.setupPerspective();
 	// start the loop again
 	chesterGL.currentProgram = null;
 	chesterGL.run();
