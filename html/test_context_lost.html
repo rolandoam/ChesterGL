@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
+	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
+	<script type="text/javascript" src="webgl-debug.js"></script>
+	<script type="text/javascript" src="chester.js"></script>
+    <script type="text/javascript">
+$(document).ready(function () {
+	setupGame();
+	function setupGame() {
+		chesterGL.settings['useGoogleAnalytics'] = true;
+		chesterGL.setup("demo-canvas");
+		var size = chesterGL.viewportSize();
+		var oneDeg = Math.PI / 180.0;
+
+		chesterGL.loadAsset("texture", "images/test.png");
+		chesterGL.loadAsset("texture", "images/star.png");
+		chesterGL.assetsLoaded("texture", function () {
+			// $("#loading").html("Test Single Block");
+			// finish with the setup and run the game
+			chesterGL.setupPerspective();
+
+			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
+			sceneBlock.title = "Test::Single Block";
+			chesterGL.setRunningScene(sceneBlock);
+
+			// create a block
+			var someBlock = new chesterGL.Block();
+			someBlock.setTexture("images/test.png")
+			// someBlock.rotateBy(-45);
+			someBlock.setPosition([size.width/2, size.height/2, 0]);
+
+			var someBlock2 = new chesterGL.Block();
+			someBlock2.setTexture("images/star.png");
+			someBlock2.setColor([1, 1, 1, 0.5]);
+			someBlock2.setPosition([60, 0, 0]);
+			someBlock.append(someBlock2);
+
+			var pt = someBlock.getAbsolutePosition([size.width/2, size.height/2, 0]);
+			console.log("point: " + pt[0] + "," + pt[1]);
+
+			sceneBlock.append(someBlock);
+
+			// add some action
+			var dz = 10;
+			someBlock.setUpdate(function () {
+				this.setRotation(this.rotation + oneDeg);
+				this.setPosition([this.position[0], this.position[1], this.position[2] + dz]);
+				if (this.position[2] >=  200) { dz = -dz; }
+				if (this.position[2] <= -200) { dz = -dz; }
+			});
+			someBlock2.setUpdate(function () {
+				this.setRotation(this.rotation - oneDeg);
+			});
+
+			chesterGL.run();
+			// draw a single frame (for debug purposes)
+			// chesterGL.drawScene();
+		});
+	} // setupGame()
+
+});
+function simulateLostContext() {
+	document.getElementById("demo-canvas").loseContext();
+}
+    </script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+		  <input type="button" onclick="simulateLostContext();" value="simulate lost context"/>
+		</div>
+	</div>
+</body>
+</html>
