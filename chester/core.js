@@ -23,7 +23,14 @@
  *
  */
 
-define(["require", "glmatrix", "chester/block"], function (require, glmatrix, block) {
+define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/blockFrames"], function (require, glmatrix) {
+	// we will setup this modules later
+	var coreModules = [
+		"block",
+		"blockGroup",
+		"blockFrames"
+	];
+
 	// public interface
 	var core = {};
 	// private namespace
@@ -288,11 +295,11 @@ define(["require", "glmatrix", "chester/block"], function (require, glmatrix, bl
 	};
 
 	/**
-	 * setups the webgl canvas
+	 * setups chester and loads the core modules. This must be the first call for chester
 	 * @param {string} canvasId
 	 */
 	core.setup = function (canvasId) {
-		var canvas = core.onFakeWebGL ? new FakeCanvas(innerWidth, innerHeight) : document.getElementById(canvasId); // get the DOM element
+		var canvas = core.onFakeWebGL ? new FakeCanvas(innerWidth, innerHeight) : document.getElementById(canvasId);
 		var settings = core.settings;
 
 		core.initGraphics(canvas);
@@ -319,6 +326,10 @@ define(["require", "glmatrix", "chester/block"], function (require, glmatrix, bl
 				document.body.appendChild(_core.stats['domElement']);
 			}
 		}
+		// setup the rest of the core
+		coreModules.forEach(function (m) {
+			require("chester/" + m).setup(core);
+		});
 	};
 
 	/**
@@ -352,6 +363,7 @@ define(["require", "glmatrix", "chester/block"], function (require, glmatrix, bl
 
 			if (settings.webglMode) {
 				if (typeof WebGLDebugUtils !== "undefined") {
+					console.log("**** using debug context");
 					canvas = WebGLDebugUtils['makeLostContextSimulatingCanvas'](canvas);
 				}
 				core.gl = canvas.getContext("experimental-webgl", {alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false});
@@ -401,7 +413,7 @@ define(["require", "glmatrix", "chester/block"], function (require, glmatrix, bl
 			}
 			// helper function to recreate all the buffers of the blocks
 			var createBuffers = function (b) {
-				b.createBuffers(null, b.indexBufferData);
+				b.createBuffers(null, null, true);
 				b.children.forEach(function (child) {
 					createBuffers(child);
 				});
@@ -1011,10 +1023,11 @@ define(["require", "glmatrix", "chester/block"], function (require, glmatrix, bl
 	 * @param {core.Block} block
 	 */
 	core.setRunningScene = function (b) {
+		var Block = require("chester/block");
 		if (_core.runningScene && _core.runningScene != b) {
 			_core.runningScene.onExitScene();
 		}
-		if (b.type == block.TYPE.SCENE) {
+		if (b.type == Block.TYPE.SCENE) {
 			_core.runningScene = b;
 		}
 	};

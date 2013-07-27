@@ -25,6 +25,11 @@
 
 define(["require", "glmatrix"], function (require, glmatrix) {
 	/**
+	 * will be filled later with the core module
+	 */
+	var core = null;
+
+	/**
 	 * The namespace for BlockFrame related functions
 	 *
 	 * @const
@@ -48,7 +53,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		}
 		if (data['meta'] && data['meta']['version'] == '1.0') {
 			var texName = data['meta']['image'];
-			require("chester/core").loadAsset('texture', texName, null, function (err, img) {
+			core.loadAsset('texture', texName, null, function (err, img) {
 				var imgHeight = img.height;
 				var dataFrames = data['frames'];
 				for (var frameName in dataFrames) {
@@ -82,7 +87,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @ignore
 	 */
 	blockFrames.framesLoadHandler = function (params, data) {
-		var frameset = require("chester/core").getRawAsset('frameset', params.name);
+		var frameset = core.getRawAsset('frameset', params.name);
 		frameset.data = data;
 		return true;
 	};
@@ -102,11 +107,14 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @param {function()=} callback The callback to be called after everything is ready
 	 */
 	blockFrames.loadFrames = function (path, callback) {
-		require("chester/core").loadAsset("frameset", {url: path, dataType: 'json'}, null, function (err, data) {
+		core.loadAsset("frameset", {url: path, dataType: 'json'}, null, function (err, data) {
 			blockFrames.parseFrameData(data);
 		});
 	};
 
-	require("chester/core").registerAssetHandler('frameset', blockFrames.framesLoadHandler);
+	blockFrames.setup = function blockFrames_setup(c) {
+		core = c;
+		core.registerAssetHandler('frameset', blockFrames.framesLoadHandler);
+	};
 	return blockFrames;
 });

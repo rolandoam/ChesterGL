@@ -24,7 +24,11 @@
  */
 
 define(["require", "glmatrix"], function (require, glmatrix) {
+	/**
+	 * will be filled later, with the core object
+	 */
 	var core = null;
+
 	/**
 	 * creates a new block. Pass the rect if you want to set the frame at
 	 * creation time.
@@ -32,21 +36,20 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @constructor
 	 * @param {goog.vec.Vec4.Vec4Like|string=} rect
 	 * @param {number=} type
-	 * @param {block=} parent
+	 * @param {Block=} parent
 	 */
-	var block = function (rect, type, parent) {
-		core = core || require("chester/core");
-		this.type = type || block.TYPE.STANDALONE;
+	var Block = function (rect, type, parent) {
+		this.type = type || Block.TYPE.STANDALONE;
 		if (parent) {
 			this.parent = parent;
 		}
 
 		this.children = [];
-		this.program = block.PROGRAM.DEFAULT;
+		this.program = Block.PROGRAM.DEFAULT;
 
 		// set default color and content size
 		this.setContentSize(0, 0);
-		if (this.type == block.TYPE.STANDALONE) {
+		if (this.type == Block.TYPE.STANDALONE) {
 			this.setColor([1, 1, 1, 1]);
 		}
 		if (rect) {
@@ -60,11 +63,11 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		// default anchor point
 		this.setAnchorPoint(0.5, 0.5);
 
-		if (core.settings.webglMode && (!parent || parent.type != block.TYPE.BLOCKGROUP)) {
+		if (core.settings.webglMode && (!parent || parent.type != Block.TYPE.BLOCKGROUP)) {
 			var gl = core.gl;
 			// just a single buffer for all data (a "quad")
 			this.createBuffers();
-			this.glBufferData = new Float32Array(block.BUFFER_SIZE);
+			this.glBufferData = new Float32Array(Block.BUFFER_SIZE);
 		}
 
 		// always create the mvMatrix
@@ -80,7 +83,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * what gl program to use
 	 * @enum {number}
 	 */
-	block.PROGRAM = {
+	Block.PROGRAM = {
 		DEFAULT: 0,
 		TEXTURE: 1
 	};
@@ -90,7 +93,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @const
 	 * @type {Array.<string>}
 	 */
-	block.PROGRAM_NAME = [
+	Block.PROGRAM_NAME = [
 		"default",
 		"texture"
 	];
@@ -99,7 +102,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * Different types of blocks
 	 * @enum {number}
 	 */
-	block.TYPE = {
+	Block.TYPE = {
 		STANDALONE: 0,
 		BLOCKGROUP: 1,
 		SCENE:      2,
@@ -115,7 +118,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @type {number}
 	 * @ignore
 	 */
-	block.VERT_SIZE = 36;
+	Block.VERT_SIZE = 36;
 
 	/**
 	 * This is how many items the buffer data must have.
@@ -124,26 +127,26 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @type {number}
 	 * @ignore
 	 */
-	block.BUFFER_SIZE = 36;
+	Block.BUFFER_SIZE = 36;
 
 	/**
 	 * @const
 	 * @type {number}
 	 */
-	block.DEG_TO_RAD = Math.PI / 180.0;
+	Block.DEG_TO_RAD = Math.PI / 180.0;
 
 	/**
 	 * @const
 	 * @type {number}
 	 */
-	block.RAD_TO_DEG = 180.0 / Math.PI;
+	Block.RAD_TO_DEG = 180.0 / Math.PI;
 
 	/**
 	 * One degree in radians
 	 * @const
 	 * @type {number}
 	 */
-	block.ONE_DEG = 1 * block.DEG_TO_RAD;
+	Block.ONE_DEG = 1 * Block.DEG_TO_RAD;
 
 	/**
 	 * the full frame
@@ -151,7 +154,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @const
 	 * @type {goog.vec.Vec4.Type}
 	 */
-	block.FullFrame = glmatrix.vec4.fromValues(0.0, 0.0, 1.0, 1.0);
+	Block.FullFrame = glmatrix.vec4.fromValues(0.0, 0.0, 1.0, 1.0);
 
 	/**
 	 * the size zero constant
@@ -159,183 +162,183 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @const
 	 * @type {goog.math.Size}
 	 */
-	block.SizeZero = glmatrix.vec2.create();
+	Block.SizeZero = glmatrix.vec2.create();
 
 	/**
 	 * Sets the title of this block, only used in the scenes right now (for analytics)
 	 * @type {string}
 	 */
-	block.prototype.title = "";
+	Block.prototype.title = "";
 
 	/**
 	 * @type {boolean}
 	 * @ignore
 	 */
-	block.prototype.debugNodeAdded = false;
+	Block.prototype.debugNodeAdded = false;
 
 	/**
 	 * @type {?goog.vec.Mat4.Type}
 	 * @ignore
 	 */
-	block.prototype.mvMatrix = null;
+	Block.prototype.mvMatrix = null;
 
 	/**
 	 * @type {?goog.vec.Mat4.Type}
 	 * @ignore
 	 */
-	block.prototype.mvpMatrix = null;
+	Block.prototype.mvpMatrix = null;
 
 	/**
 	 * Sets whether or not the block is visible
 	 * @type {boolean}
 	 */
-	block.prototype.visible = true;
+	Block.prototype.visible = true;
 
 	/**
 	 * True if the node/scene is running
 	 * @type {boolean}
 	 */
-	block.prototype.isRunning = false;
+	Block.prototype.isRunning = false;
 
 	/**
 	 * The z-order of the blocks inside the parent block
 	 * @type {number}
 	 */
-	block.prototype.zorder = 0;
+	Block.prototype.zorder = 0;
 
 	/**
 	 * did the position, scale or rotation change?
 	 * @type {boolean}
 	 * @ignore
 	 */
-	block.prototype.isTransformDirty = false;
+	Block.prototype.isTransformDirty = false;
 
 	/**
 	 * @type {boolean}
 	 * @ignore
 	 */
-	block.prototype.isColorDirty = false;
+	Block.prototype.isColorDirty = false;
 
 	/**
 	 * @type {boolean}
 	 * @ignore
 	 */
-	block.prototype.isFrameDirty = false;
+	Block.prototype.isFrameDirty = false;
 
 	/**
 	 * @type {number}
 	 * @ignore
 	 */
-	block.prototype.baseBufferIndex = 0;
+	Block.prototype.baseBufferIndex = 0;
 
 	/**
 	 * @type {?WebGLBuffer}
 	 * @ignore
 	 */
-	block.prototype.glBuffer = null;
+	Block.prototype.glBuffer = null;
 
 	/**
 	 * @type {Float32Array}
 	 * @ignore
 	 */
-	block.prototype.glBufferData = null;
+	Block.prototype.glBufferData = null;
 
 	/**
 	 * the position of the anchor point of the block. Use the setter to modify this property
 	 * @type {goog.vec.Vec3.Type}
 	 */
-	block.prototype.position = null;
+	Block.prototype.position = null;
 
 	/**
 	 * the anchor point for the block. Use the setter to modify this property
 	 * @type {goog.math.Vec2}
 	 */
-	block.prototype.anchorPoint = null;
+	Block.prototype.anchorPoint = null;
 
 	/**
 	 * the content size of the block. Use the setter to modify this property
 	 * @type {?goog.math.Size}
 	 */
-	block.prototype.contentSize = null;
+	Block.prototype.contentSize = null;
 
 	/**
 	 * the color of the block. Use the setter to modify this property
 	 * @type {goog.vec.Vec4.Type}
 	 */
-	block.prototype.color = null;
+	Block.prototype.color = null;
 
 	/**
 	 * The name of the texture associated with this block. Use the setter to modify this property
 	 * @type {?string}
 	 */
-	block.prototype.texture = null;
+	Block.prototype.texture = null;
 
 	/**
 	 * rotation of the box - in radians. Use the setter to modify this property
 	 * @type {number}
 	 */
-	block.prototype.rotation = 0;
+	Block.prototype.rotation = 0;
 
 	/**
 	 * the scale in the X axis of the box. Use the setter to modify this property
 	 * @type {number}
 	 */
-	block.prototype.scaleX = 1.0;
+	Block.prototype.scaleX = 1.0;
 
 	/**
 	 * the scale in the Y axis of the box. Use the setter to modify this property
 	 * @type {number}
 	 */
-	block.prototype.scaleY = 1.0;
+	Block.prototype.scaleY = 1.0;
 
 	/**
 	 * update function - called every frame with the delta in milliseconds since last frame
 	 * @type {?function(number)}
 	 */
-	block.prototype.update = null;
+	Block.prototype.update = null;
 
 	/**
 	 * the texture frame. Use the setter to modify this property
 	 * @type {?goog.vec.Vec4.Type}
 	 */
-	block.prototype.frame = null;
+	Block.prototype.frame = null;
 
 	/**
 	 * the block group this block belongs to. Read only
-	 * @type {?block}
+	 * @type {?Block}
 	 */
-	block.prototype.parent = null;
+	Block.prototype.parent = null;
 
 	/**
 	 * the array to hold children blocks. Read only, to modify use append or remove
-	 * @type {?Array.<block>}
+	 * @type {?Array.<Block>}
 	 */
-	block.prototype.children = null;
+	Block.prototype.children = null;
 
 	/**
 	 * The scheduled list of blocks to add/remove after a visit
 	 * @ignore
-	 * @type {?Array.<block>}
+	 * @type {?Array.<Block>}
 	 */
-	block.prototype._scheduledAdd = null;
+	Block.prototype._scheduledAdd = null;
 
 	/**
 	 * @ignore
-	 * @type {?Array.<block>}
+	 * @type {?Array.<Block>}
 	 */
-	block.prototype._scheduledRemove = null;
+	Block.prototype._scheduledRemove = null;
 
 	/**
 	 * Are we visiting this node?
 	 * @ignore
 	 * @type {boolean}
 	 */
-	block.prototype._inVisit = false;
+	Block.prototype._inVisit = false;
 
 	/**
 	 * create (or recreate) buffers for this block
 	 */
-	block.prototype.createBuffers = function () {
+	Block.prototype.createBuffers = function () {
 		if (core.settings.webglMode) {
 			this.glBuffer = core.gl.createBuffer();
 			this.isTransformDirty = this.isFrameDirty = true;
@@ -346,7 +349,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * executed when the node/scene is activated for the first time
 	 * or when adding a new child to a running scene.
 	 */
-	block.prototype.onEnterScene = function () {
+	Block.prototype.onEnterScene = function () {
 		this.isRunning = true;
 		for (var i in this.children) {
 			this.children[i].onEnterScene();
@@ -356,7 +359,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	/**
 	 * executed when the node/scene is removed
 	 */
-	block.prototype.onExitScene = function () {
+	Block.prototype.onExitScene = function () {
 		this.isRunning = false;
 		for (var i in this.children) {
 			this.children[i].onExitScene();
@@ -369,13 +372,13 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 *
 	 * @param {goog.vec.Vec3.Vec3Like|string} newFrame
 	 * @param {boolean=} isHighDPI
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setFrame = function (newFrame, isHighDPI) {
-		var blockFrames = require("chester/blockFrames");
+	Block.prototype.setFrame = function (newFrame, isHighDPI) {
+		var BlockFrames = require("chester/blockFrames");
 		if (typeof newFrame === "string") {
 			// just get the cached frame
-			var tmpFrame = blockFrames.getFrame(newFrame);
+			var tmpFrame = BlockFrames.getFrame(newFrame);
 			if (!tmpFrame) {
 				throw "Invalid frame name: " + newFrame;
 			}
@@ -405,7 +408,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 *
 	 * @return {Float32Array}
 	 */
-	block.prototype.getFrame = function () {
+	Block.prototype.getFrame = function () {
 		return this.frame;
 	};
 
@@ -414,18 +417,18 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 *
 	 * @param {number} width
 	 * @param {number} height
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 * @example
 	 * // sets the content size to 128 x 128px
 	 * block.setContentSize(128, 128);
 	 */
-	block.prototype.setContentSize = function (width, height) {
+	Block.prototype.setContentSize = function (width, height) {
 		this.contentSize = glmatrix.vec2.fromValues(width, height);
 		this.isFrameDirty = true;
 		return this;
 	};
 
-	block.prototype.getContentSize = function () {
+	Block.prototype.getContentSize = function () {
 		return this.contentSize;
 	};
 
@@ -436,7 +439,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @param {number=} newScaleY optional: pass only newScaleX to set both
 	 * @returns {block} The object itself
 	 */
-	block.prototype.setScale = function (newScaleX, newScaleY) {
+	Block.prototype.setScale = function (newScaleX, newScaleY) {
 		this.scaleX = newScaleX;
 		if (arguments.length == 2) {
 			this.scaleY = /** @type {number} */(newScaleY);
@@ -452,7 +455,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 *
 	 * @return {number} the scaleX property
 	 */
-	block.prototype.getScale = function () {
+	Block.prototype.getScale = function () {
 		return this.scaleX;
 	};
 
@@ -461,9 +464,9 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * the array should be created in the order RGBA
 	 *
 	 * @param {Array|Float32Array} color
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setColor = function (color) {
+	Block.prototype.setColor = function (color) {
 		if (!this.color) {
 			this.color = glmatrix.vec4.clone(color);
 		} else {
@@ -477,7 +480,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * gets the color of the block
 	 * @return {Float32Array} an array with the color [r, g, b, a]
 	 */
-	block.prototype.getColor = function () {
+	Block.prototype.getColor = function () {
 		return this.color;
 	};
 
@@ -485,7 +488,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * gets the alpha of the block (the fourth element of the color)
 	 * @return {number} the alpha
 	 */
-	block.prototype.getAlpha = function () {
+	Block.prototype.getAlpha = function () {
 		return this.color[3];
 	};
 
@@ -493,7 +496,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * sets the alpha of the block (the fourth element of the color)
 	 * @param {number} alpha the new alpha value
 	 */
-	block.prototype.setAlpha = function (alpha) {
+	Block.prototype.setAlpha = function (alpha) {
 		if (!this.color) {
 			throw "Need to set the color before alpha";
 		}
@@ -509,9 +512,9 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @param {Array|Float32Array|number} x
 	 * @param {number=} y
 	 * @param {number=} z
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setPosition = function (x, y, z) {
+	Block.prototype.setPosition = function (x, y, z) {
 		if (!this.position) {
 			if (arguments.length == 1)
 				this.position = glmatrix.vec3.clone(x);
@@ -534,7 +537,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @param {number} dy
 	 * @param {number} dz
 	 */
-	block.prototype.adjustPosition = function (dx, dy, dz) {
+	Block.prototype.adjustPosition = function (dx, dy, dz) {
 		if (!this.position) {
 			throw "call setPosition before adjusting it!";
 		}
@@ -550,9 +553,9 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * You can specify numbers bigger than 1 and smaller than 0 if you want.
 	 * @param {number} x
 	 * @param {number} y
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setAnchorPoint = function(x, y) {
+	Block.prototype.setAnchorPoint = function(x, y) {
 		this.anchorPoint = glmatrix.vec2.fromValues(x, y);
 		return this;
 	};
@@ -560,7 +563,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	/**
 	 * @return {goog.math.Vec2}
 	 */
-	block.prototype.getAnchorPoint = function() {
+	Block.prototype.getAnchorPoint = function() {
 		return this.anchorPoint;
 	};
 
@@ -568,7 +571,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * gets the position of the block (x, y, z)
 	 * @return {Float32Array}
 	 */
-	block.prototype.getPosition = function () {
+	Block.prototype.getPosition = function () {
 		return this.position;
 	};
 
@@ -577,7 +580,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * transformations from all its parents.
 	 * @return {Float32Array|Array}
 	 */
-	block.prototype.getAbsolutePosition = function () {
+	Block.prototype.getAbsolutePosition = function () {
 		var p = this.parent,
 			pos = glmatrix.vec3.clone(this.position),
 			m = this.getAbsoluteTransform();
@@ -598,7 +601,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @param {Float32Array|Array=} dest optional destination array
 	 * @return {Float32Array|Array}
 	 */
-	block.prototype.toLocal = function (pt, dest) {
+	Block.prototype.toLocal = function (pt, dest) {
 		dest = dest || pt;
 		glmatrix.mat4.invert(__tmpInv, this.mvMatrix);
 		glmatrix.vec3.transformMat4(dest, pt, __tmpInv);
@@ -611,7 +614,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * returns the concatenated matrix from all the block's parents
 	 * @return {Float32Array|Array}
 	 */
-	block.prototype.getAbsoluteTransform = function () {
+	Block.prototype.getAbsoluteTransform = function () {
 		var m = glmatrix.mat4.clone(this.mvMatrix),
 			p = this.parent;
 		while (p) {
@@ -625,7 +628,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * returns the current bounding box as an Array [bottom, left, width, height]
 	 * @return {Array}
 	 */
-	block.prototype.getBoundingBox = function () {
+	Block.prototype.getBoundingBox = function () {
 		var p = this.position,
 			w = this.contentSize[0],
 			h = this.contentSize[1];
@@ -636,15 +639,15 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * sets the texture of the block - the texture will be loaded if needed
 	 * @param {string} texturePath
 	 * @param {goog.vec.Vec3.Vec3Like=} frame
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setTexture = function (texturePath, frame) {
+	Block.prototype.setTexture = function (texturePath, frame) {
 		if (texturePath == this.texture && (!frame || this.frame == frame)) {
 			return this;
 		}
 		this.texture = texturePath;
 		// force program to texture program
-		this.program = block.PROGRAM.TEXTURE;
+		this.program = Block.PROGRAM.TEXTURE;
 		core.loadAsset("texture", texturePath, null, function (err, t) {
 			// set the default frame for all our blocks (if it's not set)
 			var isHighDPI = core.isHighDPI() && (core.getRawAsset('texture', this.texture) || {}).highDPI;
@@ -657,16 +660,16 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * gets the texture of the block
 	 * @return {string|null}
 	 */
-	block.prototype.getTexture = function () {
+	Block.prototype.getTexture = function () {
 		return this.texture;
 	};
 
 	/**
 	 * sets the rotation of the block to a specific angle
 	 * @param {number} angle specified in radians, CW
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setRotation = function (angle) {
+	Block.prototype.setRotation = function (angle) {
 		this.rotation = angle;
 		this.isTransformDirty = true;
 		return this;
@@ -676,25 +679,25 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * gets the rotation of the block
 	 * @return {number} then current rotation angle in radians, CW
 	 */
-	block.prototype.getRotation = function () {
+	Block.prototype.getRotation = function () {
 		return this.rotation;
 	};
 
 	/**
 	 * sets the update function - to be called every frame for this block
 	 * @param {function (?number)} callback
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setUpdate = function (callback) {
+	Block.prototype.setUpdate = function (callback) {
 		this.update = callback;
 		return this;
 	};
 
 	/**
 	 * @ignore
-	 * @param {block} b
+	 * @param {Block} b
 	 */
-	block.prototype.reorder = function (b) {
+	Block.prototype.reorder = function (b) {
 		var idx = this.children.indexOf(b);
 		if (idx >= 0) {
 			this.children.splice(idx, 1);
@@ -715,7 +718,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	/**
 	 * @param {number} zorder
 	 */
-	block.prototype.setZOrder = function (zorder) {
+	Block.prototype.setZOrder = function (zorder) {
 		if (zorder !== this.zorder) {
 			this.zorder = zorder;
 			if (this.parent) {
@@ -728,16 +731,16 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	/**
 	 * return {number} the zorder of this block
 	 */
-	block.prototype.getZOrder = function () {
+	Block.prototype.getZOrder = function () {
 		return this.zorder;
 	};
 
 	/**
 	 * sets whether or not the block is visible
 	 * @param {boolean} visible
-	 * @returns {block} The object itself
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.setVisible = function (visible) {
+	Block.prototype.setVisible = function (visible) {
 		this.visible = visible;
 		return this;
 	};
@@ -746,7 +749,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * returns whether or not the block is visible
 	 * @return {boolean}
 	 */
-	block.prototype.isVisible = function () {
+	Block.prototype.isVisible = function () {
 		return this.visible;
 	};
 
@@ -754,10 +757,10 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * Append a block as a child. If you add the block while in a visit of the parent block,
 	 * the child will be scheduled to be added after the visit.
 	 *
-	 * @param {...block} blocks
-	 * @returns {block} The object itself
+	 * @param {...Block} blocks
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.append = function (blocks) {
+	Block.prototype.append = function (blocks) {
 		for (var i in arguments) {
 			var b = arguments[i];
 			if (b.parent) {
@@ -790,10 +793,10 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * removes a block from the children list. If you remove the child while in a visit of the parent block,
 	 * the child will be scheduled to be removed after the visit.
 	 *
-	 * @param {block} block
-	 * @returns {block} The object itself
+	 * @param {Block} block
+	 * @returns {Block} The object itself
 	 */
-	block.prototype.remove = function (b) {
+	Block.prototype.remove = function (b) {
 		if (!b.parent || b.parent != this) {
 			throw "not our child!";
 		}
@@ -815,13 +818,13 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	/**
 	 * detach block from parent
 	 */
-	block.prototype.detach = function Block_detach() {
+	Block.prototype.detach = function Block_detach() {
 		if (this.parent) {
 			this.parent.remove(this);
 		}
 	};
 
-	block.prototype.removeAll = function Block_removeAll() {
+	Block.prototype.removeAll = function Block_removeAll() {
 		if (this._inVisit) {
 			this._scheduledRemove.push("all");
 		} else {
@@ -845,11 +848,11 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * actually performs the transformation
 	 * @ignore
 	 */
-	block.prototype.transform = function () {
+	Block.prototype.transform = function () {
 		var gl = core.gl,
 			transformDirty = (this.isTransformDirty || (this.parent && this.parent.isTransformDirty)),
 			_px, _py,
-			inBlockGroup = this.parent && this.parent.type == block.TYPE.BLOCKGROUP;
+			inBlockGroup = this.parent && this.parent.type == Block.TYPE.BLOCKGROUP;
 		var anchorOffX = (this.contentSize ? (0.5 - this.anchorPoint[0]) * this.contentSize[0] : 0),
 			anchorOffY = (this.contentSize ? (0.5 - this.anchorPoint[1]) * this.contentSize[1] : 0);
 		if (transformDirty) {
@@ -872,7 +875,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		}
 
 		// bail out if we're a block group or a primitive block
-		if (this.type == block.TYPE.BLOCKGROUP || this.type == block.TYPE.PRIMITIVE) {
+		if (this.type == Block.TYPE.BLOCKGROUP || this.type == Block.TYPE.PRIMITIVE) {
 			return;
 		}
 
@@ -887,7 +890,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 				var hw = this.contentSize[0] * 0.5,
 					hh = this.contentSize[1] * 0.5,
 					z = this.position[2];
-				_idx = this.baseBufferIndex * block.BUFFER_SIZE;
+				_idx = this.baseBufferIndex * Block.BUFFER_SIZE;
 
 				if (inBlockGroup) {
 					// NOTE
@@ -897,10 +900,10 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 						tl = glmatrix.vec3.set(__tmpBuffers[1],-hw + anchorOffX,  hh + anchorOffY, z),
 						br = glmatrix.vec3.set(__tmpBuffers[2], hw + anchorOffX, -hh + anchorOffY, z),
 						bl = glmatrix.vec3.set(__tmpBuffers[3],-hw + anchorOffX, -hh + anchorOffY, z);
-					glmatrix.vec3.transformMat4(tr, this.mvMatrix, tr);
-					glmatrix.vec3.transformMat4(tl, this.mvMatrix, tl);
-					glmatrix.vec3.transformMat4(bl, this.mvMatrix, bl);
-					glmatrix.vec3.transformMat4(bl, this.mvMatrix, br);
+					glmatrix.vec3.transformMat4(tr, tr, this.mvMatrix);
+					glmatrix.vec3.transformMat4(tl, tl, this.mvMatrix);
+					glmatrix.vec3.transformMat4(bl, bl, this.mvMatrix);
+					glmatrix.vec3.transformMat4(br, br, this.mvMatrix);
 
 					bufferData[_idx           ] = bl[0]; bufferData[_idx + 1           ] = bl[1]; bufferData[_idx + 2           ] = z;
 					bufferData[_idx +   offset] = tl[0]; bufferData[_idx + 1 +   offset] = tl[1]; bufferData[_idx + 2 +   offset] = z;
@@ -913,7 +916,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 					bufferData[_idx + 3*offset] =  hw + anchorOffX; bufferData[_idx + 1 + 3*offset] =  hh + anchorOffY; bufferData[_idx + 2 + 3*offset] = z;
 				}
 
-				if (this.program == block.PROGRAM.TEXTURE) {
+				if (this.isFrameDirty && this.program == Block.PROGRAM.TEXTURE) {
 					var tex = core.getAsset("texture", this.texture);
 					var texW = tex.width,
 						texH = tex.height;
@@ -931,7 +934,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 				}
 			}
 			if (this.isColorDirty) {
-				_idx = 5 + this.baseBufferIndex * block.BUFFER_SIZE;
+				_idx = 5 + this.baseBufferIndex * Block.BUFFER_SIZE;
 				var color = this.color;
 				for (var i=0; i < 4; i++) {
 					bufferData[_idx     + offset*i] = color[0];
@@ -950,7 +953,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * prepares the block for the rendering (transforms if necessary)
 	 * @ignore
 	 */
-	block.prototype.visit = function () {
+	Block.prototype.visit = function () {
 		this._inVisit = true;
 		if (this.update) {
 			this.update(core.delta);
@@ -962,7 +965,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		this.transform();
 
 		// render this block if not in a block group and if not orphan
-		if (!this.parent || this.parent.type != block.TYPE.BLOCKGROUP) {
+		if (this.parent && this.parent.type != Block.TYPE.BLOCKGROUP) {
 			this.render();
 		}
 
@@ -994,9 +997,9 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * render (only will work for non-blockgroup blocks)
 	 * @ignore
 	 */
-	block.prototype.render = function () {
+	Block.prototype.render = function () {
 		// dummy render for scene blocks
-		if (this.type == block.TYPE.SCENE) {
+		if (this.type == Block.TYPE.SCENE) {
 			return;
 		}
 		var gl, texture;
@@ -1004,19 +1007,19 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		if (core.settings.webglMode) {
 			gl = core.gl;
 			// select current shader
-			var program = core.selectProgram(block.PROGRAM_NAME[this.program]);
+			var program = core.selectProgram(Block.PROGRAM_NAME[this.program]);
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer);
 			var texOff = 3 * 4,
 				colorOff = texOff + 2 * 4,
-				stride = block.VERT_SIZE;
+				stride = Block.VERT_SIZE;
 
 			gl.vertexAttribPointer(program.attribs['vertexPositionAttribute'], 3, gl.FLOAT, false, stride, 0);
 			gl.vertexAttribPointer(program.attribs['vertexColorAttribute'], 4, gl.FLOAT, false, stride, colorOff);
 
-			if (this.program == block.PROGRAM.DEFAULT) {
+			if (this.program == Block.PROGRAM.DEFAULT) {
 				// no extra attributes for the shader
-			} else if (this.program == block.PROGRAM.TEXTURE) {
+			} else if (this.program == Block.PROGRAM.TEXTURE) {
 				texture = core.getAsset('texture', this.texture);
 
 				// pass the texture attributes
@@ -1054,7 +1057,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 								m[12] + (0.5 - this.anchorPoint[0]) * w,
 								gl.viewportHeight - (m[13] + (0.5 - this.anchorPoint[1]) * h));
 			}
-			if (this.program == block.PROGRAM.TEXTURE) {
+			if (this.program == Block.PROGRAM.TEXTURE) {
 				texture = core.getAsset('texture', this.texture);
 				var frame = this.frame;
 				gl.drawImage(/** @type {HTMLImageElement} */(texture), frame[0], frame[1], frame[2], frame[3], -w/2, -h/2, w, h);
@@ -1070,6 +1073,10 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		}
 	};
 
-	return block;
+	Block.setup = function Block_setup(c) {
+		core = c;
+	};
+
+	return Block;
 
 });
