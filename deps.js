@@ -145,3 +145,8 @@ WebGLDebugUtils.glEnumToString = function (err) {};
  * @constructor
  */
 var FakeCanvas = function (width, height) {};
+
+/**
+ * @param {number} requestId
+ */
+var cancelAnimationFrame = function (requestId) {};

@@ -362,7 +362,7 @@ chesterGL.selectProgram = function (program) {
 		// console.log("selecting program " + program);
 		chesterGL.currentProgram = program;
 		// gl.validateProgram(prog);
-		gl.useProgram(prog);
+		gl.useProgram(prog.glProgram);
 		// enable attribs
 		for (var attr in prog.attribs) {
 			// console.log("  enabling attribute " + attr);
@@ -461,11 +461,16 @@ chesterGL.initGraphics = function (canvas) {
 
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
+			canvas = WebGLDebugUtils['makeLostContextSimulatingCanvas'](canvas);
 			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false});
-			if (chesterGL.gl && typeof WebGLDebugUtils !== 'undefined') {
-				console.log("installing debug context");
-				chesterGL.gl = WebGLDebugUtils.makeDebugContext(chesterGL.gl, throwOnGLError);
-			}
+			canvas.addEventListener("webglcontextlost", function (event) {
+				event.preventDefault();
+				cancelAnimationFrame(chesterGL.reqFrameId);
+			}, false);
+			canvas.addEventListener("webglcontextrestored", function (event) {
+				event.preventDefault();
+				chesterGL.canvasResized();
+			}, false);
 		}
 	} catch (e) {
 		console.log("ERROR: " + e);
@@ -496,6 +501,27 @@ chesterGL.canvasResized = function () {
 	// get real width and height
 	chesterGL.gl.viewportWidth = canvas.width;
 	chesterGL.gl.viewportHeight = canvas.height;
+
+	if (chesterGL.webglMode) {
+		chesterGL.initDefaultShaders();
+		// prepare all textures again
+		for (var key in chesterGL.assets['texture']) {
+			var tex = chesterGL.assets['texture'][key];
+			tex.data.tex = chesterGL.gl.createTexture();
+			chesterGL.prepareWebGLTexture(tex.data);
+		}
+		// recreate all the buffers in all nodes in the scene
+		var createBuffers = function (b) {
+			b.createBuffers(null, b.indexBufferData);
+			for (var i in b.children) {
+				createBuffers(b.children[i]);
+			}
+		};
+		createBuffers(chesterGL.runningScene);
+	}
+	// start the loop again
+	chesterGL.currentProgram = null;
+	chesterGL.run();
 };
 
 /**
@@ -514,36 +540,38 @@ chesterGL.initDefaultShaders = function () {
 	var gl = chesterGL.gl;
 
 	chesterGL.initShader("default", function (program) {
-		program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
+		gl.bindAttribLocation(program.glProgram, 0, "aVertexPosition");
+		gl.bindAttribLocation(program.glProgram, 1, "aVertexColor");
 		program.attribs = {
-			'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
-			'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
+			'vertexPositionAttribute': 0,
+			'vertexColorAttribute': 1
 		};
-		goog.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
-		goog.exportProperty(program, 'attribs', program.attribs);
+	}, function (program) {
+		program.mvpMatrixUniform = gl.getUniformLocation(program.glProgram, "uMVPMatrix");
 	});
 
 	chesterGL.initShader("texture", function (program) {
-		program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
-		program.samplerUniform = gl.getUniformLocation(program, "uSampler");
+		gl.bindAttribLocation(program.glProgram, 0, "aVertexPosition");
+		gl.bindAttribLocation(program.glProgram, 1, "aVertexColor");
+		gl.bindAttribLocation(program.glProgram, 2, "aTextureCoord");
 		program.attribs = {
-			'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor"),
-			'textureCoordAttribute': gl.getAttribLocation(program, "aTextureCoord"),
-			'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition")
+			'vertexPositionAttribute': 0,
+			'vertexColorAttribute': 1,
+			'textureCoordAttribute': 2
 		};
-		goog.exportProperty(program, 'mvpMatrixUniform', program.mvpMatrixUniform);
-		goog.exportProperty(program, 'samplerUniform', program.samplerUniform);
-		goog.exportProperty(program, 'attribs', program.attribs);
+	}, function (program) {
+		program.mvpMatrixUniform = gl.getUniformLocation(program.glProgram, "uMVPMatrix");
+		program.samplerUniform = gl.getUniformLocation(program.glProgram, "uSampler");
 	});
 };
 
 /**
  * init shaders (fetches data - in a sync way)
  * @param {string} prefix
- * @param {function(WebGLProgram)} callback
+ * @param {function(Object)} callback
  * @ignore
  */
-chesterGL.initShader = function (prefix, callback) {
+chesterGL.initShader = function (prefix, prelinkCb, postlinkCb) {
 	var gl = chesterGL.gl;
 	var fsData = chesterGL.loadShader(prefix, "frag");
 	var vsData = chesterGL.loadShader(prefix, "vert");
@@ -552,21 +580,35 @@ chesterGL.initShader = function (prefix, callback) {
 	gl.shaderSource(fs, fsData);
 	gl.compileShader(fs);
 
-	if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
-		console.log("problem compiling fragment shader " + prefix + "(" + gl.getShaderInfoLog(fs) + "):\n" + fsData);
+	if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS) && !gl.isContextLost()) {
+		console.log("problem compiling fragment shader " + prefix + " (" + gl.getShaderInfoLog(fs) + "):\n" + fsData);
 		return;
 	}
 
 	var vs = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vs, vsData);
 	gl.compileShader(vs);
-	if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
-		console.log("problem compiling vertex shader " + prefix + "(" + gl.getShaderInfoLog(vs) + "):\n" + vsData);
+	if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS) && !gl.isContextLost()) {
+		console.log("problem compiling vertex shader " + prefix + " (" + gl.getShaderInfoLog(vs) + "):\n" + vsData);
 		return;
 	}
 
-	var program = chesterGL.createShader(prefix, fs, vs);
-	if (callback) callback(program);
+	var program = gl.createProgram();
+	var wrapper = {
+		glProgram: program
+	};
+	gl.attachShader(program, fs);
+	gl.attachShader(program, vs);
+	// do any stuff before linking
+	prelinkCb(wrapper);
+	// continue with the linking
+	gl.linkProgram(program);
+	if (!gl.getProgramParameter(program, gl.LINK_STATUS) && !gl.isContextLost()) {
+		console.log("problem linking shader");
+	}
+	gl.useProgram(program);
+	postlinkCb(wrapper);
+	chesterGL.programs[prefix] = wrapper
 };
 
 /**
@@ -580,54 +622,54 @@ chesterGL.loadShader = function (prefix, type) {
 		// these are going to be packed in the source code now
 		if (type == "frag") {
 			if (prefix == "default") {
-				shaderData = ["#ifdef GL_ES",
-							  "precision mediump float;",
-							  "#endif",
-							  "varying vec4 vColor;",
-							  "void main(void) {",
-							  "    gl_FragColor = vColor;",
-							  "}"].join("\n");
+				shaderData = "#ifdef GL_ES\n" +
+							 "precision mediump float;\n" +
+							 "#endif\n" +
+							 "varying vec4 vColor;\n" +
+							 "void main(void) {\n" +
+							 "    gl_FragColor = vColor;\n" +
+							 "}";
 			} else {
-				shaderData = ["#ifdef GL_ES",
-							  "precision mediump float;",
-							  "#endif",
-							  "uniform sampler2D uSampler;",
-							  "varying vec4 vColor;",
-							  "varying vec2 vTextureCoord;",
-							  "void main(void) {",
-							  "    vec4 textureColor = texture2D(uSampler, vTextureCoord);",
-							  "    gl_FragColor = textureColor * vColor;",
-							  "}"].join("\n");
+				shaderData = "#ifdef GL_ES\n" +
+							 "precision mediump float;\n" +
+							 "#endif\n" +
+							 "uniform sampler2D uSampler;\n" +
+							 "varying vec2 vTextureCoord;\n" +
+							 "varying vec4 vColor;\n" +
+							 "void main(void) {\n" +
+							 "    vec4 textureColor = texture2D(uSampler, vTextureCoord);\n" +
+							 "    gl_FragColor = textureColor * vColor;\n" +
+							 "}";
 			}
 		} else {
 			if (prefix == "default") {
-				shaderData = ["#ifdef GL_ES",
-							  "precision mediump float;",
-							  "#endif",
-							  "attribute vec3 aVertexPosition;",
-							  "attribute vec4 aVertexColor;",
-							  "uniform mat4 uMVPMatrix;",
-							  "varying vec4 vColor;",
-							  "void main(void) {",
-							  "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);",
-							  "    gl_PointSize = 1.0;",
-							  "    vColor = aVertexColor;",
-							  "}"].join("\n");
+				shaderData = "#ifdef GL_ES\n" +
+							 "precision mediump float;\n" +
+							 "#endif\n" +
+							 "attribute vec3 aVertexPosition;\n" +
+							 "attribute vec4 aVertexColor;\n" +
+							 "uniform mat4 uMVPMatrix;\n" +
+							 "varying vec4 vColor;\n" +
+							 "void main(void) {\n" +
+							 "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);\n" +
+							 "    gl_PointSize = 1.0;\n" +
+							 "    vColor = aVertexColor;\n" +
+							 "}";
 			} else {
-				shaderData = ["#ifdef GL_ES",
-							  "precision mediump float;",
-							  "#endif",
-							  "attribute vec3 aVertexPosition;",
-							  "attribute vec4 aVertexColor;",
-							  "attribute vec2 aTextureCoord;",
-							  "uniform mat4 uMVPMatrix;",
-							  "varying vec2 vTextureCoord;",
-							  "varying vec4 vColor;",
-							  "void main(void) {",
-							  "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);",
-							  "    vTextureCoord = aTextureCoord;",
-							  "    vColor = aVertexColor;",
-							  "}"].join("\n");
+				shaderData = "#ifdef GL_ES\n" +
+							 "precision mediump float;\n" +
+							 "#endif\n" +
+							 "attribute vec3 aVertexPosition;\n" +
+							 "attribute vec4 aVertexColor;\n" +
+							 "attribute vec2 aTextureCoord;\n" +
+							 "uniform mat4 uMVPMatrix;\n" +
+							 "varying vec2 vTextureCoord;\n" +
+							 "varying vec4 vColor;\n" +
+							 "void main(void) {\n" +
+							 "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);\n" +
+							 "    vTextureCoord = aTextureCoord;\n" +
+							 "    vColor = aVertexColor;\n" +
+							 "}";
 			}
 		}
 	} else {
@@ -643,28 +685,6 @@ chesterGL.loadShader = function (prefix, type) {
 		req.send();
 	}
 	return shaderData;
-};
-
-/**
- * actually creates the shader
- * @param {string} prefix
- * @param {WebGLShader|null} fragmentData
- * @param {WebGLShader|null} vertexData
- * @return {WebGLProgram}
- * @ignore
- */
-chesterGL.createShader = function (prefix, fragmentData, vertexData) {
-	var gl = chesterGL.gl;
-	var program = gl.createProgram();
-	gl.attachShader(program, fragmentData);
-	gl.attachShader(program, vertexData);
-	gl.linkProgram(program);
-	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-		console.log("problem linking shader");
-	}
-	// console.log("creating shader " + prefix);
-	chesterGL.programs[prefix] = program;
-	return program;
 };
 
 /**
@@ -877,7 +897,7 @@ chesterGL.prepareWebGLTexture = function (texture) {
 		gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 		error = gl.getError();
-		if (error !== 0) {
+		if (error !== gl.NO_ERROR && error != gl.CONTEXT_LOST_WEBGL) {
 			console.log("gl error " + error);
 			result = false;
 		}
@@ -887,7 +907,7 @@ chesterGL.prepareWebGLTexture = function (texture) {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	} catch (e) {
-		console.log("got some error: " + e);
+		console.log("got some error: ", e);
 		result = false;
 	}
 	return result;
@@ -938,7 +958,7 @@ chesterGL.defaultTextureLoader = function (type, params) {
 	var img = new Image(),
 		path = params.url,
 		name = params.name,
-		prefix = chesterGL.settings.highDPIPrefix.replace("__PR__", ""+chesterGL.devicePixelRatio),
+		prefix = chesterGL.settings['highDPIPrefix'].replace("__PR__", ""+chesterGL.devicePixelRatio),
 		re = new RegExp(prefix + "\\..+$");
 
 	img.src = "";
@@ -1307,16 +1327,17 @@ chesterGL.removeMouseHandler = function (callback) {
 	}
 };
 
+chesterGL.reqFrameId = null;
 /**
  * run at browser's native animation speed
  */
 chesterGL.run = function () {
 	if (!chesterGL._paused) {
-		requestAnimationFrame(chesterGL.run, /** @type {HTMLElement} */(chesterGL.canvas));
 		if (chesterGL.stats) chesterGL.stats['begin']();
 		chesterGL.drawScene();
 		chesterGL.ActionManager.tick(chesterGL.delta);
 		if (chesterGL.stats) chesterGL.stats['end']();
+		chesterGL.reqFrameId = requestAnimationFrame(chesterGL.run, /** @type {HTMLElement} */(chesterGL.canvas));
 	}
 };
 

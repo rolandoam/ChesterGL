@@ -66,7 +66,7 @@ chesterGL.Block = function (rect, type, parent) {
 	if (chesterGL.webglMode && (!parent || parent.type != chesterGL.Block.TYPE['BLOCKGROUP'])) {
 		var gl = chesterGL.gl;
 		// just a single buffer for all data (a "quad")
-		this.glBuffer = gl.createBuffer();
+		this.createBuffers();
 		this.glBufferData = new Float32Array(chesterGL.Block.BUFFER_SIZE);
 	}
 
@@ -361,6 +361,13 @@ chesterGL.Block.prototype.addDebugNode = function () {
 		});
 	}
 	this.debugNodeAdded = true;
+};
+
+chesterGL.Block.prototype.createBuffers = function () {
+	if (chesterGL.webglMode) {
+		this.glBuffer = chesterGL.gl.createBuffer();
+		this.isTransformDirty = this.isFrameDirty = true;
+	}
 };
 
 /**
