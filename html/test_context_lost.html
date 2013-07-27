@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="test.css"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
+	<script src="scripts/webgl-debug.js"></script>
+	<script type="text/javascript" data-main="scripts/test-context-lost" src="scripts/require.js"></script>
+	<script type="text/javascript">
+function simulateLostContext() {
+    document.getElementById("demo-canvas").loseContext();
+}
+	</script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-77863-9']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+	</script>
+</head>
+<body>
+	<div id="loading" style="position: absolute; z-index: 100;"></div>
+	<div id="game-container">
+		<canvas id="demo-canvas" width="640" height="480"></canvas>
+		<div>
+			<a href="index.html">Test Index</a><br/>
+			<input type="button" onclick="simulateLostContext();" value="simulate lost context"/>
+		</div>
+	</div>
+</body>
+</html>

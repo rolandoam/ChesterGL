@@ -23,7 +23,7 @@
  *
  */
 
-define(["glmatrix", "chester/block"], function (glmatrix, block) {
+define(["require", "glmatrix", "chester/block"], function (require, glmatrix, block) {
 	// public interface
 	var core = {};
 	// private namespace
@@ -277,7 +277,7 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 			// console.log("selecting program " + program);
 			_core.currentProgram = program;
 			// gl.validateProgram(prog);
-			gl.useProgram(prog);
+			gl.useProgram(prog.glProgram);
 			// enable attribs
 			for (var attr in prog.attribs) {
 				// console.log("  enabling attribute " + attr);
@@ -350,10 +350,22 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 				desiredHeight = canvas.height;
 			}
 
-			_core.canvas = canvas;
 			if (settings.webglMode) {
+				if (typeof WebGLDebugUtils !== "undefined") {
+					canvas = WebGLDebugUtils['makeLostContextSimulatingCanvas'](canvas);
+				}
 				core.gl = canvas.getContext("experimental-webgl", {alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false});
+				// add context loosing event listeners
+				canvas.addEventListener("webglcontextlost", function (event) {
+					event.preventDefault();
+					cancelAnimationFrame(_core.reqFrameId);
+				}, false);
+				canvas.addEventListener("webglcontextrestored", function (event) {
+					event.preventDefault();
+					_core.resetContext();
+				}, false);
 			}
+			_core.canvas = canvas;
 		} catch (e) {
 			console.log("ERROR: " + e);
 		}
@@ -375,14 +387,32 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 	};
 
 	/**
-	 * called when the canvas is resized
+	 * called when we need to reset the GL context
 	 * @ignore
 	 */
-	_core.canvasResized = function () {
+	_core.resetContext = function () {
 		var canvas = _core.canvas;
-		// get real width and height
-		core.gl.viewportWidth = canvas.width;
-		core.gl.viewportHeight = canvas.height;
+		if (core.settings.webglMode) {
+			core.initDefaultShaders();
+			for (var key in _core.assets['texture']) {
+				var tex = _core.assets['texture'][key];
+				tex.data.tex = core.gl.createTexture();
+				core.prepareWebGLTexture(tex.data);
+			}
+			// helper function to recreate all the buffers of the blocks
+			var createBuffers = function (b) {
+				b.createBuffers(null, b.indexBufferData);
+				b.children.forEach(function (child) {
+					createBuffers(child);
+				});
+			};
+			createBuffers(_core.runningScene);
+		}
+		// setup the projection again
+		core.setupPerspective();
+		// start the loop again
+		_core.currentProgram = null;
+		core.run();
 	};
 
 	/**
@@ -401,31 +431,39 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 		var gl = core.gl;
 
 		core.initShader("default", function (program) {
-			program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
+			gl.bindAttribLocation(program.glProgram, 0, "aVertexPosition");
+			gl.bindAttribLocation(program.glProgram, 1, "aVertexColor");
 			program.attribs = {
-				'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition"),
-				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor")
+				'vertexPositionAttribute': 0,
+				'vertexColorAttribute': 1
 			};
+		}, function (program) {
+			program.mvpMatrixUniform = gl.getUniformLocation(program.glProgram, "uMVPMatrix");
 		});
 
 		core.initShader("texture", function (program) {
-			program.mvpMatrixUniform = gl.getUniformLocation(program, "uMVPMatrix");
-			program.samplerUniform = gl.getUniformLocation(program, "uSampler");
+			gl.bindAttribLocation(program.glProgram, 0, "aVertexPosition");
+			gl.bindAttribLocation(program.glProgram, 1, "aVertexColor");
+			gl.bindAttribLocation(program.glProgram, 2, "aTextureCoord");
 			program.attribs = {
-				'vertexColorAttribute': gl.getAttribLocation(program, "aVertexColor"),
-				'textureCoordAttribute': gl.getAttribLocation(program, "aTextureCoord"),
-				'vertexPositionAttribute': gl.getAttribLocation(program, "aVertexPosition")
+				'vertexPositionAttribute': 0,
+				'vertexColorAttribute': 1,
+				'textureCoordAttribute': 2
 			};
+		}, function (program) {
+			program.mvpMatrixUniform = gl.getUniformLocation(program.glProgram, "uMVPMatrix");
+			program.samplerUniform = gl.getUniformLocation(program.glProgram, "uSampler");
 		});
 	};
 
 	/**
 	 * init shaders (fetches data - in a sync way)
 	 * @param {string} prefix
-	 * @param {function(WebGLProgram)} callback
+	 * @param {function(Object)} prelinkCallback
+	 * @param {function(Object)} postlinkCallback
 	 * @ignore
 	 */
-	core.initShader = function (prefix, callback) {
+	core.initShader = function (prefix, prelinkCb, postlinkCb) {
 		var gl = core.gl;
 		var fsData = core.loadShader(prefix, "frag");
 		var vsData = core.loadShader(prefix, "vert");
@@ -434,21 +472,36 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 		gl.shaderSource(fs, fsData);
 		gl.compileShader(fs);
 
-		if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
-			console.log("problem compiling fragment shader " + prefix + "(" + gl.getShaderInfoLog(fs) + "):\n" + fsData);
+		if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS) && !gl.isContextLost()) {
+			console.log("problem compiling fragment shader " + prefix + " (" + gl.getShaderInfoLog(fs) + "):\n" + fsData);
 			return;
 		}
 
 		var vs = gl.createShader(gl.VERTEX_SHADER);
 		gl.shaderSource(vs, vsData);
 		gl.compileShader(vs);
-		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
-			console.log("problem compiling vertex shader " + prefix + "(" + gl.getShaderInfoLog(vs) + "):\n" + vsData);
+		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS) && !gl.isContextLost()) {
+			console.log("problem compiling vertex shader " + prefix + " (" + gl.getShaderInfoLog(vs) + "):\n" + vsData);
 			return;
 		}
 
-		var program = core.createShader(prefix, fs, vs);
-		if (callback) callback(program);
+		var program = gl.createProgram();
+		var wrapper = {
+			glProgram: program
+		};
+		gl.attachShader(program, fs);
+		gl.attachShader(program, vs);
+		// do any stuff before linking
+		prelinkCb && prelinkCb(wrapper);
+		// continue with the linking
+		gl.linkProgram(program);
+		if (!gl.getProgramParameter(program, gl.LINK_STATUS) && !gl.isContextLost()) {
+			console.log("problem linking shader");
+			return;
+		}
+		gl.useProgram(program);
+		postlinkCb && postlinkCb(wrapper);
+		_core.programs[prefix] = wrapper;
 	};
 
 	/**
@@ -462,54 +515,54 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 			// these are going to be packed in the source code now
 			if (type == "frag") {
 				if (prefix == "default") {
-					shaderData = ["#ifdef GL_ES",
-								  "precision mediump float;",
-								  "#endif",
-								  "varying vec4 vColor;",
-								  "void main(void) {",
-								  "    gl_FragColor = vColor;",
-								  "}"].join("\n");
+					shaderData = "#ifdef GL_ES\n" +
+								 "precision mediump float;\n" +
+								 "#endif\n" +
+								 "varying vec4 vColor;\n" +
+								 "void main(void) {\n" +
+								 "    gl_FragColor = vColor;\n" +
+								 "}";
 				} else {
-					shaderData = ["#ifdef GL_ES",
-								  "precision mediump float;",
-								  "#endif",
-								  "uniform sampler2D uSampler;",
-								  "varying vec4 vColor;",
-								  "varying vec2 vTextureCoord;",
-								  "void main(void) {",
-								  "    vec4 textureColor = texture2D(uSampler, vTextureCoord);",
-								  "    gl_FragColor = textureColor * vColor;",
-								  "}"].join("\n");
+					shaderData = "#ifdef GL_ES\n" +
+								 "precision mediump float;\n" +
+								 "#endif\n" +
+								 "uniform sampler2D uSampler;\n" +
+								 "varying vec4 vColor;\n" +
+								 "varying vec2 vTextureCoord;\n" +
+								 "void main(void) {\n" +
+								 "    vec4 textureColor = texture2D(uSampler, vTextureCoord);\n" +
+								 "    gl_FragColor = textureColor * vColor;\n" +
+								 "}";
 				}
 			} else {
 				if (prefix == "default") {
-					shaderData = ["#ifdef GL_ES",
-								  "precision mediump float;",
-								  "#endif",
-								  "attribute vec3 aVertexPosition;",
-								  "attribute vec4 aVertexColor;",
-								  "uniform mat4 uMVPMatrix;",
-								  "varying vec4 vColor;",
-								  "void main(void) {",
-								  "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);",
-								  "    gl_PointSize = 1.0;",
-								  "    vColor = aVertexColor;",
-								  "}"].join("\n");
+					shaderData = "#ifdef GL_ES\n" +
+								 "precision mediump float;\n" +
+								 "#endif\n" +
+								 "attribute vec3 aVertexPosition;\n" +
+								 "attribute vec4 aVertexColor;\n" +
+								 "uniform mat4 uMVPMatrix;\n" +
+								 "varying vec4 vColor;\n" +
+								 "void main(void) {\n" +
+								 "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);\n" +
+								 "    gl_PointSize = 1.0;\n" +
+								 "    vColor = aVertexColor;\n" +
+								 "}";
 				} else {
-					shaderData = ["#ifdef GL_ES",
-								  "precision mediump float;",
-								  "#endif",
-								  "attribute vec3 aVertexPosition;",
-								  "attribute vec4 aVertexColor;",
-								  "attribute vec2 aTextureCoord;",
-								  "uniform mat4 uMVPMatrix;",
-								  "varying vec2 vTextureCoord;",
-								  "varying vec4 vColor;",
-								  "void main(void) {",
-								  "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);",
-								  "    vTextureCoord = aTextureCoord;",
-								  "    vColor = aVertexColor;",
-								  "}"].join("\n");
+					shaderData = "#ifdef GL_ES\n" +
+								 "precision mediump float;\n" +
+								 "#endif\n" +
+								 "attribute vec3 aVertexPosition;\n" +
+								 "attribute vec4 aVertexColor;\n" +
+								 "attribute vec2 aTextureCoord;\n" +
+								 "uniform mat4 uMVPMatrix;\n" +
+								 "varying vec2 vTextureCoord;\n" +
+								 "varying vec4 vColor;\n" +
+								 "void main(void) {\n" +
+								 "    gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);\n" +
+								 "    vTextureCoord = aTextureCoord;\n" +
+								 "    vColor = aVertexColor;\n" +
+								 "}";
 				}
 			}
 		} else {
@@ -525,28 +578,6 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 			req.send();
 		}
 		return shaderData;
-	};
-
-	/**
-	 * actually creates the shader
-	 * @param {string} prefix
-	 * @param {WebGLShader|null} fragmentData
-	 * @param {WebGLShader|null} vertexData
-	 * @return {WebGLProgram}
-	 * @ignore
-	 */
-	core.createShader = function (prefix, fragmentData, vertexData) {
-		var gl = core.gl;
-		var program = gl.createProgram();
-		gl.attachShader(program, fragmentData);
-		gl.attachShader(program, vertexData);
-		gl.linkProgram(program);
-		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-			console.log("problem linking shader");
-		}
-		// console.log("creating shader " + prefix);
-		_core.programs[prefix] = program;
-		return program;
 	};
 
 	/**
@@ -765,7 +796,7 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 			gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 			error = gl.getError();
-			if (error !== 0) {
+			if (error !== gl.NO_ERROR && error != gl.CONTEXT_LOST_WEBGL) {
 				console.log("gl error " + error);
 				result = false;
 			}
@@ -775,7 +806,7 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.bindTexture(gl.TEXTURE_2D, null);
 		} catch (e) {
-			console.log("got some error: " + e);
+			console.log("got some error: ", e);
 			result = false;
 		}
 		return result;
@@ -1201,11 +1232,18 @@ define(["glmatrix", "chester/block"], function (glmatrix, block) {
 	};
 
 	/**
+	 * the current request frame id
+	 * @ignore
+	 * @type {number}
+	 */
+	_core.reqFrameId = 0;
+
+	/**
 	 * start the animation
 	 */
 	core.run = function () {
 		if (!_core.paused) {
-			requestAnimationFrame(core.run, _core.canvas);
+			_core.reqFrameId = requestAnimationFrame(core.run, _core.canvas);
 			if (_core.stats) _core.stats['begin']();
 			core.drawScene();
 			// FIXME: add the tick when it's done

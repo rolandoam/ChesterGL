@@ -63,7 +63,7 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 		if (core.settings.webglMode && (!parent || parent.type != block.TYPE.BLOCKGROUP)) {
 			var gl = core.gl;
 			// just a single buffer for all data (a "quad")
-			this.glBuffer = gl.createBuffer();
+			this.createBuffers();
 			this.glBufferData = new Float32Array(block.BUFFER_SIZE);
 		}
 
@@ -331,6 +331,16 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 * @type {boolean}
 	 */
 	block.prototype._inVisit = false;
+
+	/**
+	 * create (or recreate) buffers for this block
+	 */
+	block.prototype.createBuffers = function () {
+		if (core.settings.webglMode) {
+			this.glBuffer = core.gl.createBuffer();
+			this.isTransformDirty = this.isFrameDirty = true;
+		}
+	};
 
 	/**
 	 * executed when the node/scene is activated for the first time
