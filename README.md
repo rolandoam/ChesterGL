@@ -1,5 +1,11 @@
 # ChesterGL
 
+## IMPORTANT UPDATE
+
+I'm refactoring all the code in the branch [getting-rid-of-closure-compiler](https://github.com/funkaster/ChesterGL/tree/getting-rid-of-closure-compiler). Basically I'm getting rid of closure compiler and using [require.js](http://requirejs.org) instead. This will make things a lot simpler to debug & play, as well as deploy. And possibly reducing file-size of the library, as it will only add the core modules + whatever you need in your game.
+
+I'll also add support back for canvas (already there, missing support for block groups), clean the API for actions, and add simple raycasting (detect when you touch/click a block in the scene graph).
+
 ## What is this?
 
 ChesterGL (Chester Game Library) is a WebGL/canvas 2d game library that focuses on ease of use and performance. It supports a simple scene graph and provides a minimal interface for you to create games, and extend the library if you need. Current features: time based actions, simple scene graph, Tiled (tmx) map support, different shaders (webgl only), batched sprites.
