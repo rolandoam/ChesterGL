@@ -1378,6 +1378,10 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 		return _core.runningScene;
 	};
 
+	core.getDevicePixelRatio = function () {
+		return _core.devicePixelRatio;
+	};
+
 	/**
 	 * sets the clear (background) color
 	 * the array should be created in the order RGBA
