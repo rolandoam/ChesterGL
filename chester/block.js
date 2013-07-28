@@ -394,7 +394,8 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 			// if on highDPI mode, and the texture is a highDPI texture, then set the content size to
 			// the "real" content size.
 			if (isHighDPI) {
-				this.setContentSize(newFrame[2] / core.devicePixelRatio, newFrame[3] / core.devicePixelRatio);
+				var pixelRatio = core.getDevicePixelRatio();
+				this.setContentSize(newFrame[2] / pixelRatio, newFrame[3] / pixelRatio);
 			} else {
 				this.setContentSize(newFrame[2], newFrame[3]);
 			}
