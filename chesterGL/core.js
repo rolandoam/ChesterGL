@@ -461,7 +461,9 @@ chesterGL.initGraphics = function (canvas) {
 
 		chesterGL.canvas = canvas;
 		if (chesterGL.webglMode) {
-			canvas = WebGLDebugUtils['makeLostContextSimulatingCanvas'](canvas);
+			if (typeof WebGLDebugUtils !== "undefined") {
+				canvas = WebGLDebugUtils['makeLostContextSimulatingCanvas'](canvas);
+			}
 			chesterGL.gl = canvas.getContext("experimental-webgl", {alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false});
 			canvas.addEventListener("webglcontextlost", function (event) {
 				event.preventDefault();
