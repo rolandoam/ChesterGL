@@ -167,7 +167,7 @@ chesterGL.BlockGroup.prototype.remove = function (b) {
 			var _b = this.children.splice(idx, 1);
 			_b[0].parent = null;
 			// for the rest of the children, mark them as dirty and reduce the baseBufferIndex
-			for (var i=idx; i < this.totalChildren; i++) {
+			for (var i=idx; i < this.children.length; i++) {
 				_b = this.children[i];
 				_b.baseBufferIndex = i;
 				_b.isTransformDirty = true;
