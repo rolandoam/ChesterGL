@@ -4,69 +4,8 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="test.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<!-- <script type="text/javascript" src="externals/webgl-debug.js"></script> -->
 	<script src="http://commondatastorage.googleapis.com/chestergl/Stats.js"></script>
-	<script type="text/javascript" src="chester.js"></script>
-	<!-- audio!! -->
-    <script type="text/javascript">
-
-$(document).ready(function () {
-	setupGame();
-	function setupGame() {
-		chesterGL.settings['useGoogleAnalytics'] = true;
-		chesterGL.setup("demo-canvas");
-		var size = chesterGL.viewportSize();
-		var oneDeg = Math.PI / 180.0;
-
-		chesterGL.BMFontLabelBlock.loadFont("fonts/arial");
-		chesterGL.BMFontLabelBlock.loadFont("fonts/alte_haas");
-		chesterGL.BMFontLabelBlock.loadFont("fonts/alte_haas_nr");
-		chesterGL.loadAsset("texture", "images/star.png");
-		chesterGL.assetsLoaded("all", function () {
-			// finish with the setup and run the game
-			chesterGL.setupPerspective();
-
-			var sceneBlock = new chesterGL.Block(null, chesterGL.Block.TYPE['SCENE']);
-			sceneBlock.title = "Test::BMFonts";
-			chesterGL.setRunningScene(sceneBlock);
-
-			var group = new chesterGL.Block();
-			group.setPosition(100, 100, 0);
-
-			// create a label
-            var txt = "This is a\n" +
-                "BitMap Font\n" +
-                "with lines of very different length\n" +
-                "and also lots of text\n" +
-                "but also with lots of lines\n" +
-                "this is the last one, also longer than the other ones\n" +
-                "abcdefghijklmnopqrstuvwxyz 01234567890\n" +
-                "abcdefghijklmnopqrstuvwxyz 01234567890\n" +
-                "abcdefghijklmnopqrstuvwxyz 01234567890\n" +
-                "áéíóúñ ÁÉÍÓÚÑ\n" +
-                "abcdefghijklmnopqrstuvwxyz 01234567890";
-
-			var label = new chesterGL.BMFontLabelBlock(txt, "fonts/arial");
-			label.setAnchorPoint(0, 0);
-			label.setPosition(size.width/2 - 60, size.height/2 - 30, 0);
-			label.setColor([1, 0, 0, 1]);
-
-            var otherLabel = new chesterGL.BMFontLabelBlock("120", "fonts/alte_haas");
-            otherLabel.setAnchorPoint(1, 0.5);
-            otherLabel.setPosition(size.width - 5, 100, 0);
-            window.otherLabel = otherLabel;
-
-            var otherLabelNR = new chesterGL.BMFontLabelBlock("120", "fonts/alte_haas_nr");
-            otherLabelNR.setAnchorPoint(1, 0.5);
-            otherLabelNR.setPosition(size.width - 5, 50, 0);
-            window.otherLabelNR = otherLabelNR;
-
-			sceneBlock.append(label, otherLabel, otherLabelNR);
-			chesterGL.run();
-		});
-	} // setupGame()
-});
-    </script>
+	<script type="text/javascript" data-main="scripts/test-bmfonts.js" src="scripts/require.js"></script>
 	<script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-77863-9']);

@@ -29,7 +29,8 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 		"block",
 		"blockGroup",
 		"blockFrames",
-		"actions"
+		"actions",
+		"bmFontLabelBlock"
 	];
 	var actions = null;
 
