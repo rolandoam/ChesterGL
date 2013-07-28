@@ -426,6 +426,11 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	Block.prototype.setContentSize = function (width, height) {
 		this.contentSize = glmatrix.vec2.fromValues(width, height);
 		this.isFrameDirty = true;
+		if (DEBUG) {
+			if (isNaN(this.contentSize[0]) || isNaN(this.contentSize[1])) {
+				throw "Invalid content size!";
+			}
+		}
 		return this;
 	};
 
@@ -527,6 +532,11 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 			else
 				glmatrix.vec3.set(this.position, x, y, z);
 		}
+		if (DEBUG) {
+			if (isNaN(this.position[0]) || isNaN(this.position[1]) || isNaN(this.position[2])) {
+				throw "Invalid position!";
+			}
+		}
 		this.isTransformDirty = true;
 		return this;
 	};
@@ -558,6 +568,11 @@ define(["require", "glmatrix"], function (require, glmatrix) {
 	 */
 	Block.prototype.setAnchorPoint = function(x, y) {
 		this.anchorPoint = glmatrix.vec2.fromValues(x, y);
+		if (DEBUG) {
+			if (isNaN(this.anchorPoint[0]) || isNaN(this.anchorPoint[1])) {
+				throw "Invalid anchor point!";
+			}
+		}
 		return this;
 	};
 
