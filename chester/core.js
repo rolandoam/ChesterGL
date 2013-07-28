@@ -23,13 +23,15 @@
  *
  */
 
-define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/blockFrames"], function (require, glmatrix) {
+define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/blockFrames", "chester/actions"], function (require, glmatrix) {
 	// we will setup this modules later
 	var coreModules = [
 		"block",
 		"blockGroup",
-		"blockFrames"
+		"blockFrames",
+		"actions"
 	];
+	var actions = null;
 
 	// public interface
 	var core = {};
@@ -330,6 +332,8 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 		coreModules.forEach(function (m) {
 			require("chester/" + m).setup(core);
 		});
+		// cache some modules
+		actions = require("chester/actions");
 	};
 
 	/**
@@ -1259,8 +1263,8 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 			_core.reqFrameId = requestAnimationFrame(core.run, _core.canvas);
 			if (_core.stats) _core.stats['begin']();
 			core.drawScene();
-			// FIXME: add the tick when it's done
-			//actionManager.tick(core.delta);
+			// tick the manager
+			actions.Manager.tick(core.delta);
 			if (_core.stats) _core.stats['end']();
 		}
 	};

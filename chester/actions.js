@@ -1,7 +1,7 @@
 /**
- * chesterGL - Simple 2D WebGL demo/library
+ * chesterGL - Simple 2D WebGL Library
  *
- * Copyright (c) 2010-2012 Rolando Abarca
+ * Copyright (c) 2010-2013 Rolando Abarca
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,911 +23,820 @@
  *
  */
 
-goog.provide("chesterGL.actions");
+define(["require", "glmatrix", "chester/util"], function (require, glmatrix, util) {
+	/**
+	 * @constructor
+	 * @param {number} totalTime in milliseconds
+	 * @param {Block=} block The target block
+	 */
+	var Action = function (totalTime, block) {
+		this.totalTime = totalTime;
+		this.block = block;
+		this.elapsed = 0;
+	};
 
-goog.require("chesterGL.core");
-goog.require("chesterGL.Block");
+	/**
+	 * The internal action id, useful to unschedule an action. It's only
+	 * valid after scheduling an action.
+	 * @type {number}
+	 */
+	Action.prototype.actionId = 0;
 
-/**
- * @constructor
- * @param {number} totalTime in milliseconds
- * @param {chesterGL.Block=} block The target block
- */
-chesterGL.Action = function (totalTime, block) {
-	this.totalTime = totalTime;
-	this.block = block;
-	this.elapsed = 0;
-};
+	/**
+	 * The block to which this action will be applied
+	 *
+	 * @type {Block|null|undefined}
+	 */
+	Action.prototype.block = null;
 
-/**
- * The internal action id, useful to unschedule an action. It's only
- * valid after scheduling an action.
- * @type {number}
- */
-chesterGL.Action.prototype.actionId = 0;
+	/**
+	 * The total time in seconds this action should take
+	 * (might not be relevant for all actions)
+	 *
+	 * @type {number}
+	 */
+	Action.prototype.totalTime = 0;
 
-/**
- * The block to which this action will be applied
- *
- * @type {chesterGL.Block|null|undefined}
- */
-chesterGL.Action.prototype.block = null;
+	/**
+	 * Current time in seconds of the action
+	 * (might not be relevant for all actions)
+	 *
+	 * @type {number}
+	 */
+	Action.prototype.elapsed = 0;
 
-/**
- * The total time in seconds this action should take
- * (might not be relevant for all actions)
- *
- * @type {number}
- */
-chesterGL.Action.prototype.totalTime = 0;
+	/**
+	 * true if the action has ended
+	 * @type {boolean}
+	 */
+	Action.prototype.finished = false;
 
-/**
- * Current time in seconds of the action
- * (might not be relevant for all actions)
- *
- * @type {number}
- */
-chesterGL.Action.prototype.elapsed = 0;
+	/**
+	 * is the action running?
+	 * @type {boolean}
+	 */
+	Action.prototype.running = false;
 
-/**
- * true if the action has ended
- * @type {boolean}
- */
-chesterGL.Action.prototype.finished = false;
+	/**
+	 * is there a next action?
+	 * @type {Action?}
+	 */
+	Action.prototype.next = null;
 
-/**
- * is the action running?
- * @type {boolean}
- */
-chesterGL.Action.prototype.running = false;
-
-/**
- * is there a next action?
- * @type {chesterGL.Action?}
- */
-chesterGL.Action.prototype.next = null;
-
-/**
- * This is the default update function (does nothing)
- * @param {number} delta
- * @ignore
- */
-chesterGL.Action.prototype.update = function (delta) {
-	if (this.running) {
-		this.elapsed += delta;
-		if (this.totalTime >= 0 && this.elapsed >= this.totalTime) {
-			this.stop();
-			if (this.next) {
-				this.block.runAction(this.next);
+	/**
+	 * This is the default update function (does nothing)
+	 * @param {number} delta
+	 * @ignore
+	 */
+	Action.prototype.update = function (delta) {
+		if (this.running) {
+			this.elapsed += delta;
+			if (this.totalTime >= 0 && this.elapsed >= this.totalTime) {
+				this.stop();
+				if (this.next) {
+					this.block.runAction(this.next);
+				}
 			}
 		}
-	}
-};
+	};
 
-/**
- * sets the next action. Returns that action (chainable methods)
- * @param {chesterGL.Action} action
- * @return {chesterGL.Action}
- */
-chesterGL.Action.prototype.setNext = function (action) {
-	this.next = action;
-	return action;
-};
+	/**
+	 * sets the next action. Returns that action (chainable methods)
+	 * @param {Action} action
+	 * @return {Action}
+	 */
+	Action.prototype.setNext = function (action) {
+		this.next = action;
+		return action;
+	};
 
-/**
- * sets the time for the action
- * @param {number} time
- */
-chesterGL.Action.prototype.setTotalTime = function (time) {
-	if (!this.running) {
-		this.totalTime = time;
-	}
-};
-
-/**
- * will be called the first time - usually overriden by subclasses
- * @ignore
- */
-chesterGL.Action.prototype.begin = function () {
-	this.running = true;
-};
-
-/**
- * will be called at the end of the function (or to stop it)
- */
-chesterGL.Action.prototype.stop = function () {
-	this.finished = true;
-	this.running = false;
-};
-
-/**
- * pause the action
- */
-chesterGL.Action.prototype.pause = function () {
-	this.running = false;
-};
-
-/**
- * resume the action
- */
-chesterGL.Action.prototype.resume = function () {
-	this.running = true;
-};
-
-/**
- * is running?
- * @return {boolean}
- */
-chesterGL.Action.prototype.isRunning = function () {
-	return this.running === true;
-};
-
-/**
- * reset - prepare the action in order to use it again
- * @ignore
- */
-chesterGL.Action.prototype.reset = function () {
-	this.running = false;
-	this.finished = false;
-	this.elapsed = 0;
-};
-
-/**
- * @constructor
- * @param {Array|Float32Array} delta The final position (the initial position is the current one of the block)
- * @param {number} totalTime The total time in seconds that this action should take
- * @param {boolean=} relative whether or not the movement is relative (defaults: true)
- * @param {chesterGL.Block=} block The block that will execute this action
- * @extends {chesterGL.Action}
- */
-chesterGL.MoveAction = function (delta, totalTime, relative, block) {
-	chesterGL.Action.call(this, totalTime, block);
-	this.delta = goog.vec.Vec3.createFloat32FromArray(delta);
-	if (relative !== undefined) {
-		this.isRelative = (relative === true);
-	} else {
-		this.isRelative = true;
-	}
-	this.startPosition = goog.vec.Vec3.createFloat32();
-	this.finalPosition = goog.vec.Vec3.createFloat32();
-};
-goog.inherits(chesterGL.MoveAction, chesterGL.Action);
-
-/**
- * @type {?goog.vec.Vec3.Type}
- */
-chesterGL.MoveAction.prototype.delta = null;
-
-/**
- * @type {?goog.vec.Vec3.Type}
- */
-chesterGL.MoveAction.prototype.finalPosition = null;
-
-/**
- * @type {boolean}
- */
-chesterGL.MoveAction.prototype.isRelative = true;
-
-/**
- * @type {?goog.vec.Vec3.Type}
- */
-chesterGL.MoveAction.prototype.startPosition = null;
-
-/**
- * @type {goog.vec.Vec3.Type}
- * @ignore
- */
-chesterGL.MoveAction.__tmp_pos = goog.vec.Vec3.createFloat32();
-
-/**
- * @param {number} delta miliseconds from last time we updated
- * @ignore
- */
-chesterGL.MoveAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	var block = this.block,
-		t = Math.min(1, this.elapsed / this.totalTime),
-		pos = chesterGL.MoveAction.__tmp_pos;
-	goog.vec.Vec3.lerp(this.startPosition, this.finalPosition, t, pos);
-	// console.log([this.startPosition[2], pos[2], t, this.elapsed, this.totalTime].join('\t'));
-	block.setPosition(pos[0], pos[1], pos[2]);
-};
-
-/**
- * just set the initial position
- * @ignore
- */
-chesterGL.MoveAction.prototype.begin = function () {
-	chesterGL.Action.prototype.begin.call(this);
-	if (!this.block) {
-		throw "invalid move action! - no block";
-	}
-	if (this.isRelative) {
-		goog.vec.Vec3.add(this.delta, this.block.position, this.finalPosition);
-	} else {
-		goog.vec.Vec3.setFromArray(this.finalPosition, this.delta);
-	}
-	goog.vec.Vec3.setFromArray(this.startPosition, this.block.position);
-};
-
-/**
- * @ignore
- */
-chesterGL.MoveAction.prototype.stop = function () {
-	chesterGL.Action.prototype.stop.call(this);
-	if (this.elapsed >= this.totalTime) {
-		this.block.setPosition(this.finalPosition);
-	}
-};
-
-/**
- * Return a new action with the reverse move action
- * @return {chesterGL.MoveAction}
- */
-chesterGL.MoveAction.prototype.reverse = function () {
-	if (!this.isRelative) {
-		throw "This only works on relative movements";
-	}
-	var revDelta = [];
-	goog.vec.Vec3.negate(this.delta, revDelta);
-	return new chesterGL.MoveAction(revDelta, this.totalTime, true);
-};
-
-
-/**
- * @constructor
- * @param {number} scaleX The final scale in the X axis
- * @param {number} scaleY The final scale in the Y axis
- * @param {number} totalTime The total time in seconds that this action should take
- * @param {boolean=} relative whether or not the scaling is relative (defaults: true)
- * @param {chesterGL.Block=} block The block that will execute this action
- * @extends {chesterGL.Action}
- */
-chesterGL.ScaleAction = function (scaleX, scaleY, totalTime, relative, block) {
-	chesterGL.Action.call(this, totalTime, block);
-	this.isRelative = relative;
-	this.dx = scaleX;
-	this.dy = scaleY;
-	this.finalScaleX = 0;
-	this.finalScaleY = 0;
-	this.startScaleX = 0;
-	this.startScaleY = 0;
-};
-goog.inherits(chesterGL.ScaleAction, chesterGL.Action);
-
-/**
- * @ignore
- */
-chesterGL.ScaleAction.prototype.begin = function() {
-	chesterGL.Action.prototype.begin.call(this);
-	if (!this.block) {
-		throw "invalid scale action - no block provided";
-	}
-	if (this.isRelative) {
-		this.finalScaleX = this.block.scaleX + this.dx;
-		this.finalScaleY = this.block.scaleY + this.dy;
-	} else {
-		this.finalScaleX = this.dx;
-		this.finalScaleY = this.dy;
-	}
-	this.startScaleX = this.block.scaleX;
-	this.startScaleY = this.block.scaleY;
-};
-
-/**
- * @param {number} delta miliseconds from last time we updated
- * @ignore
- */
-chesterGL.ScaleAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	var block = this.block,
-		t = Math.min(1, this.elapsed / this.totalTime),
-		scaleX = this.startScaleX + t * (this.finalScaleX - this.startScaleX),
-		scaleY = this.startScaleY + t * (this.finalScaleY - this.startScaleY);
-	block.setScale(scaleX, scaleY);
-};
-
-/**
- * @ignore
- */
-chesterGL.ScaleAction.prototype.stop = function () {
-	chesterGL.Action.prototype.stop.call(this);
-	if (this.elapsed >= this.totalTime) {
-		this.block.setScale(this.finalScaleX, this.finalScaleY);
-	}
-};
-
-/**
- * Return a new action with the reverse scale action
- * @return {chesterGL.ScaleAction}
- */
-chesterGL.ScaleAction.prototype.reverse = function () {
-	if (!this.isRelative) {
-		throw "This only works on relative movements";
-	}
-	return new chesterGL.ScaleAction(-this.dx, -this.dy, this.totalTime, true);
-};
-
-
-/**
- * A simple action that will execute the callback, useful for
- * sequences, e.g.: move, then execute some callback.
- * @constructor
- * @extends {chesterGL.Action}
- * @param {function (Object=)} callback the callback to be executed
- * @param {number=} delay Do not call inmediately, but after delay milliseconds. Pass zero for calling immediately.
- * @param {Object=} arg the object to be passed as argument to the
- * callback.
- * @example
- * // move 100 points up in 0.5 seconds (500 milliseconds)
- * var move = new chesterGL.MoveAction([0, 100, 0], 500);
- * var remove = new chesterGL.CallbackAction(function () {
- *	this.remove();
- * }, 0, someBlock);
- */
-chesterGL.CallbackAction = function (callback, delay, arg) {
-	this.callback = callback;
-	this.arg = arg;
-	chesterGL.Action.call(this, delay || 0);
-};
-goog.inherits(chesterGL.CallbackAction, chesterGL.Action);
-
-/**
- * The callback
- * @type {?function (Object=)}
- */
-chesterGL.CallbackAction.prototype.callback = null;
-
-/**
- * The object that can be used as `this` inside the callback.
- * @type {Object|undefined}
- */
-chesterGL.CallbackAction.prototype.arg = null;
-
-chesterGL.CallbackAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	if (this.finished) {
-		this.callback.call(null, this.arg);
-	}
-};
-
-/**
- * @constructor
- * @param {...chesterGL.Action} actions an array of actions
- * @extends {chesterGL.Action}
- * @example
- * var a1 = new chesterGL.MoveAction([100, 100, 0], 5000);
- * var a2 = a1.reverse();
- * var seq = new chesterGL.SequenceAction(a1, a2);
- * block.runAction(seq);
- */
-chesterGL.SequenceAction = function (actions) {
-	if (arguments.length < 1) {
-		throw "you need at least one action to create a sequence";
-	}
-	var totalTime = 0;
-	this.actions = [];
-	for (var i in arguments) {
-		totalTime += arguments[i].totalTime;
-		this.actions.push(arguments[i]);
-	}
-	this.nextStop = this.actions[0].totalTime;
-	chesterGL.Action.call(this, totalTime);
-};
-goog.inherits(chesterGL.SequenceAction, chesterGL.Action);
-
-/**
- * @type {Array.<chesterGL.Action>}
- * @ignore
- */
-chesterGL.SequenceAction.prototype.actions = null;
-
-/**
- * What action are we running
- * @type {number}
- */
-chesterGL.SequenceAction.prototype.currentAction = 0;
-
-/**
- * just mark the split time (the duration of the first action)
- * @ignore
- */
-chesterGL.SequenceAction.prototype.begin = function () {
-	chesterGL.Action.prototype.begin.call(this);
-	this.nextStop = this.actions[0].totalTime;
-	this.actions[0].block = this.block;
-	this.actions[0].begin();
-	// console.log("[seq begin] setting split time: " + this.splitTime);
-};
-
-/**
- * resets the sequence action (will also reset and unschedule its internal actions)
- */
-chesterGL.SequenceAction.prototype.reset = function () {
-	goog.base(this, "reset");
-	this.currentAction = 0;
-	this.nextStop = this.actions[0].totalTime;
-	this.totalTime = 0;
-	for (var i=0; i < this.actions.length; i++) {
-		this.actions[i].reset();
-		this.totalTime += this.actions[i].totalTime;
-	}
-};
-
-/**
- * propagate update to the corresponding action
- * @ignore
- */
-chesterGL.SequenceAction.prototype.update = function (delta) {
-	goog.base(this, "update", delta);
-	var current = this.actions[this.currentAction];
-	current.update(delta);
-	if (this.elapsed >= this.nextStop) {
-		if (!current.finished) {
-			// force the action to finish
-			current.update(1000);
+	/**
+	 * sets the time for the action
+	 * @param {number} time
+	 */
+	Action.prototype.setTotalTime = function (time) {
+		if (!this.running) {
+			this.totalTime = time;
 		}
-		/**
-		 * execute the next action:
-		 * 1) increment currentAction
-		 * 2) while there are any actions left, pick the next
-		 * 3) init the new current action (set block & begin)
-		 * 4) increment the nextStop pointer
-		 * 5) if the current action is not instant (totalTime != 0), then break the loop
-		 * 6) execute the current action (update(1), any delta will do since totalTime == 0)
-		 * 6.5) if the currentAction == 0 then break: the update might've reset the sequence
-		 * 7) repeat the loop (2)
-		 */
-		this.currentAction++;
-		while (this.currentAction < this.actions.length) {
-			current = this.actions[this.currentAction];
-			current.block = this.block;
-			current.begin();
-			this.nextStop += current.totalTime;
-			if (current.totalTime > 0) {
-				break;
-			}
-			current.update(1);
-			if (this.currentAction === 0) {
-				break;
-			}
-			this.currentAction += 1;
+	};
+
+	/**
+	 * will be called the first time - usually overriden by subclasses
+	 * @ignore
+	 */
+	Action.prototype.begin = function () {
+		this.running = true;
+	};
+
+	/**
+	 * will be called at the end of the function (or to stop it)
+	 */
+	Action.prototype.stop = function () {
+		this.finished = true;
+		this.running = false;
+	};
+
+	/**
+	 * pause the action
+	 */
+	Action.prototype.pause = function () {
+		this.running = false;
+	};
+
+	/**
+	 * resume the action
+	 */
+	Action.prototype.resume = function () {
+		this.running = true;
+	};
+
+	/**
+	 * is running?
+	 * @return {boolean}
+	 */
+	Action.prototype.isRunning = function () {
+		return this.running === true;
+	};
+
+	/**
+	 * reset - prepare the action in order to use it again
+	 * @ignore
+	 */
+	Action.prototype.reset = function () {
+		this.running = false;
+		this.finished = false;
+		this.elapsed = 0;
+		// reset in chain
+		if (this.next) {
+			this.next.reset();
 		}
-	}
-};
+	};
 
-/**
- * @constructor
- * @param {chesterGL.Action} action
- * @param {number=} maxTimes The number of times an action should be repeated (-1 for infinity). Defaults to 1
- * @extends {chesterGL.Action}
- */
-chesterGL.RepeatAction = function (action, maxTimes) {
-	this.maxTimes = maxTimes || 1;
-	this.times = 0;
-	this.action = action;
-	chesterGL.Action.call(this, action.totalTime);
-};
-goog.inherits(chesterGL.RepeatAction, chesterGL.Action);
-
-/**
- * the total number of times the action needs to be executed
- * @type {number}
- * @ignore
- */
-chesterGL.RepeatAction.prototype.maxTimes = 0;
-
-/**
- * the current number of times the action has been executed
- * @type {number}
- * @ignore
- */
-chesterGL.RepeatAction.prototype.times = 0;
-
-/**
- * The action to be repeated
- * @type {chesterGL.Action}
- * @ignore
- */
-chesterGL.RepeatAction.prototype.action = null;
-
-/**
- * @ignore
- */
-chesterGL.RepeatAction.prototype.begin = function () {
-	chesterGL.Action.prototype.begin.call(this);
-	this.action.block = this.block;
-	this.action.begin();
-};
-
-/**
- * @ignore
- * @param {number} delta
- */
-chesterGL.RepeatAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	this.action.update(delta);
-	if (this.finished && this.action.finished) {
-		if (this.maxTimes < 0 || this.times < this.maxTimes) {
-			this.times++;
-			this.reset();
-			this.action.reset();
-			this.begin();
-		}
-	}
-};
-
-/**
- * @constructor
- * Flexible action, that will change linearly in time a numeric property
- * @param {string|Object} param the paramenter to modify in the block. You can also pass an object
- * to specify a getter/setter instead.
- * @param {number} targetValue
- * @param {number} totalTime the total time of the action, in milliseconds
- * @param {chesterGL.Block=} block the block on which to run the action
- * @extends {chesterGL.Action}
- */
-chesterGL.ParametricAction = function (param, targetValue, totalTime, block) {
-	chesterGL.Action.call(this, totalTime, block);
-	this.param = param;
-	this.targetValue = targetValue;
-	this.hasGetterAndSetter = (typeof param === "object");
-};
-goog.inherits(chesterGL.ParametricAction, chesterGL.Action);
-
-/** @ignore */
-chesterGL.ParametricAction.prototype.begin = function ParametricAction_begin() {
-	chesterGL.Action.prototype.begin.call(this);
-	if (this.hasGetterAndSetter) {
-		if (typeof this.param['getter'] === "string") {
-			this.initialValue = this.block[this.param['getter']]();
+	/**
+	 * @constructor
+	 * @param {Array|Float32Array} delta The final position (the initial position is the current one of the block)
+	 * @param {number} totalTime The total time in seconds that this action should take
+	 * @param {boolean=} relative whether or not the movement is relative (defaults: true)
+	 * @param {Block=} block The block that will execute this action
+	 * @extends {Action}
+	 */
+	var MoveAction = function (delta, totalTime, relative, block) {
+		Action.call(this, totalTime, block);
+		this.delta = glmatrix.vec3.clone(delta);
+		if (relative !== undefined) {
+			this.isRelative = (relative === true);
 		} else {
-			// assume it's a function
-			this.initialValue = this.param['getter'].call(this.block);
+			this.isRelative = true;
 		}
-	} else {
-		var iv = this.block[this.param];
-		if (!iv) {
-			throw "Invalid ElasticAction param!";
-		}
-		this.initialValue = iv;
-	}
-};
+		this.startPosition = glmatrix.vec3.create();
+		this.finalPosition = glmatrix.vec3.create();
+	};
+	util.inherits(MoveAction, Action);
 
-/** @ignore */
-chesterGL.ParametricAction.prototype.update = function ParametricAction_update(delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	var t = Math.min(1, this.elapsed / this.totalTime),
-		b = this.block;
-	var newv = this.initialValue + t * (this.targetValue - this.initialValue);
-	if (this.hasGetterAndSetter) {
-		if (typeof this.param['setter'] === "string") {
-			b[this.param['setter']].call(b, newv);
+	/**
+	 * @type {?glmatrix.vec3}
+	 */
+	MoveAction.prototype.delta = null;
+
+	/**
+	 * @type {?glmatrix.vec3}
+	 */
+	MoveAction.prototype.finalPosition = null;
+
+	/**
+	 * @type {boolean}
+	 */
+	MoveAction.prototype.isRelative = true;
+
+	/**
+	 * @type {?glmatrix.vec3}
+	 */
+	MoveAction.prototype.startPosition = null;
+
+	/**
+	 * @type {glmatrix.vec3}
+	 * @ignore
+	 */
+	MoveAction.__tmp_pos = glmatrix.vec3.create();
+
+	/**
+	 * @param {number} delta miliseconds from last time we updated
+	 * @ignore
+	 */
+	MoveAction.prototype.update = function (delta) {
+		Action.prototype.update.call(this, delta);
+		var block = this.block,
+			t = Math.min(1, this.elapsed / this.totalTime),
+			pos = MoveAction.__tmp_pos;
+		glmatrix.vec3.lerp(pos, this.startPosition, this.finalPosition, t);
+		// console.log([this.startPosition[2], pos[2], t, this.elapsed, this.totalTime].join('\t'));
+		block.setPosition(pos[0], pos[1], pos[2]);
+	};
+
+	/**
+	 * just set the initial position
+	 * @ignore
+	 */
+	MoveAction.prototype.begin = function () {
+		Action.prototype.begin.call(this);
+		if (!this.block) {
+			throw "invalid move action! - no block";
+		}
+		if (this.isRelative) {
+			glmatrix.vec3.add(this.finalPosition, this.delta, this.block.position);
 		} else {
-			this.param['setter'].call(b, newv);
+			glmatrix.vec3.copy(this.finalPosition, this.delta);
 		}
-	} else {
-		b[this.param] = newv;
-	}
-};
+		glmatrix.vec3.copy(this.startPosition, this.block.position);
+	};
 
-/**
- * @constructor
- * This is not really "elastic", It's applying a bezier-curve to transform the parameter in an
- * elastic-like curve. The current curve is:
- *
- * y(t)=(1-t)^3*0.5+3(1-t)^2*t*0.06+3*(1-t)*t^2*2.2+t^3*1.5 - 0.5
- *
- * Q0 = 0.5; Q1 = 0.06; Q2 = 2.2; Q3 = 1.5
- * Google graph: http://goo.gl/p0DKc
- *
- * The function is shifted in 0.5 to simulate a bounce at the beginning as well. This will only
- * work if the parameter to modify is either an array or a number.
- *
- * @param {string|Object} param the paramenter to modify in the block. You can also pass an object
- * to specify a getter/setter instead.
- * @param {Array|number} targetValue the target value of the parameter
- * @param {number} totalTime the totalTime of the action, in milliseconds
- * @param {chesterGL.Block=} block the block on which to run the action
- * @extends {chesterGL.Action}
- */
-chesterGL.ElasticAction = function (param, targetValue, totalTime, block) {
-	chesterGL.Action.call(this, totalTime, block);
-	this.param = param;
-	this.targetValue = targetValue;
-	this.hasGetterAndSetter = (typeof param === "object");
-};
-goog.inherits(chesterGL.ElasticAction, chesterGL.Action);
-
-/** @ignore */
-chesterGL.ElasticAction.prototype.begin = function ElasticAction_begin() {
-	chesterGL.Action.prototype.begin.call(this);
-	var iv;
-	if (this.hasGetterAndSetter) {
-		iv = this.block[this.param['getter']]();
-	} else {
-		iv = this.block[this.param];
-		if (!iv) {
-			throw "Invalid ElasticAction param!";
+	/**
+	 * @ignore
+	 */
+	MoveAction.prototype.stop = function () {
+		Action.prototype.stop.call(this);
+		if (this.elapsed >= this.totalTime) {
+			this.block.setPosition(this.finalPosition);
 		}
-	}
-	this.arrayLike = false;
-	if (iv instanceof Array) {
-		this.initialValue = iv.slice(0);
-		this.arrayLike = true;
-	} else if (iv instanceof Float32Array) {
-		this.initialValue = new Float32Array(iv);
-		this.arrayLike = true;
-	} else {
-		// assume number
-		this.initialValue = iv;
-	}
-};
+	};
 
-// TODO:
-// make the f(t) an argument, so we can update f(t) any way we want
-/** @ignore */
-chesterGL.ElasticAction.prototype.update = function ElasticAction_update(delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	var t = Math.min(1, this.elapsed / this.totalTime),
-		fakeT = Math.pow(1-t,3)*0.5+3*Math.pow(1-t,2)*t*0.06+3*(1-t)*Math.pow(t,2)*2.2+Math.pow(t,3)*1.5 - 0.5,
-		b = this.block;
-	// now simply interpolate using the new `t`
-	if (this.arrayLike) {
-		var tmp = [],
-			tpLen = this.initialValue.length;
-		for (var i=0; i < tpLen; i++) {
-			tmp[i] = this.initialValue[i] + fakeT * (this.targetValue[i] - this.initialValue[i]);
+	/**
+	 * Return a new action with the reverse move action
+	 * @return {MoveAction}
+	 */
+	MoveAction.prototype.reverse = function () {
+		if (!this.isRelative) {
+			throw "This only works on relative movements";
 		}
+		var revDelta = [];
+		glmatrix.vec3.negate(revDelta, this.delta);
+		return new MoveAction(revDelta, this.totalTime, true);
+	};
+
+
+	/**
+	 * @constructor
+	 * @param {number} scaleX The final scale in the X axis
+	 * @param {number} scaleY The final scale in the Y axis
+	 * @param {number} totalTime The total time in seconds that this action should take
+	 * @param {boolean=} relative whether or not the scaling is relative (defaults: true)
+	 * @param {Block=} block The block that will execute this action
+	 * @extends {Action}
+	 */
+	ScaleAction = function (scaleX, scaleY, totalTime, relative, block) {
+		Action.call(this, totalTime, block);
+		this.isRelative = relative;
+		this.dx = scaleX;
+		this.dy = scaleY;
+		this.finalScaleX = 0;
+		this.finalScaleY = 0;
+		this.startScaleX = 0;
+		this.startScaleY = 0;
+	};
+	util.inherits(ScaleAction, Action);
+
+	/**
+	 * @ignore
+	 */
+	ScaleAction.prototype.begin = function() {
+		Action.prototype.begin.call(this);
+		if (!this.block) {
+			throw "invalid scale action - no block provided";
+		}
+		if (this.isRelative) {
+			this.finalScaleX = this.block.scaleX + this.dx;
+			this.finalScaleY = this.block.scaleY + this.dy;
+		} else {
+			this.finalScaleX = this.dx;
+			this.finalScaleY = this.dy;
+		}
+		this.startScaleX = this.block.scaleX;
+		this.startScaleY = this.block.scaleY;
+	};
+
+	/**
+	 * @param {number} delta miliseconds from last time we updated
+	 * @ignore
+	 */
+	ScaleAction.prototype.update = function (delta) {
+		Action.prototype.update.call(this, delta);
+		var block = this.block,
+			t = Math.min(1, this.elapsed / this.totalTime),
+			scaleX = this.startScaleX + t * (this.finalScaleX - this.startScaleX),
+			scaleY = this.startScaleY + t * (this.finalScaleY - this.startScaleY);
+		block.setScale(scaleX, scaleY);
+	};
+
+	/**
+	 * @ignore
+	 */
+	ScaleAction.prototype.stop = function () {
+		Action.prototype.stop.call(this);
+		if (this.elapsed >= this.totalTime) {
+			this.block.setScale(this.finalScaleX, this.finalScaleY);
+		}
+	};
+
+	/**
+	 * Return a new action with the reverse scale action
+	 * @return {ScaleAction}
+	 */
+	ScaleAction.prototype.reverse = function () {
+		if (!this.isRelative) {
+			throw "This only works on relative movements";
+		}
+		return new ScaleAction(-this.dx, -this.dy, this.totalTime, true);
+	};
+
+
+	/**
+	 * A simple action that will execute the callback, useful for
+	 * sequences, e.g.: move, then execute some callback.
+	 * @constructor
+	 * @extends {Action}
+	 * @param {function (Object=)} callback the callback to be executed
+	 * @param {number=} delay Do not call inmediately, but after delay milliseconds. Pass zero for calling immediately.
+	 * @param {Object=} arg the object to be passed as argument to the
+	 * callback.
+	 * @example
+	 * // move 100 points up in 0.5 seconds (500 milliseconds)
+	 * var move = new MoveAction([0, 100, 0], 500);
+	 * var remove = new CallbackAction(function () {
+	 *	this.remove();
+	 * }, 0, someBlock);
+	 */
+	CallbackAction = function (callback, delay, arg) {
+		this.callback = callback;
+		this.arg = arg;
+		Action.call(this, delay || 0);
+	};
+	util.inherits(CallbackAction, Action);
+
+	/**
+	 * The callback
+	 * @type {?function (Object=)}
+	 */
+	CallbackAction.prototype.callback = null;
+
+	/**
+	 * The object that can be used as `this` inside the callback.
+	 * @type {Object|undefined}
+	 */
+	CallbackAction.prototype.arg = null;
+
+	CallbackAction.prototype.update = function (delta) {
+		Action.prototype.update.call(this, delta);
+		if (this.finished) {
+			this.callback.call(null, this.arg);
+		}
+	};
+
+	/**
+	 * @constructor
+	 * @param {Action} action
+	 * @param {number=} maxTimes The number of times an action should be repeated (-1 for infinity). Defaults to 1
+	 * @extends {Action}
+	 */
+	RepeatAction = function (action, maxTimes) {
+		this.maxTimes = maxTimes || 1;
+		this.times = 0;
+		this.action = action;
+		var totalTime = action.totalTime;
+		var nextAction = action.next;
+		var counter = 1;
+		while (nextAction) {
+			totalTime += nextAction.totalTime;
+			nextAction = nextAction.next;
+			counter++;
+			if (counter > 100) {
+				console.log("**** too many sequencial actions");
+				totalTime = 0;
+				nextAction = null;
+			}
+		}
+		Action.call(this, -1);
+	};
+	util.inherits(RepeatAction, Action);
+
+	/**
+	 * the total number of times the action needs to be executed
+	 * @type {number}
+	 * @ignore
+	 */
+	RepeatAction.prototype.maxTimes = 0;
+
+	/**
+	 * the current number of times the action has been executed
+	 * @type {number}
+	 * @ignore
+	 */
+	RepeatAction.prototype.times = 0;
+
+	/**
+	 * The action to be repeated
+	 * @type {Action}
+	 * @ignore
+	 */
+	RepeatAction.prototype.action = null;
+
+	/**
+	 * @ignore
+	 */
+	RepeatAction.prototype.begin = function () {
+		Action.prototype.begin.call(this);
+		// just start our action
+		this.block.runAction(this.action);
+	};
+
+	/**
+	 * @ignore
+	 * @param {number} delta
+	 */
+	RepeatAction.prototype.update = function (delta) {
+		Action.prototype.update.call(this, delta);
+		// test whether this and all the chained actions are done
+		var actionFinished = this.action.finished;
+		var nextAction = this.action.next;
+		while (nextAction && actionFinished) {
+			actionFinished = actionFinished && nextAction.finished;
+			nextAction = nextAction.next;
+		}
+		// if so, then reset them all and start this again
+		if (actionFinished) {
+			if (this.maxTimes < 0 || this.times < this.maxTimes) {
+				this.times++;
+				this.reset();
+				this.action.reset();
+				this.begin();
+			}
+		}
+	};
+
+	/**
+	 * @constructor
+	 * Flexible action, that will change linearly in time a numeric property
+	 * @param {string|Object} param the paramenter to modify in the block. You can also pass an object
+	 * to specify a getter/setter instead.
+	 * @param {number} targetValue
+	 * @param {number} totalTime the total time of the action, in milliseconds
+	 * @param {Block=} block the block on which to run the action
+	 * @extends {Action}
+	 */
+	ParametricAction = function (param, targetValue, totalTime, block) {
+		Action.call(this, totalTime, block);
+		this.param = param;
+		this.targetValue = targetValue;
+		this.hasGetterAndSetter = (typeof param === "object");
+	};
+	util.inherits(ParametricAction, Action);
+
+	/** @ignore */
+	ParametricAction.prototype.begin = function ParametricAction_begin() {
+		Action.prototype.begin.call(this);
 		if (this.hasGetterAndSetter) {
-			b[this.param['setter']].apply(b, tmp);
+			if (typeof this.param['getter'] === "string") {
+				this.initialValue = this.block[this.param['getter']]();
+			} else {
+				// assume it's a function
+				this.initialValue = this.param['getter'].call(this.block);
+			}
 		} else {
-			b[this.param] = tmp;
+			var iv = this.block[this.param];
+			if (!iv) {
+				throw "Invalid ElasticAction param!";
+			}
+			this.initialValue = iv;
 		}
-	} else {
-		var newv = this.initialValue + fakeT * (this.targetValue - this.initialValue);
+	};
+
+	/** @ignore */
+	ParametricAction.prototype.update = function ParametricAction_update(delta) {
+		Action.prototype.update.call(this, delta);
+		var t = Math.min(1, this.elapsed / this.totalTime),
+			b = this.block;
+		var newv = this.initialValue + t * (this.targetValue - this.initialValue);
 		if (this.hasGetterAndSetter) {
-			b[this.param['setter']].call(b, newv);
+			if (typeof this.param['setter'] === "string") {
+				b[this.param['setter']].call(b, newv);
+			} else {
+				this.param['setter'].call(b, newv);
+			}
 		} else {
 			b[this.param] = newv;
 		}
-	}
-};
+	};
 
-/**
- * @constructor
- * @param {number} delay in seconds between frames
- * @param {Array.<Object>} frames The frames of the animation
- * @param {boolean=} loop Whether or not this animation should loop
- * @param {chesterGL.Block=} block The block that will receive this action
- * @extends {chesterGL.Action}
- */
-chesterGL.AnimateAction = function (delay, frames, loop, block) {
-	this.delay = delay;
-	var totalTime = delay * frames.length;
-	if (loop === true) totalTime = -1;
-	chesterGL.Action.call(this, totalTime, block);
-	this.shouldLoop = (loop === true);
-	this.frames = frames.slice(0);
-};
-goog.inherits(chesterGL.AnimateAction, chesterGL.Action);
+	/**
+	 * @constructor
+	 * This is not really "elastic", It's applying a bezier-curve to transform the parameter in an
+	 * elastic-like curve. The current curve is:
+	 *
+	 * y(t)=(1-t)^3*0.5+3(1-t)^2*t*0.06+3*(1-t)*t^2*2.2+t^3*1.5 - 0.5
+	 *
+	 * Q0 = 0.5; Q1 = 0.06; Q2 = 2.2; Q3 = 1.5
+	 * Google graph: http://goo.gl/p0DKc
+	 *
+	 * The function is shifted in 0.5 to simulate a bounce at the beginning as well. This will only
+	 * work if the parameter to modify is either an array or a number.
+	 *
+	 * @param {string|Object} param the paramenter to modify in the block. You can also pass an object
+	 * to specify a getter/setter instead.
+	 * @param {Array|number} targetValue the target value of the parameter
+	 * @param {number} totalTime the totalTime of the action, in milliseconds
+	 * @param {Block=} block the block on which to run the action
+	 * @extends {Action}
+	 */
+	ElasticAction = function (param, targetValue, totalTime, block) {
+		Action.call(this, totalTime, block);
+		this.param = param;
+		this.targetValue = targetValue;
+		this.hasGetterAndSetter = (typeof param === "object");
+	};
+	util.inherits(ElasticAction, Action);
 
-/**
- * the current frame
- * @type {number}
- * @ignore
- */
-chesterGL.AnimateAction.prototype.currentFrame = 0;
-
-/**
- * The delay between frames
- * @type {number}
- * @ignore
- */
-chesterGL.AnimateAction.prototype.delay = 0.0;
-
-/**
- * The total frames of the animation
- * @type {Array.<goog.vec.Vec4.Type>}
- * @ignore
- */
-chesterGL.AnimateAction.prototype.frames = null;
-
-/**
- * Whether or not the animation should loop
- * @type {boolean}
- */
-chesterGL.AnimateAction.prototype.shouldLoop = false;
-
-/**
- * @param {number} delta
- * @ignore
- */
-chesterGL.AnimateAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	var block = this.block;
-	if (this.finished) {
-		this.currentFrame = this.frames.length - 1;
-		// set last frame
-		block.setFrame(this.frames[this.currentFrame]);
-	} else {
-		if (this.elapsed >= this.delay * this.currentFrame) {
-			block.setFrame(this.frames[this.currentFrame++]);
-			if (this.currentFrame == this.frames.length) {
-				if (this.shouldLoop) { this.currentFrame = 0; this.elapsed = 0; }
-				else this.finished = true;
+	/** @ignore */
+	ElasticAction.prototype.begin = function ElasticAction_begin() {
+		Action.prototype.begin.call(this);
+		var iv;
+		if (this.hasGetterAndSetter) {
+			iv = this.block[this.param['getter']]();
+		} else {
+			iv = this.block[this.param];
+			if (!iv) {
+				throw "Invalid ElasticAction param!";
 			}
 		}
-	}
-};
-
-/**
- * @constructor
- * Will rotate the block using a sin(t) function with the given
- * Amplitude.
- *
- * @param {number} amplitude in radians of the wiggle
- * @param {number} cycles the total number of cycles
- * @param {number} totalTime the total duration (in milliseconds)
- * @param {chesterGL.Block=} block The block that will receive this action
- * @extends {chesterGL.Action}
- */
-chesterGL.WiggleAction = function (amplitude, cycles, totalTime, block) {
-	this.amplitude = amplitude;
-	this.cycles = cycles;
-	chesterGL.Action.call(this, totalTime, block);
-};
-goog.inherits(chesterGL.WiggleAction, chesterGL.Action);
-
-/**
- * @type {number} the amplitude of the wiggle
- */
-chesterGL.WiggleAction.prototype.amplitude = 0;
-
-/**
- * @type {number} the number of cycles of the wiggle
- */
-chesterGL.WiggleAction.prototype.cycles = 0;
-
-/**
- * @param {number} delta
- * @ignore
- */
-chesterGL.WiggleAction.prototype.update = function (delta) {
-	chesterGL.Action.prototype.update.call(this, delta);
-	if (!this.finished) {
-		// t' = t * cycles * 2 * PI / duration
-		var _t = this.elapsed / 1000.0 * this.cycles * 2 * Math.PI / (this.totalTime / 1000.0);
-		var sin = Math.sin(_t);
-		// console.log("sin: " + sin + " - " + this.elapsed + " - " + t);
-		this.block.setRotation(this.amplitude * sin);
-	} else {
-		// reset rotation
-		this.block.setRotation(0);
-	}
-};
-
-/**
- * global action manager
- * @namespace
- */
-chesterGL.ActionManager = {};
-
-/**
- * the list of scheduled actions
- * @ignore
- * @type {Object.<number, chesterGL.Action>}
- * @private
- */
-chesterGL.ActionManager.scheduledActions_ = {};
-
-/**
- * @type {number}
- * @ignore
- */
-chesterGL.ActionManager.internalIdCounter_ = 0;
-
-/**
- * adds an action to the scheduler
- *
- * @param {chesterGL.Action} action
- * @return {number} the actionId of the recently scheduled action
- */
-chesterGL.ActionManager.scheduleAction = function (action) {
-	if (!action.actionId || !chesterGL.ActionManager.scheduledActions_.hasOwnProperty(action.actionId)) {
-		action.actionId = chesterGL.ActionManager.internalIdCounter_++;
-		chesterGL.ActionManager.scheduledActions_[action.actionId] = action;
-	}
-	action.begin();
-	return action.actionId;
-};
-
-/**
- * removes an action of the manager
- * @param {number} actionId
- */
-chesterGL.ActionManager.unscheduleAction = function (actionId) {
-	if (chesterGL.ActionManager.scheduledActions_.hasOwnProperty(actionId)) {
-		delete chesterGL.ActionManager.scheduledActions_[actionId];
-	}
-};
-
-/**
- * Iterate over all scheduled actions
- * @param {number} delta number of miliseconds to run in all actions
- * @ignore
- */
-chesterGL.ActionManager.tick = function (delta) {
-	if (chesterGL.ActionManager.paused) {
-		return;
-	}
-	for (var i in chesterGL.ActionManager.scheduledActions_) {
-		var a = chesterGL.ActionManager.scheduledActions_[i];
-		if (a.running) a.update(delta);
-		if (a.finished) {
-			delete chesterGL.ActionManager.scheduledActions_[i];
+		this.arrayLike = false;
+		if (iv instanceof Array) {
+			this.initialValue = iv.slice(0);
+			this.arrayLike = true;
+		} else if (iv instanceof Float32Array) {
+			this.initialValue = new Float32Array(iv);
+			this.arrayLike = true;
+		} else {
+			// assume number
+			this.initialValue = iv;
 		}
-	}
-};
+	};
 
-/**
- * pauses all actions (basically just skip the tick)
- */
-chesterGL.ActionManager.pause = function ActionManager_pause() {
-	chesterGL.ActionManager.paused = true;
-};
-
-/**
- * resumes all actions
- */
-chesterGL.ActionManager.resume = function ActionManager_resume() {
-	chesterGL.ActionManager.paused = false;
-};
-
-/**
- * schedules an action to be run over this block
- * @param {chesterGL.Action} action
- * @return {number} the action id (to unschedule it if you want)
- */
-chesterGL.Block.prototype.runAction = function (action) {
-	action.block = this;
-	return chesterGL.ActionManager.scheduleAction(action);
-};
-
-/**
- * removes all actions associated with this block
- */
-chesterGL.Block.prototype.removeAllActions = function Block_removeAllActions() {
-	for (var i in chesterGL.ActionManager.scheduledActions_) {
-		var a = chesterGL.ActionManager.scheduledActions_[/** @type{number} */(i)];
-		if (a.block == this) {
-			chesterGL.ActionManager.unscheduleAction(/** @type{number} */(i));
+	// TODO:
+	// make the f(t) an argument, so we can update f(t) any way we want
+	/** @ignore */
+	ElasticAction.prototype.update = function ElasticAction_update(delta) {
+		Action.prototype.update.call(this, delta);
+		var t = Math.min(1, this.elapsed / this.totalTime),
+			fakeT = Math.pow(1-t,3)*0.5+3*Math.pow(1-t,2)*t*0.06+3*(1-t)*Math.pow(t,2)*2.2+Math.pow(t,3)*1.5 - 0.5,
+			b = this.block;
+		// now simply interpolate using the new `t`
+		if (this.arrayLike) {
+			var tmp = [],
+				tpLen = this.initialValue.length;
+			for (var i=0; i < tpLen; i++) {
+				tmp[i] = this.initialValue[i] + fakeT * (this.targetValue[i] - this.initialValue[i]);
+			}
+			if (this.hasGetterAndSetter) {
+				b[this.param['setter']].apply(b, tmp);
+			} else {
+				b[this.param] = tmp;
+			}
+		} else {
+			var newv = this.initialValue + fakeT * (this.targetValue - this.initialValue);
+			if (this.hasGetterAndSetter) {
+				b[this.param['setter']].call(b, newv);
+			} else {
+				b[this.param] = newv;
+			}
 		}
-	}
-};
+	};
 
-goog.exportSymbol('chesterGL.ActionManager', chesterGL.ActionManager);
-goog.exportSymbol('chesterGL.MoveAction', chesterGL.MoveAction);
-goog.exportSymbol('chesterGL.ScaleAction', chesterGL.ScaleAction);
-goog.exportSymbol('chesterGL.CallbackAction', chesterGL.CallbackAction);
-goog.exportSymbol('chesterGL.SequenceAction', chesterGL.SequenceAction);
-goog.exportSymbol('chesterGL.RepeatAction', chesterGL.RepeatAction);
-goog.exportSymbol('chesterGL.AnimateAction', chesterGL.AnimateAction);
-goog.exportSymbol('chesterGL.WiggleAction', chesterGL.WiggleAction);
-goog.exportSymbol('chesterGL.ElasticAction', chesterGL.ElasticAction);
-goog.exportSymbol('chesterGL.ParametricAction', chesterGL.ParametricAction);
-goog.exportProperty(chesterGL.ActionManager, 'scheduleAction', chesterGL.ActionManager.scheduleAction);
-goog.exportProperty(chesterGL.ActionManager, 'unscheduleAction', chesterGL.ActionManager.unscheduleAction);
-goog.exportProperty(chesterGL.ActionManager, 'pause', chesterGL.ActionManager.pause);
-goog.exportProperty(chesterGL.ActionManager, 'resume', chesterGL.ActionManager.resume);
-goog.exportProperty(chesterGL.Block.prototype, 'runAction', chesterGL.Block.prototype.runAction);
-goog.exportProperty(chesterGL.Action.prototype, 'setNext', chesterGL.Action.prototype.setNext);
-goog.exportProperty(chesterGL.Action.prototype, 'stop', chesterGL.Action.prototype.stop);
-goog.exportProperty(chesterGL.Action.prototype, 'reset', chesterGL.Action.prototype.reset);
-goog.exportProperty(chesterGL.Action.prototype, 'begin', chesterGL.Action.prototype.begin);
-goog.exportProperty(chesterGL.Action.prototype, 'pause', chesterGL.Action.prototype.pause);
-goog.exportProperty(chesterGL.Action.prototype, 'resume', chesterGL.Action.prototype.resume);
-goog.exportProperty(chesterGL.Action.prototype, 'setTotalTime', chesterGL.Action.prototype.setTotalTime);
-goog.exportProperty(chesterGL.Action.prototype, 'isRunning', chesterGL.Action.prototype.isRunning);
-goog.exportProperty(chesterGL.MoveAction.prototype, 'reverse', chesterGL.MoveAction.prototype.reverse);
-goog.exportProperty(chesterGL.ScaleAction.prototype, 'reverse', chesterGL.ScaleAction.prototype.reverse);
+	/**
+	 * @constructor
+	 * @param {number} delay in seconds between frames
+	 * @param {Array.<Object>} frames The frames of the animation
+	 * @param {boolean=} loop Whether or not this animation should loop
+	 * @param {Block=} block The block that will receive this action
+	 * @extends {Action}
+	 */
+	AnimateAction = function (delay, frames, loop, block) {
+		this.delay = delay;
+		var totalTime = delay * frames.length;
+		if (loop === true) totalTime = -1;
+		Action.call(this, totalTime, block);
+		this.shouldLoop = (loop === true);
+		this.frames = frames.slice(0);
+	};
+	util.inherits(AnimateAction, Action);
+
+	/**
+	 * the current frame
+	 * @type {number}
+	 * @ignore
+	 */
+	AnimateAction.prototype.currentFrame = 0;
+
+	/**
+	 * The delay between frames
+	 * @type {number}
+	 * @ignore
+	 */
+	AnimateAction.prototype.delay = 0.0;
+
+	/**
+	 * The total frames of the animation
+	 * @type {Array.<glmatrix.vec4>}
+	 * @ignore
+	 */
+	AnimateAction.prototype.frames = null;
+
+	/**
+	 * Whether or not the animation should loop
+	 * @type {boolean}
+	 */
+	AnimateAction.prototype.shouldLoop = false;
+
+	/**
+	 * @param {number} delta
+	 * @ignore
+	 */
+	AnimateAction.prototype.update = function (delta) {
+		Action.prototype.update.call(this, delta);
+		var block = this.block;
+		if (this.finished) {
+			this.currentFrame = this.frames.length - 1;
+			// set last frame
+			block.setFrame(this.frames[this.currentFrame]);
+		} else {
+			if (this.elapsed >= this.delay * this.currentFrame) {
+				block.setFrame(this.frames[this.currentFrame++]);
+				if (this.currentFrame == this.frames.length) {
+					if (this.shouldLoop) { this.currentFrame = 0; this.elapsed = 0; }
+					else this.finished = true;
+				}
+			}
+		}
+	};
+
+	/**
+	 * @constructor
+	 * Will rotate the block using a sin(t) function with the given
+	 * Amplitude.
+	 *
+	 * @param {number} amplitude in radians of the wiggle
+	 * @param {number} cycles the total number of cycles
+	 * @param {number} totalTime the total duration (in milliseconds)
+	 * @param {Block=} block The block that will receive this action
+	 * @extends {Action}
+	 */
+	WiggleAction = function (amplitude, cycles, totalTime, block) {
+		this.amplitude = amplitude;
+		this.cycles = cycles;
+		Action.call(this, totalTime, block);
+	};
+	util.inherits(WiggleAction, Action);
+
+	/**
+	 * @type {number} the amplitude of the wiggle
+	 */
+	WiggleAction.prototype.amplitude = 0;
+
+	/**
+	 * @type {number} the number of cycles of the wiggle
+	 */
+	WiggleAction.prototype.cycles = 0;
+
+	/**
+	 * @param {number} delta
+	 * @ignore
+	 */
+	WiggleAction.prototype.update = function (delta) {
+		Action.prototype.update.call(this, delta);
+		if (!this.finished) {
+			// t' = t * cycles * 2 * PI / duration
+			var _t = this.elapsed / 1000.0 * this.cycles * 2 * Math.PI / (this.totalTime / 1000.0);
+			var sin = Math.sin(_t);
+			// console.log("sin: " + sin + " - " + this.elapsed + " - " + t);
+			this.block.setRotation(this.amplitude * sin);
+		} else {
+			// reset rotation
+			this.block.setRotation(0);
+		}
+	};
+
+	/**
+	 * global action manager
+	 * @namespace
+	 */
+	var ActionManager = {};
+
+	/**
+	 * the list of scheduled actions
+	 * @ignore
+	 * @type {Object.<number, Action>}
+	 * @private
+	 */
+	ActionManager.scheduledActions_ = {};
+
+	/**
+	 * @type {number}
+	 * @ignore
+	 */
+	var _internalIdCounter = 0;
+
+	/**
+	 * adds an action to the scheduler
+	 *
+	 * @param {Action} action
+	 * @return {number} the actionId of the recently scheduled action
+	 */
+	ActionManager.scheduleAction = function (action) {
+		if (!action.actionId || !ActionManager.scheduledActions_.hasOwnProperty(action.actionId)) {
+			action.actionId = _internalIdCounter++;
+			ActionManager.scheduledActions_[action.actionId] = action;
+		}
+		action.begin();
+		return action.actionId;
+	};
+
+	/**
+	 * removes an action of the manager
+	 * @param {number} actionId
+	 */
+	ActionManager.unscheduleAction = function (actionId) {
+		if (ActionManager.scheduledActions_.hasOwnProperty(actionId)) {
+			delete ActionManager.scheduledActions_[actionId];
+		}
+	};
+
+	/**
+	 * Iterate over all scheduled actions
+	 * @param {number} delta number of miliseconds to run in all actions
+	 * @ignore
+	 */
+	ActionManager.tick = function (delta) {
+		if (ActionManager.paused) {
+			return;
+		}
+		for (var i in ActionManager.scheduledActions_) {
+			var a = ActionManager.scheduledActions_[i];
+			if (a.running) a.update(delta);
+			if (a.finished) {
+				delete ActionManager.scheduledActions_[i];
+			}
+		}
+	};
+
+	/**
+	 * pauses all actions (basically just skip the tick)
+	 */
+	ActionManager.pause = function ActionManager_pause() {
+		ActionManager.paused = true;
+	};
+
+	/**
+	 * resumes all actions
+	 */
+	ActionManager.resume = function ActionManager_resume() {
+		ActionManager.paused = false;
+	};
+
+	var setup = function actions_setup(c) {
+		var Block = require("chester/block");
+
+		/**
+		 * schedules an action to be run over this block
+		 * @param {Action} action
+		 * @return {number} the action id (to unschedule it if you want)
+		 */
+		Block.prototype.runAction = function (action) {
+			action.block = this;
+			return ActionManager.scheduleAction(action);
+		};
+
+		/**
+		 * removes all actions associated with this block
+		 */
+		Block.prototype.removeAllActions = function Block_removeAllActions() {
+			for (var i in ActionManager.scheduledActions_) {
+				var a = ActionManager.scheduledActions_[/** @type{number} */(i)];
+				if (a.block == this) {
+					ActionManager.unscheduleAction(/** @type{number} */(i));
+				}
+			}
+		};
+	};
+
+
+	return {
+		"Base": Action,
+		"Move": MoveAction,
+		"Scale": ScaleAction,
+		"Callback": CallbackAction,
+		"Repeat": RepeatAction,
+		"Parametric": ParametricAction,
+		"Elastic": ElasticAction,
+		"Animate": AnimateAction,
+		"Wiggle": WiggleAction,
+		"Manager": ActionManager,
+		"setup": setup
+	};
+});
