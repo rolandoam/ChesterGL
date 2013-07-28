@@ -353,10 +353,10 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 				var devicePixelRatio = window.devicePixelRatio;
 				desiredWidth = canvas.width;
 				desiredHeight = canvas.height;
-				canvas.style.width = canvas.width + "px";
-				canvas.style.height = canvas.height + "px";
 				canvas.width = canvas.clientWidth * devicePixelRatio;
 				canvas.height = canvas.clientHeight * devicePixelRatio;
+				canvas.style.width = desiredWidth + "px";
+				canvas.style.height = desiredHeight + "px";
 				_core.highDPI = true;
 				_core.devicePixelRatio = window.devicePixelRatio;
 				console.log("using HighDPI resolution (devicePixelRatio: " + devicePixelRatio + ")");
@@ -387,8 +387,15 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 		}
 		if (!core.gl) {
 			// fallback to canvas API
-			core.gl = canvas.getContext("2d");
-			if (!core.gl) {
+			var offCanvas = document.createElement("canvas");
+			offCanvas.width = desiredWidth;
+			offCanvas.height = desiredHeight;
+			core.gl = offCanvas.getContext("2d");
+			// save the front context
+			_core.frontGL = canvas.getContext("2d");
+			// save the off canvas
+			_core.offCanvas = offCanvas;
+			if (!core.gl || !_core.frontGL) {
 				throw "Error initializing graphic context!";
 			}
 			settings.webglMode = false;
@@ -1047,8 +1054,9 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		} else {
 			gl.setTransform(1, 0, 0, 1, 0, 0);
+			gl.globalAlpha = 1.0;
 			// FIXME: this should respect whatever we have in settings
-			gl.fillStyle = "rgb(0, 0, 0)";
+			gl.fillStyle = "rgba(0, 0, 0, 1)";
 			gl.fillRect(0, 0, _core.canvas.width, _core.canvas.height);
 		}
 
@@ -1058,6 +1066,11 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 			if (!_core.runningScene.isRunning) {
 				_core.runningScene.onEnterScene();
 			}
+		}
+
+		if (!settings.webglMode) {
+			// draw the off canvas into the real one
+			_core.frontGL.drawImage(_core.offCanvas, 0, 0, _core.canvas.width, _core.canvas.height);
 		}
 
 		// for actions and other stuff
@@ -1106,10 +1119,10 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 	};
 
 	/**
-	 * @type {Float32Array}
+	 * @type {Array}
 	 * @ignore
 	 */
-	var __tmp_mouse_vec = new Float32Array(3);
+	var __tmp_mouse_vec = [];
 
 	/**
 	 * @param {number} x
@@ -1117,9 +1130,9 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 	 * @ignore
 	 */
 	var __tmp_mouse_setFromValues = function (x, y) {
-		core.__tmp_mouse_vec[0] = x;
-		core.__tmp_mouse_vec[1] = y;
-		core.__tmp_mouse_vec[2] = 0;
+		__tmp_mouse_vec[0] = x;
+		__tmp_mouse_vec[1] = y;
+		__tmp_mouse_vec[2] = 0;
 	};
 
 	/**
