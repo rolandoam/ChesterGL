@@ -349,7 +349,7 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 		var settings = core.settings;
 		try {
 			// test for high-dpi device
-			if (settings['useHighDPI'] && window.devicePixelRatio && window.devicePixelRatio > 1) {
+			if (settings.useHighDPI && window.devicePixelRatio && window.devicePixelRatio > 1) {
 				var devicePixelRatio = window.devicePixelRatio;
 				desiredWidth = canvas.width;
 				desiredHeight = canvas.height;
@@ -386,7 +386,7 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 			console.log("ERROR: " + e);
 		}
 		if (!core.gl) {
-			// fallback to canvas API (uses an offscreen buffer)
+			// fallback to canvas API
 			core.gl = canvas.getContext("2d");
 			if (!core.gl) {
 				throw "Error initializing graphic context!";
@@ -398,7 +398,7 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 		core.gl.viewportWidth = desiredWidth;
 		core.gl.viewportHeight = desiredHeight;
 
-		// install touch handler
+		// install touch & mouse handlers
 		core.installMouseHandlers();
 	};
 
@@ -1047,9 +1047,9 @@ define(["require", "glmatrix", "chester/block", "chester/blockGroup", "chester/b
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		} else {
 			gl.setTransform(1, 0, 0, 1, 0, 0);
-			gl.fillStyle = settings.backgroundColor;
-			gl.clearRect(0, 0, gl.viewportWidth, gl.viewportHeight); //We are using RGBA
-			gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
+			// FIXME: this should respect whatever we have in settings
+			gl.fillStyle = "rgb(0, 0, 0)";
+			gl.fillRect(0, 0, _core.canvas.width, _core.canvas.height);
 		}
 
 		// start mayhem
